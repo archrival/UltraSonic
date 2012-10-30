@@ -1,0 +1,224 @@
+﻿<Window x:Class="UltraSonic.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic"
+        Icon="Images/ultrasonic-logo.ico"
+        Title="UltraSonic" Height="729.851" Width="1077" MinWidth="1077" MinHeight="600" Closed="WindowClosed">
+
+        <Window.CommandBindings>
+        <CommandBinding Command="MediaCommands.Play" Executed="PlayButtonClick" CanExecute="CommandCanExecute"/>
+        <CommandBinding Command="MediaCommands.Stop" Executed="StopButtonClick" CanExecute="CommandCanExecute"/>
+        <CommandBinding Command="MediaCommands.Pause" Executed="PauseButtonClick" CanExecute="CommandCanExecute"/>
+        <CommandBinding Command="MediaCommands.PreviousTrack" Executed="PreviousButtonClick" CanExecute="PreviousCanExecute"/>
+        <CommandBinding Command="MediaCommands.NextTrack" Executed="NextButtonClick" CanExecute="NextCanExecute"/>
+    </Window.CommandBindings>
+
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo>
+            <TaskbarItemInfo.ThumbButtonInfos>
+                <ThumbButtonInfoCollection>
+                    <ThumbButtonInfo Description="Previous" DismissWhenClicked="False"  Command="MediaCommands.PreviousTrack" CommandTarget="{Binding ElementName=PreviousButton}" ImageSource="Images/media-skip-backward-16.png" />
+                    <ThumbButtonInfo Description="Play" DismissWhenClicked="False"  Command="MediaCommands.Play" CommandTarget="{Binding ElementName=PlayButton}" ImageSource="Images/media-playback-start-16.png" />
+                    <ThumbButtonInfo Description="Pause" DismissWhenClicked="False"  Command="MediaCommands.Pause" CommandTarget="{Binding ElementName=PauseButton}" ImageSource="Images/media-playback-pause-16.png" />
+                    <ThumbButtonInfo Description="Stop" DismissWhenClicked="False"  Command="MediaCommands.Stop" CommandTarget="{Binding ElementName=StopButton}" ImageSource="Images/media-playback-stop-16.png" />
+                    <ThumbButtonInfo Description="Next" DismissWhenClicked="False"  Command="MediaCommands.NextTrack" CommandTarget="{Binding ElementName=NextButton}" ImageSource="Images/media-skip-forward-16.png" />
+                </ThumbButtonInfoCollection>
+            </TaskbarItemInfo.ThumbButtonInfos>
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StatusBar VerticalAlignment="Bottom" Height="29">
+            <Label x:Name="MusicTimeRemainingLabel" Content="0:00 / 0:00" Width="100" FontSize="10"/>
+            <Label x:Name="MusicPlayStatusLabel" Content="" Width="100" FontSize="10"/>
+        </StatusBar>
+        <TabControl Margin="10,5,10,88">
+            <TabItem Header="Music">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="6*"/>
+                        <RowDefinition Height="32*"/>
+                        <RowDefinition Height="273*"/>
+                        <RowDefinition Height="264*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="329*"/>
+                        <ColumnDefinition Width="309*"/>
+                        <ColumnDefinition Width="401*"/>
+                    </Grid.ColumnDefinitions>
+                    <TreeView x:Name="MusicTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="MusicTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" Grid.Row="2" >
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type local:ArtistItem}" ItemsSource="{Binding Path=Children}">
+                                <TextBlock Text="{Binding Path=Name}" />
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                    </TreeView>
+                    <Border BorderThickness="1" Grid.Row="3" BorderBrush="#FF000000">
+                        <Image x:Name="MusicCoverArt" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True" Grid.Row="3" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
+                    </Border>
+                    <DataGrid x:Name="MusicDataGrid" AlternatingRowBackground="Gainsboro" SelectionChanged="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" VerticalContentAlignment="Center" Grid.Row="2">
+                        <DataGrid.Columns>
+                            <!--<DataGridCheckBoxColumn Binding="{Binding Selected}" Header="" IsReadOnly="False"/>-->
+                            <DataGridTemplateColumn Header="Cover Art">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Image}" Height="150" Width="150" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Album" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid x:Name="TrackDataGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White"  AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" MouseDoubleClick="TrackDataGridMouseDoubleClick" Grid.Column="2" Grid.Row="2">
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Binding="{Binding Selected}" Header="" IsReadOnly="False"/>
+                            <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Rating}" Header="Rating" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid x:Name="PlaylistsListGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Tracks" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid x:Name="PlaylistTrackGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3">
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Binding="{Binding Selected}" Header="" IsReadOnly="False"/>
+                            <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Rating}" Header="Rating" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBox HorizontalAlignment="Left" Margin="0,7,283,0" Width="120" Height="20" Grid.Column="2" Grid.Row="1" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="0,7,190,0" Width="120" Height="20" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left"  Margin="0,7,0,0" Width="120" Height="20" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" TextChanged="TextBoxTextChanged"/>
+                    <TextBox HorizontalAlignment="Right" Margin="0,7,0,0" Width="120" Height="20" Grid.Column="2" Grid.Row="1" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Settings">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="Username" Height="23" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Password" Height="23" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Server Address" Height="23" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Proxy Address" Height="23" HorizontalAlignment="Left" Margin="10,122,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Proxy Port" Height="23" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Proxy Username" Height="23" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Proxy Password" Height="23" HorizontalAlignment="Left" Margin="10,206,0,0" VerticalAlignment="Top" Width="136"/>
+                    <TextBox x:Name="PreferencesUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <PasswordBox x:Name="PreferencesPasswordPasswordBox" HorizontalAlignment="Left" Height="23" Margin="159,41,0,0" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,69,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesProxyServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesProxyServerPortTextBox" HorizontalAlignment="Left" Height="23" Margin="159,153,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesProxyServerUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <PasswordBox x:Name="PreferencesProxyServerPasswordTextBox" HorizontalAlignment="Left" Height="23" Margin="159,209,0,0" VerticalAlignment="Top" Width="261"/>
+                    <Button x:Name="PreferencesSaveButton" Content="Save" HorizontalAlignment="Left" Margin="345,237,0,0" VerticalAlignment="Top" Width="75" Click="PreferencesSaveButtonClick"/>
+                    <GroupBox Header="License Information" HorizontalAlignment="Right" Margin="0,10,10,412" Height="153" Width="337" VerticalAlignment="Top">
+                        <Grid Background="#FFE5E5E5">
+                            <Label Content="Key:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Margin="692,97,0,0" Target="{Binding ElementName=PreferencesLicenseKeyLabel}"/>
+                            <Label Content="Email:" HorizontalAlignment="Left" Margin="692,35,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseEmailLabel}"/>
+                            <Label Content="Date:" HorizontalAlignment="Left" Margin="692,66,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseDateLabel}"/>
+                            <Label Content="Valid:" HorizontalAlignment="Left" Margin="692,128,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseValidLabel}"/>
+                            <Label x:Name="PreferencesLicenseEmailLabel" HorizontalAlignment="Left" Margin="767,35,0,0" VerticalAlignment="Top" Width="262"/>
+                            <Label x:Name="PreferencesLicenseDateLabel" HorizontalAlignment="Left" Margin="767,66,0,0" VerticalAlignment="Top" Width="262"/>
+                            <Label x:Name="PreferencesLicenseKeyLabel" HorizontalAlignment="Left" Margin="767,97,0,0" VerticalAlignment="Top" Width="262"/>
+                            <Label x:Name="PreferencesLicenseValidLabel" HorizontalAlignment="Left" Margin="767,128,0,0" VerticalAlignment="Top" Width="262"/>
+                        </Grid>
+                    </GroupBox>
+                    <CheckBox x:Name="PreferencesUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Margin="159,97,0,0" VerticalAlignment="Top" Height="23" Width="91" UseLayoutRounding="True" ClickMode="Press" Checked="PreferencesUseProxyCheckboxChecked" Unchecked="PreferencesUseProxyCheckboxUnChecked"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button x:Name="PreviousButton" HorizontalAlignment="Left" Margin="10,0,0,61" VerticalAlignment="Bottom" Width="30" Height="22" Command="MediaCommands.PreviousTrack">
+            <Image Source="Images/media-skip-backward.png"/>
+        </Button>
+        <Button x:Name="StopButton" HorizontalAlignment="Left" Margin="45,0,0,61" VerticalAlignment="Bottom" Width="30" Height="22" Command="MediaCommands.Stop">
+            <Image Source="Images/media-playback-stop.png"/>
+        </Button>
+        <Button x:Name="PlayButton" HorizontalAlignment="Left" Margin="80,0,0,61" VerticalAlignment="Bottom" Width="45" Height="22" Command="MediaCommands.Play">
+            <Image Source="Images/media-playback-start.png"/>
+        </Button>
+        <Button x:Name="PauseButton" HorizontalAlignment="Left" Margin="130,0,0,61" VerticalAlignment="Bottom" Width="30" Height="22" Command="MediaCommands.Pause">
+            <Image Source="Images/media-playback-pause.png"/>
+        </Button>
+        <Button x:Name="NextButton" HorizontalAlignment="Left" Margin="165,0,0,61" VerticalAlignment="Bottom" Width="30" Height="22" Command="MediaCommands.NextTrack">
+            <Image Source="Images/media-skip-forward.png"/>
+        </Button>
+        <Button x:Name="RepeatButton" HorizontalAlignment="Right" Margin="0,0,266,61" VerticalAlignment="Bottom" Width="30" Height="22" Click="RepeatButtonClick" >
+            <Image x:Name="RepeatButtonIcon">
+                <Image.Style>
+                    <Style TargetType="Image" >
+                        <Setter Property="Source" Value="/Images/media-playlist-repeat-disabled.png" />
+                        <Style.Triggers>
+                            <Trigger Property="Name" Value="RepeatEnabled">
+                                <Setter Property="Source" Value="/Images/media-playlist-repeat-enabled.png"/>
+                            </Trigger>
+                            <Trigger Property="Name" Value="RepeatDisabled">
+                                <Setter Property="Source" Value="/Images/media-playlist-repeat-disabled.png"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+        </Button>
+        <Button x:Name="ShuffleButton" HorizontalAlignment="Right" Margin="0,0,231,61" VerticalAlignment="Bottom" Width="30" Height="22" Click="ShuffleButtonClick">
+            <Image Source="Images/media-playlist-shuffle.png"/>
+        </Button>
+        <Button x:Name="MuteButton"  HorizontalAlignment="Right" Margin="0,0,196,61" VerticalAlignment="Bottom" Height="22" Width="30" Click="MuteButtonClick">
+            <Image x:Name="MuteButtonIcon">
+                <Image.Style>
+                    <Style TargetType="Image" >
+                        <Setter Property="Source" Value="/Images/audio-volume-zero-panel.png" />
+                        <Style.Triggers>
+                            <Trigger Property="Name" Value="VolumeMuted">
+                                <Setter Property="Source" Value="/Images/audio-volume-muted-panel.png"/>
+                            </Trigger>
+                            <Trigger Property="Name" Value="VolumeZero">
+                                <Setter Property="Source" Value="/Images/audio-volume-zero-panel.png"/>
+                            </Trigger>
+                            <Trigger Property="Name" Value="VolumeLow">
+                                <Setter Property="Source" Value="/Images/audio-volume-low-panel.png"/>
+                            </Trigger>
+                            <Trigger Property="Name" Value="VolumeMedium">
+                                <Setter Property="Source" Value="/Images/audio-volume-medium-panel.png"/>
+                            </Trigger>
+                            <Trigger Property="Name" Value="VolumeHigh">
+                                <Setter Property="Source" Value="/Images/audio-volume-high-panel.png"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+        </Button>
+        <Slider x:Name="VolumeSlider" Margin="0,0,10,61" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="22"/>
+        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" VerticalAlignment="Bottom" MouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22"/>
+        <MediaElement x:Name="MediaPlayer" HorizontalAlignment="Left" Height="1" VerticalAlignment="Top" Width="1" Margin="0,0,0,0" Visibility="Hidden" MediaOpened="MediaPlayerMediaOpened" UnloadedBehavior="Stop" LoadedBehavior="Manual"/>
+        <Button x:Name="ClearPlaylistButton" Margin="469,0,570,61" VerticalAlignment="Bottom" Width="30" Height="22" Click="ClearPlaylistButtonClick" HorizontalAlignment="Center">
+            <Image Source="Images/document-new.png"/>
+        </Button>
+        <Button x:Name="SavePlaylistButton" Margin="504,0,535,61" VerticalAlignment="Bottom" Width="30" Height="22" Click="SavePlaylistButtonClick" HorizontalAlignment="Center">
+            <Image Source="Images/document-save.png"/>
+        </Button>
+        
+    </Grid>    
+</Window>
+    
+    
