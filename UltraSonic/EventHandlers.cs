@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using Subsonic.Rest.Api;
 using UltraSonic.Properties;
+using CheckBox = System.Windows.Controls.CheckBox;
 using DataGrid = System.Windows.Controls.DataGrid;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -38,6 +39,7 @@ namespace UltraSonic
                 bool? isChecked = PreferencesUseProxyCheckbox.IsChecked;
                 UseProxy = isChecked.HasValue && isChecked.Value;
                 _maxSearchResults = (int)MaxSearchResultsComboBox.SelectedValue;
+                _maxBitrate = (int) MaxBitrateComboBox.SelectedValue;
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -48,6 +50,7 @@ namespace UltraSonic
                 Settings.Default.ProxyUsername = ProxyUsername;
                 Settings.Default.ProxyPassword = ProxyPassword;
                 Settings.Default.MaxSearchResults = _maxSearchResults;
+                Settings.Default.MaxBitrate = _maxBitrate;
 
                 Settings.Default.Save();
 
@@ -63,6 +66,7 @@ namespace UltraSonic
                 {
                     UpdateArtists();
                     UpdatePlaylists();
+                    MusicTab.Focus();
                 }
             }
             catch (Exception ex)
@@ -158,7 +162,7 @@ namespace UltraSonic
             string title = AppName;
 
             if (MediaPlayer.Source != null)
-                title = string.Format("{0} :: {1} : {2} [{3}]", AppName, _currentArtist, _currentTitle, MusicPlayStatusLabel.Content);
+                title = string.Format("{0} - {1} - {2} [{3}]", AppName, _currentArtist, _currentTitle, MusicPlayStatusLabel.Content);
 
             Title = title;
         }
@@ -316,7 +320,6 @@ namespace UltraSonic
                 Dispatcher.Invoke(() =>
                 {
                     SubsonicApi.GetMusicDirectoryAsync(albumItem.Album.Id).ContinueWith(UpdateTrackListingGrid);
-                    //UpdateAlbumArt(albumItem.Album.Id);
                 });
             }
         }
@@ -460,10 +463,7 @@ namespace UltraSonic
                 string searchQuery = GlobalSearchTextBox.Text;
 
                 if (!string.IsNullOrWhiteSpace(searchQuery))
-                {
                     SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0).ContinueWith(PopulateSearchResults);
-                }
-
             }
         }
 
@@ -548,6 +548,49 @@ namespace UltraSonic
 
                                       PlaylistTrackGrid.ItemsSource = itemsSource;
                                   });
+        }
+
+        private void PreferencesCancelButtonClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+                {
+                    MusicTab.Focus();
+                    PopulateSettings();
+                });
+        }
+
+        private void StarredCheckBoxClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var source = e.Source as CheckBox;
+                var item = TrackDataGrid.CurrentItem as TrackItem;
+
+                if (item != null && source != null)
+                {
+                    if (source.IsChecked.HasValue && source.IsChecked.Value)
+                        SubsonicApi.StarAsync(new List<string> { item.Track.Id });
+                    else
+                        SubsonicApi.UnStarAsync(new List<string> { item.Track.Id });
+                }
+            });
+        }
+
+        private void PlaylistStarredCheckBoxClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var source = e.Source as CheckBox;
+                var item = PlaylistTrackGrid.CurrentItem as TrackItem;
+
+                if (item != null && source != null)
+                {
+                    if (source.IsChecked.HasValue && source.IsChecked.Value)
+                        SubsonicApi.StarAsync(new List<string> { item.Track.Id });
+                    else
+                        SubsonicApi.UnStarAsync(new List<string> { item.Track.Id });
+                }
+            });
         }
     }
 }

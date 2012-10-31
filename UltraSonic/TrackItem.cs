@@ -15,7 +15,7 @@ namespace UltraSonic
         public TimeSpan Duration { get; set; }
         public int Year { get; set; }
         public int Rating { get; set; }
-        public DateTime Starred { get; set; }
+        public bool Starred { get; set; }
         public Child Track { get; set; }
     }
 }

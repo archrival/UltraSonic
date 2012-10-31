@@ -912,7 +912,7 @@ namespace Subsonic.Rest.Api
             Version methodApiVersion = _version120;
             Hashtable parameters = new Hashtable { { "id", id } };
 
-            if (maxBitRate != null)
+            if (maxBitRate != null && maxBitRate != 0)
                 parameters.Add("maxBitRate", maxBitRate);
 
             if (format != null)

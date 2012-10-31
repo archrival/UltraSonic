@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Collections;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -97,7 +98,32 @@ namespace UltraSonic
 
         private void UpdatePlaylists(Task<Playlists> task)
         {
-            UpdatePlaylists(task.Result.Playlist);
+            if (task.Status == TaskStatus.RanToCompletion)
+                UpdatePlaylists(task.Result.Playlist);
+        }
+
+        private void UpdatePlaylists(Task<Starred> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                ObservableCollection<PlaylistItem> playlists = new ObservableCollection<PlaylistItem>((IEnumerable<PlaylistItem>) PlaylistsDataGrid.ItemsSource);
+                
+
+                Dispatcher.Invoke(() =>
+                    {
+                        int starDuration = task.Result.Song.Sum(child => child.Duration);
+
+                        PlaylistItem playlistItem = new PlaylistItem();
+                        playlistItem.Duration = TimeSpan.FromSeconds(starDuration);
+                        playlistItem.Name = "Starred";
+                        playlistItem.Tracks = task.Result.Song.Count;
+                        playlistItem.Playlist = null;
+
+                        playlists.Add(playlistItem);
+
+                        PlaylistsDataGrid.ItemsSource = playlists;
+                    });
+            }
         }
 
         private void AddAlbumToPlaylist(Task<Directory> task)

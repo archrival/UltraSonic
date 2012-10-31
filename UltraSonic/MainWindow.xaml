@@ -38,7 +38,7 @@
             <Label x:Name="MusicPlayStatusLabel" Content="" Width="100" FontSize="10"/>
         </StatusBar>
         <TabControl Margin="10,5,10,98">
-            <TabItem Header="Music">
+            <TabItem Header="Music" x:Name="MusicTab">
                 <Grid Background="#FFE5E5E5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="6*"/>
@@ -100,7 +100,13 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Rating}" Header="Rating" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Starred">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
@@ -132,21 +138,15 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Rating}" Header="Rating" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Starred">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="PlaylistStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="PlaylistStarredCheckBoxClick"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Info">
-                <Grid Background="#FFE5E5E5">
-                    <Label Content="Key:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Margin="10,61,0,0" Target="{Binding ElementName=PreferencesLicenseKeyLabel}"/>
-                    <Label Content="Email:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseEmailLabel}"/>
-                    <Label Content="Date:" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseDateLabel}"/>
-                    <Label Content="Valid:" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseValidLabel}"/>
-                    <Label x:Name="PreferencesLicenseEmailLabel" HorizontalAlignment="Left" Margin="55,26,0,0" VerticalAlignment="Top" Width="262"/>
-                    <Label x:Name="PreferencesLicenseDateLabel" HorizontalAlignment="Left" Margin="50,46,0,0" VerticalAlignment="Top" Width="262"/>
-                    <Label x:Name="PreferencesLicenseKeyLabel" HorizontalAlignment="Left" Margin="55,77,0,0" VerticalAlignment="Top" Width="262"/>
-                    <Label x:Name="PreferencesLicenseValidLabel" HorizontalAlignment="Left" Margin="55,103,0,0" VerticalAlignment="Top" Width="262" RenderTransformOrigin="-2.069,-2"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="DownloadsTab" Header="Downloads">
@@ -185,10 +185,21 @@
                     <TextBox x:Name="PreferencesProxyServerUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
                     <PasswordBox x:Name="PreferencesProxyServerPasswordTextBox" HorizontalAlignment="Left" Height="23" Margin="159,209,0,0" VerticalAlignment="Top" Width="261"/>
                     <Button x:Name="PreferencesSaveButton" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="PreferencesSaveButtonClick"/>
-                    <CheckBox x:Name="PreferencesUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Margin="159,97,0,0" VerticalAlignment="Top" Height="23" Width="91" UseLayoutRounding="True" ClickMode="Press" Checked="PreferencesUseProxyCheckboxChecked" Unchecked="PreferencesUseProxyCheckboxUnChecked"/>
+                    <CheckBox x:Name="PreferencesUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Margin="159,101,0,0" VerticalAlignment="Top" Height="19" Width="91" UseLayoutRounding="True" ClickMode="Press" Checked="PreferencesUseProxyCheckboxChecked" Unchecked="PreferencesUseProxyCheckboxUnChecked"/>
                     <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Margin="159,237,0,0" VerticalAlignment="Top" Width="261"/>
+                    <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Margin="159,268,0,0" VerticalAlignment="Top" Width="261"/>
                     <Label Content="Max Search Results" HorizontalAlignment="Left" Margin="10,237,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75"/>
+                    <Label Content="Max Bitrate" HorizontalAlignment="Left" Margin="10,268,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Button x:Name="PreferencesCancelButton" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Click="PreferencesCancelButtonClick"/>
+                    <Label Content="Email:" HorizontalAlignment="Right" Margin="0,48,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseEmailLabel}"/>
+                    <Label Content="Date:" HorizontalAlignment="Right" Margin="0,79,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseDateLabel}"/>
+                    <Label Content="Key:" HorizontalAlignment="Right" Margin="0,110,267,0" VerticalAlignment="Top" Width="40"  Target="{Binding ElementName=PreferencesLicenseKeyLabel}"/>
+                    <Label Content="Valid:" HorizontalAlignment="Right" Margin="0,141,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseValidLabel}"/>
+                    <Label x:Name="PreferencesLicenseEmailLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,48,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
+                    <Label x:Name="PreferencesLicenseDateLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,79,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
+                    <Label x:Name="PreferencesLicenseKeyLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,110,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
+                    <Label x:Name="PreferencesLicenseValidLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,141,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
+                    <Label Content="License Information" HorizontalAlignment="Right" Margin="0,17,167,0" VerticalAlignment="Top" Width="140" FontWeight="Bold"/>
                 </Grid>
             </TabItem>
         </TabControl>

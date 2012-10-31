@@ -37,6 +37,7 @@ namespace UltraSonic
         private TimeSpan _position;
         private bool _repeatPlaylist;
         private int _maxSearchResults = 1;
+        private int _maxBitrate = 0;
         private User _currentUser;
 
         public MainWindow()
@@ -50,41 +51,14 @@ namespace UltraSonic
 
                 _cacheDirectory = Path.Combine(Path.Combine(_roamingPath, AppName), "Cache");
 
-                Username = Settings.Default.Username;
-                Password = Settings.Default.Password;
-                ServerUrl = Settings.Default.ServerUrl;
-                ProxyUsername = Settings.Default.ProxyUsername;
-                ProxyPassword = Settings.Default.ProxyPassword;
-                ProxyServer = Settings.Default.ProxyServer;
-                ProxyPort = Settings.Default.ProxyPort;
-                UseProxy = Settings.Default.UseProxy;
-                _maxSearchResults = Settings.Default.MaxSearchResults;
-
-                PopulateSearchResultItemComboBox();
-
-                PreferencesUseProxyCheckbox.IsChecked = UseProxy;
-
-                PreferencesUsernameTextBox.Text = Username;
-                PreferencesPasswordPasswordBox.Password = Password;
-                PreferencesServerAddressTextBox.Text = ServerUrl;
-                PreferencesUseProxyCheckbox.IsChecked = UseProxy;
-                PreferencesProxyServerAddressTextBox.Text = ProxyServer;
-                PreferencesProxyServerPortTextBox.Text = ProxyPort.ToString();
-                PreferencesProxyServerUsernameTextBox.Text = ProxyUsername;
-                PreferencesProxyServerPasswordTextBox.Password = ProxyPassword;
-
-                SetProxyEntryVisibility(UseProxy);
-
+                PopulateSettings();
                 MusicPlayStatusLabel.Content = "Stopped";
-
                 MusicTreeView.DataContext = ArtistItems;
 
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
                 {
                     InitSubsonicApi();
-
                     License license = SubsonicApi.GetLicense();
-
                     UpdateLicenseInformation(license);
 
                     if (!license.Valid)
@@ -121,12 +95,49 @@ namespace UltraSonic
         private string ProxyPassword { get; set; }
         private bool UseProxy { get; set; }
 
+        private void PopulateSettings()
+        {
+            Username = Settings.Default.Username;
+            Password = Settings.Default.Password;
+            ServerUrl = Settings.Default.ServerUrl;
+            ProxyUsername = Settings.Default.ProxyUsername;
+            ProxyPassword = Settings.Default.ProxyPassword;
+            ProxyServer = Settings.Default.ProxyServer;
+            ProxyPort = Settings.Default.ProxyPort;
+            UseProxy = Settings.Default.UseProxy;
+            _maxSearchResults = Settings.Default.MaxSearchResults;
+
+            PopulateSearchResultItemComboBox();
+            PopulateMaxBitrateComboBox();
+
+            PreferencesUseProxyCheckbox.IsChecked = UseProxy;
+
+            PreferencesUsernameTextBox.Text = Username;
+            PreferencesPasswordPasswordBox.Password = Password;
+            PreferencesServerAddressTextBox.Text = ServerUrl;
+            PreferencesUseProxyCheckbox.IsChecked = UseProxy;
+            PreferencesProxyServerAddressTextBox.Text = ProxyServer;
+            PreferencesProxyServerPortTextBox.Text = ProxyPort.ToString();
+            PreferencesProxyServerUsernameTextBox.Text = ProxyUsername;
+            PreferencesProxyServerPasswordTextBox.Password = ProxyPassword;
+
+            SetProxyEntryVisibility(UseProxy);
+        }
+
         private void PopulateSearchResultItemComboBox()
         {
             List<int> listData = new List<int> {1, 5, 10, 25, 50, 100, 250, 500, 1000};
 
             MaxSearchResultsComboBox.ItemsSource = listData;
             MaxSearchResultsComboBox.SelectedItem = _maxSearchResults;
+        }
+
+        private void PopulateMaxBitrateComboBox()
+        {
+            List<int> listData = new List<int> { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
+
+            MaxBitrateComboBox.ItemsSource = listData;
+            MaxBitrateComboBox.SelectedItem = _maxBitrate;
         }
 
         private ObservableCollection<ArtistItem> ArtistItems
@@ -215,7 +226,7 @@ namespace UltraSonic
                     Uri uri = new Uri(fileName);
                     _streams.Enqueue(uri);
                     UpdateAlbumArt(child.Id);
-                    Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName);
+                    Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?)_maxBitrate);
                     //QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), child); // Works with non-SSL servers
                     streamTask.ContinueWith((t) => QueueTrack(streamTask, child));
                 }
@@ -308,7 +319,7 @@ namespace UltraSonic
             });
         }
 
-        private void UpdatePlaylists(List<Playlist> playlists)
+        private void UpdatePlaylists(IEnumerable<Playlist> playlists)
         {
             var playlistItems = new ObservableCollection<PlaylistItem>();
 
