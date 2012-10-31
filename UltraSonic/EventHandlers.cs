@@ -6,9 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using Subsonic.Rest.Api;
 using UltraSonic.Properties;
+using DataGrid = System.Windows.Controls.DataGrid;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBox = System.Windows.MessageBox;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace UltraSonic
 {
@@ -30,10 +35,9 @@ namespace UltraSonic
                 ProxyPort = proxyPort;
                 ProxyUsername = PreferencesProxyServerUsernameTextBox.Text;
                 ProxyPassword = PreferencesProxyServerPasswordTextBox.Password;
-
                 bool? isChecked = PreferencesUseProxyCheckbox.IsChecked;
-
                 UseProxy = isChecked.HasValue && isChecked.Value;
+                _maxSearchResults = (int)MaxSearchResultsComboBox.SelectedValue;
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -43,7 +47,7 @@ namespace UltraSonic
                 Settings.Default.ProxyPort = ProxyPort;
                 Settings.Default.ProxyUsername = ProxyUsername;
                 Settings.Default.ProxyPassword = ProxyPassword;
-                Settings.Default.MaxSearchResults = (int)MaxSearchResultsComboBox.SelectedValue;
+                Settings.Default.MaxSearchResults = _maxSearchResults;
 
                 Settings.Default.Save();
 
@@ -460,6 +464,38 @@ namespace UltraSonic
                 }
 
             }
+        }
+
+        private void TrackGridDownloadClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+                                  {
+                                      var selectedItems = TrackDataGrid.SelectedItems;
+
+                                      if (selectedItems != null)
+                                      {
+                                          string downloadDirectory = FileDownloadDialog();
+
+                                          foreach (TrackItem item in selectedItems)
+                                              SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory, false);
+                                      }
+                                  });
+        }
+
+        private void MusicDataGridDownloadClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var selectedItems = MusicDataGrid.SelectedItems;
+
+                if (selectedItems != null)
+                {
+                    string downloadDirectory = FileDownloadDialog();
+
+                    foreach (AlbumItem item in selectedItems)
+                        SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory, false);
+                }
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows.Forms;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,6 +35,18 @@ namespace UltraSonic
         private static IEnumerable<TrackItem> GetTrackItemCollection(Directory directory)
         {
             return GetTrackItemCollection(directory.Child);
+        }
+
+        private static string FileDownloadDialog()
+        {
+            FolderBrowserDialog folderDialog = new FolderBrowserDialog
+            {
+                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            DialogResult result = folderDialog.ShowDialog();
+
+            return result.ToString() == "OK" ? folderDialog.SelectedPath : null;
         }
     }
 }

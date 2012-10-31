@@ -51,7 +51,12 @@
                         <ColumnDefinition Width="309*"/>
                         <ColumnDefinition Width="401*"/>
                     </Grid.ColumnDefinitions>
-                    <TreeView x:Name="MusicTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="MusicTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" Grid.Row="2" ToolTip="Artists">
+                    <TreeView x:Name="MusicTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="MusicTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" ToolTip="Artists" Grid.RowSpan="3">
+                        <TreeView.ContextMenu>
+                            <ContextMenu >
+                                <MenuItem Header="Refresh" />
+                            </ContextMenu>
+                        </TreeView.ContextMenu>
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type local:ArtistItem}" ItemsSource="{Binding Path=Children}">
                                 <TextBlock Text="{Binding Path=Name}" />
@@ -61,9 +66,14 @@
                     <Border BorderThickness="1" Grid.Row="3" BorderBrush="#FF000000">
                         <Image x:Name="MusicCoverArt" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True" Grid.Row="3" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
                     </Border>
-                    <DataGrid x:Name="MusicDataGrid" AlternatingRowBackground="Gainsboro" SelectionChanged="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" VerticalContentAlignment="Center" Grid.Row="2" ToolTip="Albums">
+                    <DataGrid x:Name="MusicDataGrid" AlternatingRowBackground="Gainsboro" SelectionChanged="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" VerticalContentAlignment="Center" ToolTip="Albums" Grid.RowSpan="3">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu >
+                                <MenuItem Header="Add To Playlist" />
+                                <MenuItem Header="Download" Click="MusicDataGridDownloadClick"/>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
                         <DataGrid.Columns>
-                            <!--<DataGridCheckBoxColumn Binding="{Binding Selected}" Header="" IsReadOnly="False"/>-->
                             <DataGridTemplateColumn Header="Cover Art">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -71,12 +81,17 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Album" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Album" IsReadOnly="True" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="TrackDataGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White"  AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" MouseDoubleClick="TrackDataGridMouseDoubleClick" Grid.Column="2" Grid.Row="2" ToolTip="Tracks">
+                    <DataGrid x:Name="TrackDataGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" MouseDoubleClick="TrackDataGridMouseDoubleClick" Grid.Column="2" ToolTip="Tracks" Grid.RowSpan="3" SelectionMode="Extended">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu >
+                                <MenuItem Header="Add To Playlist" />
+                                <MenuItem Header="Download" Click="TrackGridDownloadClick" Command="{Binding DeleteCommand}" CommandParameter="{Binding RecordIndex}" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding Selected}" Header="" IsReadOnly="False"/>
                             <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
@@ -88,16 +103,28 @@
                             <DataGridTextColumn Binding="{Binding Rating}" Header="Rating" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistsListGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
+                    <DataGrid x:Name="PlaylistsListGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu >
+                                <MenuItem Header="Delete Playlist" />
+                                <MenuItem Header="Download" />
+                                <MenuItem Header="Refresh" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" />
-                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Tracks" IsReadOnly="True" />
-                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Tracks" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistTrackGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" ToolTip="Playlist">
+                    <DataGrid x:Name="PlaylistTrackGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" ToolTip="Playlist" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu >
+                                <MenuItem Header="Remove From Playlist" />
+                                <MenuItem Header="Download" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding Selected}" Header="" IsReadOnly="False"/>
                             <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
@@ -109,8 +136,37 @@
                             <DataGridTextColumn Binding="{Binding Rating}" Header="Rating" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Left" Width="120" Height="22" Grid.Column="0" VerticalAlignment="Top" TextChanged="ArtistFilterTextBoxTextChanged" Grid.RowSpan="2" ToolTip="Artist Filter"/>
-                    <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="120" Height="22" Grid.Column="2" VerticalAlignment="Top" Grid.RowSpan="2" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Info">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="Key:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Margin="10,61,0,0" Target="{Binding ElementName=PreferencesLicenseKeyLabel}"/>
+                    <Label Content="Email:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseEmailLabel}"/>
+                    <Label Content="Date:" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseDateLabel}"/>
+                    <Label Content="Valid:" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseValidLabel}"/>
+                    <Label x:Name="PreferencesLicenseEmailLabel" HorizontalAlignment="Left" Margin="55,26,0,0" VerticalAlignment="Top" Width="262"/>
+                    <Label x:Name="PreferencesLicenseDateLabel" HorizontalAlignment="Left" Margin="50,46,0,0" VerticalAlignment="Top" Width="262"/>
+                    <Label x:Name="PreferencesLicenseKeyLabel" HorizontalAlignment="Left" Margin="55,77,0,0" VerticalAlignment="Top" Width="262"/>
+                    <Label x:Name="PreferencesLicenseValidLabel" HorizontalAlignment="Left" Margin="55,103,0,0" VerticalAlignment="Top" Width="262" RenderTransformOrigin="-2.069,-2"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Downloads">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="DownloadGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu >
+                                <MenuItem Header="Cancel" />
+                                <!--<MenuItem Header="Open" />
+                                <MenuItem Header="Open Folder" />-->
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Source}" Header="Source" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Binding="{Binding Path}" Header="Path" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="*"/>
+                            <DataGridTextColumn Binding="{Binding Status}" Header="Status" IsReadOnly="True" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </TabItem>
             <TabItem Header="Settings">
@@ -134,18 +190,6 @@
                     <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Margin="159,237,0,0" VerticalAlignment="Top" Width="261"/>
                     <Label Content="Max Search Results" HorizontalAlignment="Left" Margin="10,237,0,0" VerticalAlignment="Top" Width="136"/>
                     <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Info">
-                <Grid Background="#FFE5E5E5">
-                    <Label Content="Key:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Margin="10,61,0,0" Target="{Binding ElementName=PreferencesLicenseKeyLabel}"/>
-                    <Label Content="Email:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseEmailLabel}"/>
-                    <Label Content="Date:" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseDateLabel}"/>
-                    <Label Content="Valid:" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseValidLabel}"/>
-                    <Label x:Name="PreferencesLicenseEmailLabel" HorizontalAlignment="Left" Margin="55,26,0,0" VerticalAlignment="Top" Width="262"/>
-                    <Label x:Name="PreferencesLicenseDateLabel" HorizontalAlignment="Left" Margin="50,46,0,0" VerticalAlignment="Top" Width="262"/>
-                    <Label x:Name="PreferencesLicenseKeyLabel" HorizontalAlignment="Left" Margin="55,77,0,0" VerticalAlignment="Top" Width="262"/>
-                    <Label x:Name="PreferencesLicenseValidLabel" HorizontalAlignment="Left" Margin="55,103,0,0" VerticalAlignment="Top" Width="262" RenderTransformOrigin="-2.069,-2"/>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -219,7 +263,8 @@
         <Button x:Name="SavePlaylistButton" Margin="0,0,303,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="SavePlaylistButtonClick" ToolTip="Save Playlist" HorizontalAlignment="Right" >
             <Image Source="Images/document-save.png"/>
         </Button>
-        
+        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Left" Width="120" Height="22" Grid.Column="0" VerticalAlignment="Bottom" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="208,0,0,61"/>
+        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="120" Height="22" VerticalAlignment="Bottom" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,0,377,61"/>
     </Grid>    
 </Window>
     
