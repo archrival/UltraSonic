@@ -97,39 +97,18 @@ namespace UltraSonic
 
         private void UpdatePlaylists(Task<Playlists> task)
         {
-            var playlists = new ObservableCollection<PlaylistItem>();
-
-            if (task.Status == TaskStatus.RanToCompletion)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    foreach (Playlist playlist in task.Result.Playlist)
-                    {
-                        PlaylistItem playlistItem = new PlaylistItem
-                                                        {
-                                                            Duration = TimeSpan.FromSeconds(playlist.Duration),
-                                                            Name = playlist.Name,
-                                                            Tracks = playlist.SongCount,
-                                                            Playlist = playlist
-                                                        };
-
-                        playlists.Add(playlistItem);
-                    }
-
-                    PlaylistsListGrid.ItemsSource = playlists;
-                });
-            }
+            UpdatePlaylists(task.Result.Playlist);
         }
 
         private void AddAlbumToPlaylist(Task<Directory> task)
         {
             if (task.Status == TaskStatus.RanToCompletion)
             {
-                ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
-                IEnumerable<TrackItem> albumSource = GetTrackItemCollection(task.Result);
-
                 Dispatcher.Invoke(() =>
                                       {
+                                          ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
+                                          IEnumerable<TrackItem> albumSource = GetTrackItemCollection(task.Result);
+
                                           foreach (var trackItem in albumSource)
                                               itemsSource.Add(trackItem);
 
@@ -159,6 +138,30 @@ namespace UltraSonic
 
                 UpdateAlbumGrid(searchResult.Album);
                 UpdateTrackListingGrid(searchResult.Song);
+            }
+        }
+
+        private void UpdateCurrentUser(Task<User> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                _currentUser = task.Result;
+
+                Dispatcher.Invoke(() =>
+                                      {
+                                          DownloadsTab.Visibility =  _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                                          MusicDataGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                                          TrackDataGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                                          PlaylistTrackGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                                          PlaylistsGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                                          PreviousButton.IsEnabled = _currentUser.StreamRole;
+                                          PlayButton.IsEnabled = _currentUser.StreamRole;
+                                          StopButton.IsEnabled = _currentUser.StreamRole;
+                                          PauseButton.IsEnabled = _currentUser.StreamRole;
+                                          NextButton.IsEnabled = _currentUser.StreamRole;
+                                          SavePlaylistButton.IsEnabled = _currentUser.PlaylistRole;
+                                          PlaylistsGridDeletePlaylist.Visibility = _currentUser.PlaylistRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                                      });
             }
         }
     }

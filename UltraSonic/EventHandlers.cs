@@ -107,13 +107,14 @@ namespace UltraSonic
                                   {
                                       MediaPlayer.IsMuted = !MediaPlayer.IsMuted;
                                       VolumeSlider.IsEnabled = !MediaPlayer.IsMuted;
-                                      SetVolumeIcon();                                         
+                                      SetVolumeMetadata();                                         
                                   });
         }
 
-        private void SetVolumeIcon()
+        private void SetVolumeMetadata()
         {
             VolumeSlider.ToolTip = MediaPlayer.IsMuted ? "Volume: Muted" : string.Format("Volume: {0}%", Math.Round(MediaPlayer.Volume*100, 0));
+            MuteButton.ToolTip = MediaPlayer.IsMuted ? "UnMute Volume" : "Mute Volume";
 
             if (MediaPlayer.IsMuted)
                 MuteButtonIcon.Name = "VolumeMuted";
@@ -293,7 +294,7 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
                                   {
                                       MediaPlayer.Volume = e.NewValue/10;
-                                      SetVolumeIcon();
+                                      SetVolumeMetadata();
                                   });
         }
 
@@ -346,7 +347,7 @@ namespace UltraSonic
 
         private void NewPlaylistButtonClick(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Would you like to clear the current playlist?", "Clear Playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            MessageBoxResult result = MessageBox.Show("Would you like to clear the current playlist?", "New playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
             if (result == MessageBoxResult.Yes)
                 Dispatcher.Invoke(() =>
@@ -426,7 +427,7 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
                 {
                     RepeatButtonIcon.Name = _repeatPlaylist ? "RepeatEnabled" : "RepeatDisabled";
-                    RepeatButton.ToolTip = _repeatPlaylist ? "Repeat Enabled" : "Repeat Disabled";
+                    RepeatButton.ToolTip = _repeatPlaylist ? "Repeat: Enabled" : "Repeat: Disabled";
                 });
         }
 
@@ -466,13 +467,13 @@ namespace UltraSonic
             }
         }
 
-        private void TrackGridDownloadClick(object sender, RoutedEventArgs e)
+        private void TrackDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
                                   {
                                       var selectedItems = TrackDataGrid.SelectedItems;
 
-                                      if (selectedItems != null)
+                                      if (selectedItems.Count > 0)
                                       {
                                           string downloadDirectory = FileDownloadDialog();
 
@@ -485,17 +486,68 @@ namespace UltraSonic
         private void MusicDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
+                                  {
+                                      var selectedItems = MusicDataGrid.SelectedItems;
+
+                                      if (selectedItems.Count > 0)
+                                      {
+                                          string downloadDirectory = FileDownloadDialog();
+
+                                          foreach (AlbumItem item in selectedItems)
+                                              SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory, false);
+                                      }
+                                  });
+        }
+
+        private void PlaylistsDataGridRefreshClick(object sender, RoutedEventArgs e)
+        {
+            UpdatePlaylists();
+        }
+
+        private void PlaylistsDataGridDeletePlaylistClick(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = PlaylistsDataGrid.SelectedItems;
+
+            foreach (PlaylistItem item in selectedItems)
             {
-                var selectedItems = MusicDataGrid.SelectedItems;
+                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", item.Name), "Delete playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
-                if (selectedItems != null)
-                {
-                    string downloadDirectory = FileDownloadDialog();
+                if (result == MessageBoxResult.Yes)
+                    SubsonicApi.DeletePlaylistAsync(item.Playlist.Id).ContinueWith((t) => UpdatePlaylists());
+            }
+        }
 
-                    foreach (AlbumItem item in selectedItems)
-                        SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory, false);
-                }
-            });
+        void DataGridLoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+
+        private void MusicDataGridAddClick(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = MusicDataGrid.SelectedItems;
+
+            Dispatcher.Invoke(() =>
+                                  {
+                                      foreach (AlbumItem item in selectedItems)
+                                          SubsonicApi.GetMusicDirectoryAsync(item.Album.Id).ContinueWith(
+                                              AddAlbumToPlaylist);
+                                  });
+
+        }
+
+        private void TrackDataGridAddClick(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = TrackDataGrid.SelectedItems;
+
+            Dispatcher.Invoke(() =>
+                                  {
+                                      ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
+
+                                      foreach (TrackItem item in selectedItems)
+                                          itemsSource.Add(item);
+
+                                      PlaylistTrackGrid.ItemsSource = itemsSource;
+                                  });
         }
     }
 }

@@ -24,9 +24,7 @@ namespace UltraSonic
     {
         private const string AppName = "UltraSonic";
 
-        private readonly ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>> _albumArtRequests =
-            new ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>>();
-
+        private readonly ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>> _albumArtRequests = new ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>>();
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
         private readonly string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -39,6 +37,7 @@ namespace UltraSonic
         private TimeSpan _position;
         private bool _repeatPlaylist;
         private int _maxSearchResults = 1;
+        private User _currentUser;
 
         public MainWindow()
         {
@@ -80,8 +79,7 @@ namespace UltraSonic
 
                 MusicTreeView.DataContext = ArtistItems;
 
-                if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) &&
-                    !string.IsNullOrWhiteSpace(ServerUrl))
+                if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
                 {
                     InitSubsonicApi();
 
@@ -100,7 +98,7 @@ namespace UltraSonic
                     }
                 }
 
-                _timer.Interval = TimeSpan.FromMilliseconds(1000);
+                _timer.Interval = TimeSpan.FromMilliseconds(100);
                 _timer.Tick += Ticktock;
                 _timer.Start();
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
@@ -125,9 +123,9 @@ namespace UltraSonic
 
         private void PopulateSearchResultItemComboBox()
         {
-            List<int> ListData = new List<int> {1, 5, 10, 25, 50, 100, 250, 500, 1000};
+            List<int> listData = new List<int> {1, 5, 10, 25, 50, 100, 250, 500, 1000};
 
-            MaxSearchResultsComboBox.ItemsSource = ListData;
+            MaxSearchResultsComboBox.ItemsSource = listData;
             MaxSearchResultsComboBox.SelectedItem = _maxSearchResults;
         }
 
@@ -165,6 +163,7 @@ namespace UltraSonic
         private void InitSubsonicApi()
         {
             SubsonicApi = UseProxy ? new SubsonicApi(new Uri(ServerUrl), Username, Password, ProxyPassword, ProxyUsername, ProxyPort, ProxyServer) {UserAgent = AppName} : new SubsonicApi(new Uri(ServerUrl), Username, Password) {UserAgent = AppName};
+            SubsonicApi.GetUserAsync(Username).ContinueWith(UpdateCurrentUser);
         }
 
         private void Ticktock(object sender, EventArgs e)
@@ -213,9 +212,11 @@ namespace UltraSonic
                 }
                 else
                 {
-                    _streams.Enqueue(new Uri(fileName));
+                    Uri uri = new Uri(fileName);
+                    _streams.Enqueue(uri);
                     UpdateAlbumArt(child.Id);
                     Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName);
+                    //QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), child); // Works with non-SSL servers
                     streamTask.ContinueWith((t) => QueueTrack(streamTask, child));
                 }
             }
@@ -304,6 +305,29 @@ namespace UltraSonic
                     MusicDataGrid.ItemsSource = _albumItems;
                     MusicDataGrid.DataContext = _albumItems;
                 }
+            });
+        }
+
+        private void UpdatePlaylists(List<Playlist> playlists)
+        {
+            var playlistItems = new ObservableCollection<PlaylistItem>();
+
+            Dispatcher.Invoke(() =>
+            {
+                foreach (Playlist playlist in playlists)
+                {
+                    PlaylistItem playlistItem = new PlaylistItem
+                    {
+                        Duration = TimeSpan.FromSeconds(playlist.Duration),
+                        Name = playlist.Name,
+                        Tracks = playlist.SongCount,
+                        Playlist = playlist
+                    };
+
+                    playlistItems.Add(playlistItem);
+                }
+
+                PlaylistsDataGrid.ItemsSource = playlistItems;
             });
         }
     }
