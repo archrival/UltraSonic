@@ -165,5 +165,18 @@ namespace UltraSonic.Properties {
                 this["UseProxy"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int MaxSearchResults {
+            get {
+                return ((int)(this["MaxSearchResults"]));
+            }
+            set {
+                this["MaxSearchResults"] = value;
+            }
+        }
     }
 }

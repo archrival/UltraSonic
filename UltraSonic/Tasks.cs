@@ -14,22 +14,7 @@ namespace UltraSonic
 
         private void UpdateAlbumGrid(Task<Directory> task)
         {
-            _albumItems = new ObservableCollection<AlbumItem>();
-
-            Dispatcher.Invoke(() =>
-            {
-                foreach (Child child in task.Result.Child.Where(child => child.IsDir))
-                {
-                    AlbumItem albumItem = new AlbumItem { Name = child.Album, Album = child };
-                    _albumItems.Add(albumItem);
-
-                    Task<Image> coverArtTask = SubsonicApi.GetCoverArtAsync(child.Id);
-                    coverArtTask.ContinueWith((t) => UpdateAlbumImageArt(coverArtTask, albumItem));
-
-                    MusicDataGrid.ItemsSource = _albumItems;
-                    MusicDataGrid.DataContext = _albumItems;
-                }
-            });
+            UpdateAlbumGrid(task.Result.Child.Where(child => child.IsDir));
         }
 
         private void UpdateAlbumImageArt(Task<Image> task, AlbumItem albumItem)
@@ -47,7 +32,12 @@ namespace UltraSonic
         private void UpdateTrackListingGrid(Task<Directory> task)
         {
             if (task.Status == TaskStatus.RanToCompletion)
-                Dispatcher.Invoke(() => TrackDataGrid.ItemsSource = GetTrackItemCollection(task.Result));
+                UpdateTrackListingGrid(task.Result.Child);
+        }
+
+        private void UpdateTrackListingGrid(IEnumerable<Child> children)
+        {
+            Dispatcher.Invoke(() => TrackDataGrid.ItemsSource = GetTrackItemCollection(children));
         }
 
         private void QueueTrack(Task<long> task, Child child)
@@ -158,6 +148,17 @@ namespace UltraSonic
                                       {
                                           PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Entry);
                                       });
+            }
+        }
+
+        private void PopulateSearchResults(Task<SearchResult2> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                SearchResult2 searchResult = task.Result;
+
+                UpdateAlbumGrid(searchResult.Album);
+                UpdateTrackListingGrid(searchResult.Song);
             }
         }
     }

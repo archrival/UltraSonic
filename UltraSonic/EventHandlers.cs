@@ -43,6 +43,7 @@ namespace UltraSonic
                 Settings.Default.ProxyPort = ProxyPort;
                 Settings.Default.ProxyUsername = ProxyUsername;
                 Settings.Default.ProxyPassword = ProxyPassword;
+                Settings.Default.MaxSearchResults = (int)MaxSearchResultsComboBox.SelectedValue;
 
                 Settings.Default.Save();
 
@@ -90,7 +91,9 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
                                   {
                                       ObservableCollection<TrackItem> playlist = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
-                                      playlist.Shuffle();
+
+                                      if (playlist != null)
+                                        playlist.Shuffle();
                                   });
         }
 
@@ -99,12 +102,15 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
                                   {
                                       MediaPlayer.IsMuted = !MediaPlayer.IsMuted;
+                                      VolumeSlider.IsEnabled = !MediaPlayer.IsMuted;
                                       SetVolumeIcon();                                         
                                   });
         }
 
         private void SetVolumeIcon()
         {
+            VolumeSlider.ToolTip = MediaPlayer.IsMuted ? "Volume: Muted" : string.Format("Volume: {0}%", Math.Round(MediaPlayer.Volume*100, 0));
+
             if (MediaPlayer.IsMuted)
                 MuteButtonIcon.Name = "VolumeMuted";
             else if (MediaPlayer.Volume >= 0 && MediaPlayer.Volume <= (double)1 / (double)4)
@@ -115,7 +121,7 @@ namespace UltraSonic
                 MuteButtonIcon.Name = "VolumeMedium";
             else if (MediaPlayer.Volume > (double)3 / (double)4 && MediaPlayer.Volume <= 1)
                 MuteButtonIcon.Name = "VolumeHigh";
-       }
+        }
 
         private void PlayButtonClick(object sender, ExecutedRoutedEventArgs e)
         {
@@ -334,7 +340,7 @@ namespace UltraSonic
 
         }
 
-        private void ClearPlaylistButtonClick(object sender, RoutedEventArgs e)
+        private void NewPlaylistButtonClick(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("Would you like to clear the current playlist?", "Clear Playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
@@ -413,19 +419,46 @@ namespace UltraSonic
         {
             _repeatPlaylist = !_repeatPlaylist;
 
-            if (_repeatPlaylist)
-            {
-                Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
                 {
-                    RepeatButtonIcon.Name = "RepeatEnabled";
+                    RepeatButtonIcon.Name = _repeatPlaylist ? "RepeatEnabled" : "RepeatDisabled";
+                    RepeatButton.ToolTip = _repeatPlaylist ? "Repeat Enabled" : "Repeat Disabled";
                 });
-            }
-            else
+        }
+
+        private void WindowClosed(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
             {
-                Dispatcher.Invoke(() =>
+                Settings.Default.Volume = MediaPlayer.Volume;
+                Settings.Default.Height = Height;
+                Settings.Default.Width = Width;
+                Settings.Default.Save();
+            });
+        }
+
+        private void ArtistFilterTextBoxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var test = e.Source as TextBox;
+
+            Dispatcher.Invoke(() =>
+            {
+                if (test != null) _artistFilter = test.Text;
+                MusicTreeView.ItemsSource = ArtistItems;
+            });
+        }
+
+        private void GlobalSearchTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                string searchQuery = GlobalSearchTextBox.Text;
+
+                if (!string.IsNullOrWhiteSpace(searchQuery))
                 {
-                    RepeatButtonIcon.Name = "RepeatDisabled";
-                });
+                    SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0).ContinueWith(PopulateSearchResults);
+                }
+
             }
         }
     }

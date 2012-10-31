@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Threading;
 using Subsonic.Rest.Api;
 using UltraSonic.Properties;
@@ -37,6 +38,7 @@ namespace UltraSonic
         private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
         private TimeSpan _position;
         private bool _repeatPlaylist;
+        private int _maxSearchResults = 1;
 
         public MainWindow()
         {
@@ -57,6 +59,9 @@ namespace UltraSonic
                 ProxyServer = Settings.Default.ProxyServer;
                 ProxyPort = Settings.Default.ProxyPort;
                 UseProxy = Settings.Default.UseProxy;
+                _maxSearchResults = Settings.Default.MaxSearchResults;
+
+                PopulateSearchResultItemComboBox();
 
                 PreferencesUseProxyCheckbox.IsChecked = UseProxy;
 
@@ -118,7 +123,15 @@ namespace UltraSonic
         private string ProxyPassword { get; set; }
         private bool UseProxy { get; set; }
 
-        public ObservableCollection<ArtistItem> ArtistItems
+        private void PopulateSearchResultItemComboBox()
+        {
+            List<int> ListData = new List<int> {1, 5, 10, 25, 50, 100, 250, 500, 1000};
+
+            MaxSearchResultsComboBox.ItemsSource = ListData;
+            MaxSearchResultsComboBox.SelectedItem = _maxSearchResults;
+        }
+
+        private ObservableCollection<ArtistItem> ArtistItems
         {
             get
             {
@@ -247,28 +260,6 @@ namespace UltraSonic
                                   });
         }
 
-        private void WindowClosed(object sender, EventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-                                  {
-                                      Settings.Default.Volume = MediaPlayer.Volume;
-                                      Settings.Default.Height = Height;
-                                      Settings.Default.Width = Width;
-                                      Settings.Default.Save();
-                                  });
-        }
-
-        private void TextBoxTextChanged(object sender, TextChangedEventArgs e)
-        {
-            var test = e.Source as TextBox;
-
-            Dispatcher.Invoke(() =>
-                                  {
-                                      if (test != null) _artistFilter = test.Text;
-                                      MusicTreeView.ItemsSource = ArtistItems;
-                                  });
-        }
-
         private void ExpandAll(ItemsControl items, bool expand)
         {
             foreach (object obj in items.Items)
@@ -294,6 +285,26 @@ namespace UltraSonic
                                       PreferencesProxyServerPortTextBox.IsEnabled = isChecked;
                                       PreferencesProxyServerUsernameTextBox.IsEnabled = isChecked;
                                   });
+        }
+
+        private void UpdateAlbumGrid(IEnumerable<Child> children)
+        {
+            _albumItems = new ObservableCollection<AlbumItem>();
+
+            Dispatcher.Invoke(() =>
+            {
+                foreach (Child child in children)
+                {
+                    AlbumItem albumItem = new AlbumItem { Name = child.Album, Album = child };
+                    _albumItems.Add(albumItem);
+
+                    Task<Image> coverArtTask = SubsonicApi.GetCoverArtAsync(child.Id);
+                    coverArtTask.ContinueWith((t) => UpdateAlbumImageArt(coverArtTask, albumItem));
+
+                    MusicDataGrid.ItemsSource = _albumItems;
+                    MusicDataGrid.DataContext = _albumItems;
+                }
+            });
         }
     }
 }
