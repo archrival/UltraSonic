@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -73,9 +72,8 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-                
-            }
 
+            }
         }
 
         private void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -99,22 +97,22 @@ namespace UltraSonic
         private void ShuffleButtonClick(object sender, RoutedEventArgs routedEventArgs)
         {
             Dispatcher.Invoke(() =>
-                                  {
-                                      ObservableCollection<TrackItem> playlist = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
+                {
+                    ObservableCollection<TrackItem> playlist = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
 
-                                      if (playlist != null)
-                                        playlist.Shuffle();
-                                  });
+                    if (playlist != null)
+                        playlist.Shuffle();
+                });
         }
 
         private void MuteButtonClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
-                                  {
-                                      MediaPlayer.IsMuted = !MediaPlayer.IsMuted;
-                                      VolumeSlider.IsEnabled = !MediaPlayer.IsMuted;
-                                      SetVolumeMetadata();                                         
-                                  });
+                {
+                    MediaPlayer.IsMuted = !MediaPlayer.IsMuted;
+                    VolumeSlider.IsEnabled = !MediaPlayer.IsMuted;
+                    SetVolumeMetadata();
+                });
         }
 
         private void SetVolumeMetadata()
@@ -124,13 +122,13 @@ namespace UltraSonic
 
             if (MediaPlayer.IsMuted)
                 MuteButtonIcon.Name = "VolumeMuted";
-            else if (MediaPlayer.Volume >= 0 && MediaPlayer.Volume <= (double)1 / (double)4)
+            else if (MediaPlayer.Volume >= 0 && MediaPlayer.Volume <= (double) 1/(double) 4)
                 MuteButtonIcon.Name = "VolumeZero";
-            else if (MediaPlayer.Volume > (double)1 / (double)4 && MediaPlayer.Volume <= (double)1 / (double)2)
+            else if (MediaPlayer.Volume > (double) 1/(double) 4 && MediaPlayer.Volume <= (double) 1/(double) 2)
                 MuteButtonIcon.Name = "VolumeLow";
-            else if (MediaPlayer.Volume > (double)1 / (double)2 && MediaPlayer.Volume <= (double)3 / (double)4)
+            else if (MediaPlayer.Volume > (double) 1/(double) 2 && MediaPlayer.Volume <= (double) 3/(double) 4)
                 MuteButtonIcon.Name = "VolumeMedium";
-            else if (MediaPlayer.Volume > (double)3 / (double)4 && MediaPlayer.Volume <= 1)
+            else if (MediaPlayer.Volume > (double) 3/(double) 4 && MediaPlayer.Volume <= 1)
                 MuteButtonIcon.Name = "VolumeHigh";
         }
 
@@ -197,15 +195,15 @@ namespace UltraSonic
         private void PauseButtonClick(object sender, ExecutedRoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
-                                  {
-                                      if (MediaPlayer.Source != null && MediaPlayer.CanPause)
-                                      {
-                                          if ((string) MusicPlayStatusLabel.Content == "Paused")
-                                              PlayMusic();
-                                          else
-                                              PauseMusic();
-                                      }
-                                  });
+                {
+                    if (MediaPlayer.Source != null && MediaPlayer.CanPause)
+                    {
+                        if ((string) MusicPlayStatusLabel.Content == "Paused")
+                            PlayMusic();
+                        else
+                            PauseMusic();
+                    }
+                });
         }
 
         private void StopButtonClick(object sender, ExecutedRoutedEventArgs e)
@@ -235,8 +233,8 @@ namespace UltraSonic
                     }
                     else
                     {
-                       PlaylistTrackGrid.SelectedIndex++;
-                       playNextTrack = true;
+                        PlaylistTrackGrid.SelectedIndex++;
+                        playNextTrack = true;
                     }
 
                     if (playNextTrack)
@@ -298,32 +296,29 @@ namespace UltraSonic
         private void VolumeSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             Dispatcher.Invoke(() =>
-                                  {
-                                      MediaPlayer.Volume = e.NewValue/10;
-                                      SetVolumeMetadata();
-                                  });
+                {
+                    MediaPlayer.Volume = e.NewValue/10;
+                    SetVolumeMetadata();
+                });
         }
 
         private void ProgressSliderMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            int sliderValue = (int)ProgressSlider.Value;
+            int sliderValue = (int) ProgressSlider.Value;
             TimeSpan ts = new TimeSpan(0, 0, 0, 0, sliderValue);
             MediaPlayer.Position = ts;
         }
 
-        private void MusicDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void MusicDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
         {
-            AlbumItem albumItem = null;
-
-            if (e.AddedItems.Count > 0)
-                albumItem = e.AddedItems[0] as AlbumItem;
+            AlbumItem albumItem = MusicDataGrid.SelectedItem as AlbumItem;
 
             if (albumItem != null)
             {
                 Dispatcher.Invoke(() =>
-                {
-                    SubsonicApi.GetMusicDirectoryAsync(albumItem.Album.Id).ContinueWith(UpdateTrackListingGrid);
-                });
+                    {
+                        SubsonicApi.GetMusicDirectoryAsync(albumItem.Album.Id).ContinueWith(UpdateTrackListingGrid);
+                    });
             }
         }
 
@@ -337,17 +332,17 @@ namespace UltraSonic
                 playlistName = savePlaylist.PlaylistName;
 
             Dispatcher.Invoke(() =>
-                                  {
-                                      ObservableCollection<TrackItem> observableCollection = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
+                {
+                    ObservableCollection<TrackItem> observableCollection = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
 
-                                      if (observableCollection != null)
-                                      {
-                                          List<string> playlistTracks = new List<string>();
-                                          playlistTracks.AddRange(observableCollection.Select(test => test.Track.Id));
+                    if (observableCollection != null)
+                    {
+                        List<string> playlistTracks = new List<string>();
+                        playlistTracks.AddRange(observableCollection.Select(test => test.Track.Id));
 
-                                          SubsonicApi.CreatePlaylistAsync(null, playlistName, playlistTracks).ContinueWith(CheckPlaylistSave);
-                                      }
-                                  });
+                        SubsonicApi.CreatePlaylistAsync(null, playlistName, playlistTracks).ContinueWith(CheckPlaylistSave);
+                    }
+                });
 
         }
 
@@ -357,9 +352,9 @@ namespace UltraSonic
 
             if (result == MessageBoxResult.Yes)
                 Dispatcher.Invoke(() =>
-                                      {
-                                          PlaylistTrackGrid.ItemsSource = new ObservableCollection<TrackItem>();
-                                      });
+                    {
+                        PlaylistTrackGrid.ItemsSource = new ObservableCollection<TrackItem>();
+                    });
         }
 
         private void PlaylistsDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -374,16 +369,16 @@ namespace UltraSonic
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
                     Dispatcher.Invoke(() =>
-                                          {
-                                              SubsonicApi.GetStarredAsync().ContinueWith(UpdatePlaylistGrid);
-                                          });
+                        {
+                            SubsonicApi.GetStarredAsync().ContinueWith(UpdatePlaylistGrid);
+                        });
                 }
                 else
                 {
                     Dispatcher.Invoke(() =>
-                                          {
-                                              SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id).ContinueWith(UpdatePlaylistGrid);
-                                          });
+                        {
+                            SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id).ContinueWith(UpdatePlaylistGrid);
+                        });
                 }
             }
         }
@@ -399,11 +394,11 @@ namespace UltraSonic
                 if (selectedTrack != null)
                 {
                     Dispatcher.Invoke(() =>
-                                          {
-                                              ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
-                                              itemsSource.Add(selectedTrack);
-                                              PlaylistTrackGrid.ItemsSource = itemsSource;
-                                          });
+                        {
+                            ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
+                            itemsSource.Add(selectedTrack);
+                            PlaylistTrackGrid.ItemsSource = itemsSource;
+                        });
                 }
             }
         }
@@ -419,9 +414,9 @@ namespace UltraSonic
                 if (selectedAlbum != null)
                 {
                     Dispatcher.Invoke(() =>
-                                          {
-                                              SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Album.Id).ContinueWith(AddAlbumToPlaylist);
-                                          });
+                        {
+                            SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Album.Id).ContinueWith(AddAlbumToPlaylist);
+                        });
                 }
             }
         }
@@ -450,12 +445,12 @@ namespace UltraSonic
         private void WindowClosed(object sender, EventArgs e)
         {
             Dispatcher.Invoke(() =>
-            {
-                Settings.Default.Volume = MediaPlayer.Volume;
-                Settings.Default.Height = Height;
-                Settings.Default.Width = Width;
-                Settings.Default.Save();
-            });
+                {
+                    Settings.Default.Volume = MediaPlayer.Volume;
+                    Settings.Default.Height = Height;
+                    Settings.Default.Width = Width;
+                    Settings.Default.Save();
+                });
         }
 
         private void ArtistFilterTextBoxTextChanged(object sender, TextChangedEventArgs e)
@@ -463,10 +458,10 @@ namespace UltraSonic
             var test = e.Source as TextBox;
 
             Dispatcher.Invoke(() =>
-            {
-                if (test != null) _artistFilter = test.Text;
-                MusicTreeView.ItemsSource = ArtistItems;
-            });
+                {
+                    if (test != null) _artistFilter = test.Text;
+                    MusicTreeView.ItemsSource = ArtistItems;
+                });
         }
 
         private void GlobalSearchTextBoxKeyDown(object sender, KeyEventArgs e)
@@ -483,33 +478,33 @@ namespace UltraSonic
         private void TrackDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
-                                  {
-                                      var selectedItems = TrackDataGrid.SelectedItems;
+                {
+                    var selectedItems = TrackDataGrid.SelectedItems;
 
-                                      if (selectedItems.Count > 0)
-                                      {
-                                          string downloadDirectory = FileDownloadDialog();
+                    if (selectedItems.Count > 0)
+                    {
+                        string downloadDirectory = FileDownloadDialog();
 
-                                          foreach (TrackItem item in selectedItems)
-                                              SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
-                                      }
-                                  });
+                        foreach (TrackItem item in selectedItems)
+                            SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
+                    }
+                });
         }
 
         private void MusicDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
-                                  {
-                                      var selectedItems = MusicDataGrid.SelectedItems;
+                {
+                    var selectedItems = MusicDataGrid.SelectedItems;
 
-                                      if (selectedItems.Count > 0)
-                                      {
-                                          string downloadDirectory = FileDownloadDialog();
+                    if (selectedItems.Count > 0)
+                    {
+                        string downloadDirectory = FileDownloadDialog();
 
-                                          foreach (AlbumItem item in selectedItems)
-                                              SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory);
-                                      }
-                                  });
+                        foreach (AlbumItem item in selectedItems)
+                            SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory);
+                    }
+                });
         }
 
         private void MusicDataGridAlbumListClick(object sender, RoutedEventArgs e)
@@ -544,11 +539,11 @@ namespace UltraSonic
                         albumListType = AlbumListType.newest;
                         break;
                 }
-                
+
                 Dispatcher.Invoke(() =>
-                                      {
-                                          SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax).ContinueWith(UpdateAlbumGrid);
-                                      });
+                    {
+                        SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax).ContinueWith(UpdateAlbumGrid);
+                    });
             }
         }
 
@@ -587,11 +582,11 @@ namespace UltraSonic
             var selectedItems = MusicDataGrid.SelectedItems;
 
             Dispatcher.Invoke(() =>
-                                  {
-                                      foreach (AlbumItem item in selectedItems)
-                                          SubsonicApi.GetMusicDirectoryAsync(item.Album.Id).ContinueWith(
-                                              AddAlbumToPlaylist);
-                                  });
+                {
+                    foreach (AlbumItem item in selectedItems)
+                        SubsonicApi.GetMusicDirectoryAsync(item.Album.Id).ContinueWith(
+                            AddAlbumToPlaylist);
+                });
 
         }
 
@@ -600,14 +595,14 @@ namespace UltraSonic
             var selectedItems = TrackDataGrid.SelectedItems;
 
             Dispatcher.Invoke(() =>
-                                  {
-                                      ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
+                {
+                    ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
 
-                                      foreach (TrackItem item in selectedItems)
-                                          itemsSource.Add(item);
+                    foreach (TrackItem item in selectedItems)
+                        itemsSource.Add(item);
 
-                                      PlaylistTrackGrid.ItemsSource = itemsSource;
-                                  });
+                    PlaylistTrackGrid.ItemsSource = itemsSource;
+                });
         }
 
         private void PreferencesCancelButtonClick(object sender, RoutedEventArgs e)
@@ -622,35 +617,35 @@ namespace UltraSonic
         private void StarredCheckBoxClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
-            {
-                var source = e.Source as CheckBox;
-                var item = TrackDataGrid.CurrentItem as TrackItem;
-
-                if (item != null && source != null)
                 {
-                    if (source.IsChecked.HasValue && source.IsChecked.Value)
-                        SubsonicApi.StarAsync(new List<string> { item.Track.Id });
-                    else
-                        SubsonicApi.UnStarAsync(new List<string> { item.Track.Id });
-                }
-            });
+                    var source = e.Source as CheckBox;
+                    var item = TrackDataGrid.CurrentItem as TrackItem;
+
+                    if (item != null && source != null)
+                    {
+                        if (source.IsChecked.HasValue && source.IsChecked.Value)
+                            SubsonicApi.StarAsync(new List<string> {item.Track.Id});
+                        else
+                            SubsonicApi.UnStarAsync(new List<string> {item.Track.Id});
+                    }
+                });
         }
 
         private void PlaylistStarredCheckBoxClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
-            {
-                var source = e.Source as CheckBox;
-                var item = PlaylistTrackGrid.CurrentItem as TrackItem;
-
-                if (item != null && source != null)
                 {
-                    if (source.IsChecked.HasValue && source.IsChecked.Value)
-                        SubsonicApi.StarAsync(new List<string> { item.Track.Id });
-                    else
-                        SubsonicApi.UnStarAsync(new List<string> { item.Track.Id });
-                }
-            });
+                    var source = e.Source as CheckBox;
+                    var item = PlaylistTrackGrid.CurrentItem as TrackItem;
+
+                    if (item != null && source != null)
+                    {
+                        if (source.IsChecked.HasValue && source.IsChecked.Value)
+                            SubsonicApi.StarAsync(new List<string> {item.Track.Id});
+                        else
+                            SubsonicApi.UnStarAsync(new List<string> {item.Track.Id});
+                    }
+                });
         }
     }
 }

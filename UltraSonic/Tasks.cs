@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace UltraSonic
 {
@@ -29,10 +30,10 @@ namespace UltraSonic
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 Dispatcher.Invoke(() =>
-                                      {
-                                          albumItem.Image = task.Result.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
-                                          MusicDataGrid.Items.Refresh();
-                                      });
+                    {
+                        albumItem.Image = task.Result.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                        MusicDataGrid.Items.Refresh();
+                    });
             }
         }
 
@@ -113,15 +114,15 @@ namespace UltraSonic
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 Dispatcher.Invoke(() =>
-                                      {
-                                          ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
-                                          IEnumerable<TrackItem> albumSource = GetTrackItemCollection(task.Result);
+                    {
+                        ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
+                        IEnumerable<TrackItem> albumSource = GetTrackItemCollection(task.Result);
 
-                                          foreach (var trackItem in albumSource)
-                                              itemsSource.Add(trackItem);
+                        foreach (var trackItem in albumSource)
+                            itemsSource.Add(trackItem);
 
-                                          PlaylistTrackGrid.ItemsSource = itemsSource;
-                                      });
+                        PlaylistTrackGrid.ItemsSource = itemsSource;
+                    });
             }
         }
 
@@ -130,9 +131,9 @@ namespace UltraSonic
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 Dispatcher.Invoke(() =>
-                                      {
-                                          PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Entry);
-                                      });
+                    {
+                        PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Entry);
+                    });
             }
         }
 
@@ -141,9 +142,9 @@ namespace UltraSonic
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 Dispatcher.Invoke(() =>
-                {
-                    PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Song);
-                });
+                    {
+                        PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Song);
+                    });
             }
         }
 
@@ -165,20 +166,20 @@ namespace UltraSonic
                 _currentUser = task.Result;
 
                 Dispatcher.Invoke(() =>
-                                      {
-                                          DownloadsTab.Visibility =  _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                                          MusicDataGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                                          TrackDataGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                                          PlaylistTrackGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                                          PlaylistsGridDownload.Visibility = _currentUser.DownloadRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                                          PreviousButton.IsEnabled = _currentUser.StreamRole;
-                                          PlayButton.IsEnabled = _currentUser.StreamRole;
-                                          StopButton.IsEnabled = _currentUser.StreamRole;
-                                          PauseButton.IsEnabled = _currentUser.StreamRole;
-                                          NextButton.IsEnabled = _currentUser.StreamRole;
-                                          SavePlaylistButton.IsEnabled = _currentUser.PlaylistRole;
-                                          PlaylistsGridDeletePlaylist.Visibility = _currentUser.PlaylistRole ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                                      });
+                    {
+                        DownloadsTab.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        MusicDataGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        TrackDataGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        PlaylistTrackGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        PlaylistsGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        PreviousButton.IsEnabled = _currentUser.StreamRole;
+                        PlayButton.IsEnabled = _currentUser.StreamRole;
+                        StopButton.IsEnabled = _currentUser.StreamRole;
+                        PauseButton.IsEnabled = _currentUser.StreamRole;
+                        NextButton.IsEnabled = _currentUser.StreamRole;
+                        SavePlaylistButton.IsEnabled = _currentUser.PlaylistRole;
+                        PlaylistsGridDeletePlaylist.Visibility = _currentUser.PlaylistRole ? Visibility.Visible : Visibility.Collapsed;
+                    });
             }
         }
     }

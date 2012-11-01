@@ -15,19 +15,19 @@ namespace UltraSonic
 
             foreach (Child child in children.Where(child => child.IsDir == false && child.Type == MediaType.Music))
                 trackItems.Add(new TrackItem
-                {
-                    Track = child,
-                    Artist = child.Artist,
-                    Duration = TimeSpan.FromSeconds(child.Duration),
-                    Genre = child.Genre,
-                    Title = child.Title,
-                    Album = child.Album,
-                    TrackNumber = child.Track,
-                    DiscNumber = child.DiscNumber,
-                    Year = child.Year,
-                    Starred = child.Starred != new DateTime(),
-                    Rating = child.UserRating
-                });
+                    {
+                        Track = child,
+                        Artist = child.Artist,
+                        Duration = TimeSpan.FromSeconds(child.Duration),
+                        Genre = child.Genre,
+                        Title = child.Title,
+                        Album = child.Album,
+                        TrackNumber = child.Track,
+                        DiscNumber = child.DiscNumber,
+                        Year = child.Year,
+                        Starred = child.Starred != new DateTime(),
+                        Rating = child.UserRating
+                    });
 
             return trackItems;
         }
@@ -40,9 +40,9 @@ namespace UltraSonic
         private static string FileDownloadDialog()
         {
             FolderBrowserDialog folderDialog = new FolderBrowserDialog
-            {
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
+                {
+                    SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                };
 
             DialogResult result = folderDialog.ShowDialog();
 

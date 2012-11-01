@@ -4,6 +4,26 @@
         Icon="Images/ultrasonic-logo.ico"
         Title="UltraSonic" Height="729.851" Width="1077" MinWidth="1077" MinHeight="600" Closed="WindowClosed">
 
+    <Window.Resources>
+        <Style x:Key="styleCustomCheckBox" TargetType="{x:Type CheckBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image x:Name="imageCheckBox" Source="Images/star-active2.png" Width="20" Height="20"/>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="imageCheckBox" Property="Source" Value="Images/star-inactive.png"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Window.CommandBindings>
         <CommandBinding Command="MediaCommands.Play" Executed="PlayButtonClick" CanExecute="CommandCanExecute"/>
         <CommandBinding Command="MediaCommands.Stop" Executed="StopButtonClick" CanExecute="CommandCanExecute"/>
@@ -66,7 +86,7 @@
                     <Border BorderThickness="1" Grid.Row="3" BorderBrush="#FF000000">
                         <Image x:Name="MusicCoverArt" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True" Grid.Row="3" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
                     </Border>
-                    <DataGrid x:Name="MusicDataGrid" AlternatingRowBackground="Gainsboro" SelectionChanged="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" VerticalContentAlignment="Center" Grid.RowSpan="3">
+                    <DataGrid x:Name="MusicDataGrid" AlternatingRowBackground="Gainsboro" MouseLeftButtonUp="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" VerticalContentAlignment="Center" Grid.RowSpan="3">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="MusicDataGridAdd" Header="Add To Playlist" Click="MusicDataGridAddClick" />
@@ -98,6 +118,13 @@
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
+                            <DataGridTemplateColumn x:Name="TrackDataGridStarred">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
@@ -106,13 +133,6 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTemplateColumn x:Name="TrackDataGridStarred" Header="Starred">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
@@ -136,6 +156,13 @@
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
+                            <DataGridTemplateColumn x:Name="PlaylistGridStarred">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="PlaylistStarredCheckBoxClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
@@ -144,13 +171,6 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTemplateColumn x:Name="PlaylistGridStarred" Header="Starred">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox x:Name="PlaylistStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="PlaylistStarredCheckBoxClick"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
