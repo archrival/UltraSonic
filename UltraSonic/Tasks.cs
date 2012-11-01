@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Subsonic.Rest.Api;
+﻿using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +14,14 @@ namespace UltraSonic
 
         private void UpdateAlbumGrid(Task<Directory> task)
         {
-            UpdateAlbumGrid(task.Result.Child.Where(child => child.IsDir));
+            if (task.Status == TaskStatus.RanToCompletion)
+                UpdateAlbumGrid(task.Result.Child.Where(child => child.IsDir));
+        }
+
+        private void UpdateAlbumGrid(Task<AlbumList> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+                UpdateAlbumGrid(task.Result.Album);
         }
 
         private void UpdateAlbumImageArt(Task<Image> task, AlbumItem albumItem)
@@ -102,30 +108,6 @@ namespace UltraSonic
                 UpdatePlaylists(task.Result.Playlist);
         }
 
-        private void UpdatePlaylists(Task<Starred> task)
-        {
-            if (task.Status == TaskStatus.RanToCompletion)
-            {
-                ObservableCollection<PlaylistItem> playlists = new ObservableCollection<PlaylistItem>((IEnumerable<PlaylistItem>) PlaylistsDataGrid.ItemsSource);
-                
-
-                Dispatcher.Invoke(() =>
-                    {
-                        int starDuration = task.Result.Song.Sum(child => child.Duration);
-
-                        PlaylistItem playlistItem = new PlaylistItem();
-                        playlistItem.Duration = TimeSpan.FromSeconds(starDuration);
-                        playlistItem.Name = "Starred";
-                        playlistItem.Tracks = task.Result.Song.Count;
-                        playlistItem.Playlist = null;
-
-                        playlists.Add(playlistItem);
-
-                        PlaylistsDataGrid.ItemsSource = playlists;
-                    });
-            }
-        }
-
         private void AddAlbumToPlaylist(Task<Directory> task)
         {
             if (task.Status == TaskStatus.RanToCompletion)
@@ -145,14 +127,23 @@ namespace UltraSonic
 
         private void UpdatePlaylistGrid(Task<PlaylistWithSongs> task)
         {
-            var entryItems = new ObservableCollection<TrackItem>();
-
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 Dispatcher.Invoke(() =>
                                       {
                                           PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Entry);
                                       });
+            }
+        }
+
+        private void UpdatePlaylistGrid(Task<Starred> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Song);
+                });
             }
         }
 

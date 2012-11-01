@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
 using Subsonic.Rest.Api;
+using Subsonic.Rest.Api.Enums;
 using UltraSonic.Properties;
 using CheckBox = System.Windows.Controls.CheckBox;
 using DataGrid = System.Windows.Controls.DataGrid;
@@ -38,8 +38,9 @@ namespace UltraSonic
                 ProxyPassword = PreferencesProxyServerPasswordTextBox.Password;
                 bool? isChecked = PreferencesUseProxyCheckbox.IsChecked;
                 UseProxy = isChecked.HasValue && isChecked.Value;
-                _maxSearchResults = (int)MaxSearchResultsComboBox.SelectedValue;
+                _maxSearchResults = (int) MaxSearchResultsComboBox.SelectedValue;
                 _maxBitrate = (int) MaxBitrateComboBox.SelectedValue;
+                _albumListMax = (int) AlbumListMaxComboBox.SelectedValue;
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -51,6 +52,7 @@ namespace UltraSonic
                 Settings.Default.ProxyPassword = ProxyPassword;
                 Settings.Default.MaxSearchResults = _maxSearchResults;
                 Settings.Default.MaxBitrate = _maxBitrate;
+                Settings.Default.AlbumListMax = _albumListMax;
 
                 Settings.Default.Save();
 
@@ -281,7 +283,7 @@ namespace UltraSonic
                 {
                     _position = MediaPlayer.NaturalDuration.TimeSpan;
                     ProgressSlider.Minimum = 0;
-                    ProgressSlider.Maximum = _position.TotalSeconds;
+                    ProgressSlider.Maximum = _position.TotalMilliseconds;
                 });
         }
 
@@ -302,10 +304,11 @@ namespace UltraSonic
                                   });
         }
 
-        private void ProgressSliderMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ProgressSliderMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            int pos = Convert.ToInt32(ProgressSlider.Value);
-            MediaPlayer.Position = new TimeSpan(0, 0, 0, pos, 0);
+            int sliderValue = (int)ProgressSlider.Value;
+            TimeSpan ts = new TimeSpan(0, 0, 0, 0, sliderValue);
+            MediaPlayer.Position = ts;
         }
 
         private void MusicDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -368,10 +371,20 @@ namespace UltraSonic
 
             if (playlistItem != null)
             {
-                Dispatcher.Invoke(() =>
-                    {
-                        SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id).ContinueWith(UpdatePlaylistGrid);
-                    });
+                if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
+                {
+                    Dispatcher.Invoke(() =>
+                                          {
+                                              SubsonicApi.GetStarredAsync().ContinueWith(UpdatePlaylistGrid);
+                                          });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                                          {
+                                              SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id).ContinueWith(UpdatePlaylistGrid);
+                                          });
+                }
             }
         }
 
@@ -478,7 +491,7 @@ namespace UltraSonic
                                           string downloadDirectory = FileDownloadDialog();
 
                                           foreach (TrackItem item in selectedItems)
-                                              SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory, false);
+                                              SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
                                       }
                                   });
         }
@@ -494,9 +507,49 @@ namespace UltraSonic
                                           string downloadDirectory = FileDownloadDialog();
 
                                           foreach (AlbumItem item in selectedItems)
-                                              SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory, false);
+                                              SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory);
                                       }
                                   });
+        }
+
+        private void MusicDataGridAlbumListClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem source = e.Source as MenuItem;
+
+            if (source != null)
+            {
+                AlbumListType albumListType;
+
+                switch (source.Header.ToString())
+                {
+                    case "Newest":
+                        albumListType = AlbumListType.newest;
+                        break;
+                    case "Random":
+                        albumListType = AlbumListType.random;
+                        break;
+                    case "Highest Rated":
+                        albumListType = AlbumListType.highest;
+                        break;
+                    case "Frequently Played":
+                        albumListType = AlbumListType.frequent;
+                        break;
+                    case "Recently Played":
+                        albumListType = AlbumListType.recent;
+                        break;
+                    case "Starred":
+                        albumListType = AlbumListType.starred;
+                        break;
+                    default:
+                        albumListType = AlbumListType.newest;
+                        break;
+                }
+                
+                Dispatcher.Invoke(() =>
+                                      {
+                                          SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax).ContinueWith(UpdateAlbumGrid);
+                                      });
+            }
         }
 
         private void PlaylistsDataGridRefreshClick(object sender, RoutedEventArgs e)
@@ -510,16 +563,23 @@ namespace UltraSonic
 
             foreach (PlaylistItem item in selectedItems)
             {
-                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", item.Name), "Delete playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                if (item.Playlist == null && item.Name == "Starred")
+                {
+                    MessageBox.Show("Playlist 'Starred' is a dynamic playlist and cannot be deleted.", "Delete playlist", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", item.Name), "Delete playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
-                if (result == MessageBoxResult.Yes)
-                    SubsonicApi.DeletePlaylistAsync(item.Playlist.Id).ContinueWith((t) => UpdatePlaylists());
+                    if (result == MessageBoxResult.Yes)
+                        if (item.Playlist != null) SubsonicApi.DeletePlaylistAsync(item.Playlist.Id).ContinueWith(t => UpdatePlaylists());
+                }
             }
         }
 
         void DataGridLoadingRow(object sender, DataGridRowEventArgs e)
         {
-            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString(CultureInfo.InvariantCulture);
         }
 
         private void MusicDataGridAddClick(object sender, RoutedEventArgs e)

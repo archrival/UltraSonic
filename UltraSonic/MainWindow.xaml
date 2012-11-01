@@ -71,6 +71,12 @@
                             <ContextMenu >
                                 <MenuItem x:Name="MusicDataGridAdd" Header="Add To Playlist" Click="MusicDataGridAddClick" />
                                 <MenuItem x:Name="MusicDataGridDownload" Header="Download" Click="MusicDataGridDownloadClick" />
+                                <MenuItem x:Name="MusicDataGridRandom" Header="Random" Click="MusicDataGridAlbumListClick"/>
+                                <MenuItem x:Name="MusicDataGridNewest" Header="Newest" Click="MusicDataGridAlbumListClick"/>
+                                <MenuItem x:Name="MusicDataGridHighest" Header="Higest Rated" Click="MusicDataGridAlbumListClick"/>
+                                <MenuItem x:Name="MusicDataGridFrequent" Header="Frequently Played" Click="MusicDataGridAlbumListClick"/>
+                                <MenuItem x:Name="MusicDataGridRecent" Header="Recently Played" Click="MusicDataGridAlbumListClick"/>
+                                <MenuItem x:Name="MusicDataGridStarred" Header="Starred" Click="MusicDataGridAlbumListClick"/>                                
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
@@ -100,7 +106,7 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTemplateColumn Header="Starred">
+                            <DataGridTemplateColumn x:Name="TrackDataGridStarred" Header="Starred">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
@@ -138,7 +144,7 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTemplateColumn Header="Starred">
+                            <DataGridTemplateColumn x:Name="PlaylistGridStarred" Header="Starred">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox x:Name="PlaylistStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="PlaylistStarredCheckBoxClick"/>
@@ -149,7 +155,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="DownloadsTab" Header="Downloads">
+            <TabItem x:Name="DownloadsTab" Visibility="Collapsed" Header="Downloads">
                 <Grid Background="#FFE5E5E5">
                     <DataGrid x:Name="DownloadGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
                         <DataGrid.ContextMenu>
@@ -188,8 +194,10 @@
                     <CheckBox x:Name="PreferencesUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Margin="159,101,0,0" VerticalAlignment="Top" Height="19" Width="91" UseLayoutRounding="True" ClickMode="Press" Checked="PreferencesUseProxyCheckboxChecked" Unchecked="PreferencesUseProxyCheckboxUnChecked"/>
                     <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Margin="159,237,0,0" VerticalAlignment="Top" Width="261"/>
                     <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Margin="159,268,0,0" VerticalAlignment="Top" Width="261"/>
+                    <ComboBox x:Name="AlbumListMaxComboBox" HorizontalAlignment="Left" Margin="159,299,0,0" VerticalAlignment="Top" Width="261"/>
                     <Label Content="Max Search Results" HorizontalAlignment="Left" Margin="10,237,0,0" VerticalAlignment="Top" Width="136"/>
                     <Label Content="Max Bitrate" HorizontalAlignment="Left" Margin="10,268,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Album List Max" HorizontalAlignment="Left" Margin="10,299,0,0" VerticalAlignment="Top" Width="136"/>
                     <Button x:Name="PreferencesCancelButton" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Click="PreferencesCancelButtonClick"/>
                     <Label Content="Email:" HorizontalAlignment="Right" Margin="0,48,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseEmailLabel}"/>
                     <Label Content="Date:" HorizontalAlignment="Right" Margin="0,79,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseDateLabel}"/>
@@ -265,7 +273,7 @@
             </Image>
         </Button>
         <Slider x:Name="VolumeSlider" Margin="0,0,10,61" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="32" VerticalContentAlignment="Center" UseLayoutRounding="True" MinHeight="32" MaxHeight="32"/>
-        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" VerticalAlignment="Bottom" MouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22"/>
+        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" VerticalAlignment="Bottom" PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22"/>
         <MediaElement x:Name="MediaPlayer" HorizontalAlignment="Left" Height="1" VerticalAlignment="Top" Width="1" Margin="0,0,0,0" Visibility="Hidden" MediaOpened="MediaPlayerMediaOpened" UnloadedBehavior="Stop" LoadedBehavior="Manual"/>
         <Button x:Name="NewPlaylistButton" Margin="0,0,340,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="NewPlaylistButtonClick" ToolTip="New Playlist" HorizontalAlignment="Right" >
             <Image Source="Images/document-new.png"/>
@@ -273,8 +281,12 @@
         <Button x:Name="SavePlaylistButton" Margin="0,0,303,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="SavePlaylistButtonClick" ToolTip="Save Playlist" HorizontalAlignment="Right" >
             <Image Source="Images/document-save.png"/>
         </Button>
-        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Left" Width="120" Height="22" Grid.Column="0" VerticalAlignment="Bottom" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="208,0,0,61"/>
-        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="120" Height="22" VerticalAlignment="Bottom" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,0,377,61"/>
+        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Left" Width="166" Height="32" Grid.Column="0" VerticalAlignment="Bottom" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="208,0,0,61"/>
+        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="197" Height="32" VerticalAlignment="Bottom" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,0,377,61" VerticalContentAlignment="Bottom">
+            <TextBox.Background>
+                <ImageBrush ImageSource="Images/stock_search.png" AlignmentX="Right" Stretch="Uniform" />
+            </TextBox.Background>
+        </TextBox>
     </Grid>    
 </Window>
     

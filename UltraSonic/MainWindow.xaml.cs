@@ -2,14 +2,13 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Threading;
 using Subsonic.Rest.Api;
 using UltraSonic.Properties;
@@ -36,8 +35,9 @@ namespace UltraSonic
         private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
         private TimeSpan _position;
         private bool _repeatPlaylist;
-        private int _maxSearchResults = 1;
-        private int _maxBitrate = 0;
+        private int _maxSearchResults = 25;
+        private int _maxBitrate;
+        private int _albumListMax = 10;
         private User _currentUser;
 
         public MainWindow()
@@ -72,7 +72,7 @@ namespace UltraSonic
                     }
                 }
 
-                _timer.Interval = TimeSpan.FromMilliseconds(100);
+                _timer.Interval = TimeSpan.FromMilliseconds(1000);
                 _timer.Tick += Ticktock;
                 _timer.Start();
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
@@ -106,9 +106,11 @@ namespace UltraSonic
             ProxyPort = Settings.Default.ProxyPort;
             UseProxy = Settings.Default.UseProxy;
             _maxSearchResults = Settings.Default.MaxSearchResults;
+            _albumListMax = Settings.Default.AlbumListMax;
 
             PopulateSearchResultItemComboBox();
             PopulateMaxBitrateComboBox();
+            PopulateAlbumListMaxComboBox();
 
             PreferencesUseProxyCheckbox.IsChecked = UseProxy;
 
@@ -117,7 +119,7 @@ namespace UltraSonic
             PreferencesServerAddressTextBox.Text = ServerUrl;
             PreferencesUseProxyCheckbox.IsChecked = UseProxy;
             PreferencesProxyServerAddressTextBox.Text = ProxyServer;
-            PreferencesProxyServerPortTextBox.Text = ProxyPort.ToString();
+            PreferencesProxyServerPortTextBox.Text = ProxyPort.ToString(CultureInfo.InvariantCulture);
             PreferencesProxyServerUsernameTextBox.Text = ProxyUsername;
             PreferencesProxyServerPasswordTextBox.Password = ProxyPassword;
 
@@ -126,10 +128,22 @@ namespace UltraSonic
 
         private void PopulateSearchResultItemComboBox()
         {
-            List<int> listData = new List<int> {1, 5, 10, 25, 50, 100, 250, 500, 1000};
+            List<int> listData = new List<int>();
+            for (int i = 1; i <= 2500; i++)
+                listData.Add(i);
 
             MaxSearchResultsComboBox.ItemsSource = listData;
             MaxSearchResultsComboBox.SelectedItem = _maxSearchResults;
+        }
+
+        private void PopulateAlbumListMaxComboBox()
+        {
+            List<int> listData = new List<int>();
+            for (int i = 1; i <= 500; i++)
+                listData.Add(i);
+
+            AlbumListMaxComboBox.ItemsSource = listData;
+            AlbumListMaxComboBox.SelectedItem = _maxSearchResults;
         }
 
         private void PopulateMaxBitrateComboBox()
@@ -174,12 +188,25 @@ namespace UltraSonic
         private void InitSubsonicApi()
         {
             SubsonicApi = UseProxy ? new SubsonicApi(new Uri(ServerUrl), Username, Password, ProxyPassword, ProxyUsername, ProxyPort, ProxyServer) {UserAgent = AppName} : new SubsonicApi(new Uri(ServerUrl), Username, Password) {UserAgent = AppName};
+            SubsonicApi.Ping();
+
+            if (SubsonicApi.ServerApiVersion < Version.Parse("1.8.0"))
+            {
+                Dispatcher.Invoke(() =>
+                                      {
+                                          PlaylistGridStarred.Visibility = System.Windows.Visibility.Collapsed;
+                                          TrackDataGridStarred.Visibility = System.Windows.Visibility.Collapsed;
+                                          MusicDataGridStarred.Visibility = System.Windows.Visibility.Collapsed;
+                                      });
+            }
+
             SubsonicApi.GetUserAsync(Username).ContinueWith(UpdateCurrentUser);
+
         }
 
         private void Ticktock(object sender, EventArgs e)
         {
-            ProgressSlider.Value = MediaPlayer.Position.TotalSeconds;
+            ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
             MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
             UpdateTitle();
         }
@@ -205,18 +232,27 @@ namespace UltraSonic
                                   });
         }
 
-        private void QueueTrack(Child child)
+        private static bool IsTrackCached(string fileName, Child child)
+        {
+            var fi = new FileInfo(fileName);
+            return fi.Exists && fi.Length == child.Size;
+        }
+
+        private string GetFilename(Child child)
         {
             string fileName = Path.Combine(_cacheDirectory, child.Id);
-            fileName = Path.ChangeExtension(fileName, child.Suffix);
+            return Path.ChangeExtension(fileName, child.Suffix);
+        }
+
+        private void QueueTrack(Child child)
+        {
+            string fileName = GetFilename(child);
 
             var fileNameUri = new Uri(fileName);
 
-            var fi = new FileInfo(fileName);
-
             if (_streams != null)
             {
-                if (_streams.All(s => s.OriginalString == fileName) && File.Exists(fileName) && fi.Length == child.Size)
+                if (_streams.All(s => s.OriginalString == fileName) && IsTrackCached(fileName, child))
                 {
                     UpdateAlbumArt(child.Id);
                     QueueTrack(fileNameUri, child);
@@ -228,7 +264,7 @@ namespace UltraSonic
                     UpdateAlbumArt(child.Id);
                     Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?)_maxBitrate);
                     //QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), child); // Works with non-SSL servers
-                    streamTask.ContinueWith((t) => QueueTrack(streamTask, child));
+                    streamTask.ContinueWith(t => QueueTrack(streamTask, child));
                 }
             }
         }
@@ -265,9 +301,7 @@ namespace UltraSonic
                                           kvp.Value.Cancel();
 
                                       Task<Image> albumArtTask = SubsonicApi.GetCoverArtAsync(id, null, token);
-                                      _albumArtRequests.Enqueue(
-                                          new KeyValuePair<Task<Image>, CancellationTokenSource>(albumArtTask,
-                                                                                                 tokenSource));
+                                      _albumArtRequests.Enqueue(new KeyValuePair<Task<Image>, CancellationTokenSource>(albumArtTask, tokenSource));
                                       albumArtTask.ContinueWith(UpdateCoverArt);
                                   });
         }
@@ -311,11 +345,11 @@ namespace UltraSonic
                     _albumItems.Add(albumItem);
 
                     Task<Image> coverArtTask = SubsonicApi.GetCoverArtAsync(child.Id);
-                    coverArtTask.ContinueWith((t) => UpdateAlbumImageArt(coverArtTask, albumItem));
-
-                    MusicDataGrid.ItemsSource = _albumItems;
-                    MusicDataGrid.DataContext = _albumItems;
+                    coverArtTask.ContinueWith(t => UpdateAlbumImageArt(coverArtTask, albumItem));
                 }
+
+                MusicDataGrid.ItemsSource = _albumItems;
+                MusicDataGrid.DataContext = _albumItems;
             });
         }
 
@@ -328,18 +362,47 @@ namespace UltraSonic
                 foreach (Playlist playlist in playlists)
                 {
                     PlaylistItem playlistItem = new PlaylistItem
-                    {
-                        Duration = TimeSpan.FromSeconds(playlist.Duration),
-                        Name = playlist.Name,
-                        Tracks = playlist.SongCount,
-                        Playlist = playlist
-                    };
+                                                    {
+                                                        Duration = TimeSpan.FromSeconds(playlist.Duration),
+                                                        Name = playlist.Name,
+                                                        Tracks = playlist.SongCount,
+                                                        Playlist = playlist
+                                                    };
 
                     playlistItems.Add(playlistItem);
                 }
 
+                if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
+                {
+                    Task<Starred> starredTask = SubsonicApi.GetStarredAsync();
+                    starredTask.ContinueWith(t => AddStarredToPlaylists(starredTask, playlistItems));
+                }
+
                 PlaylistsDataGrid.ItemsSource = playlistItems;
             });
+        }
+
+        private void AddStarredToPlaylists(Task<Starred> task, ObservableCollection<PlaylistItem> playlistItems)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                Dispatcher.Invoke(() =>
+                                      {
+                                          Starred starred = task.Result;
+
+                                          int starDuration = starred.Song.Sum(child => child.Duration);
+
+                                          PlaylistItem starredItem = new PlaylistItem
+                                                                         {
+                                                                             Duration = TimeSpan.FromSeconds(starDuration),
+                                                                             Name = "Starred",
+                                                                             Tracks = starred.Song.Count,
+                                                                             Playlist = null
+                                                                         };
+
+                                          playlistItems.Add(starredItem);
+                                      });
+            }
         }
     }
 }

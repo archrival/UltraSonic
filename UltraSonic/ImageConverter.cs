@@ -14,14 +14,13 @@ namespace UltraSonic
         /// </summary>
         /// <param name="source">The source image.</param>
         /// <returns>A BitmapSource</returns>
-        public static BitmapSource ToBitmapSource(this System.Drawing.Image source)
+        public static BitmapSource ToBitmapSource(this Image source)
         {
             Bitmap bitmap = new Bitmap(source);
 
             var bitSrc = bitmap.ToBitmapSource();
 
             bitmap.Dispose();
-            bitmap = null;
 
             return bitSrc;
         }
@@ -35,7 +34,7 @@ namespace UltraSonic
         /// <returns>A BitmapSource</returns>
         public static BitmapSource ToBitmapSource(this Bitmap source)
         {
-            BitmapSource bitSrc = null;
+            BitmapSource bitSrc;
 
             var hBitmap = source.GetHbitmap();
 

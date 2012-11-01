@@ -191,5 +191,18 @@ namespace UltraSonic.Properties {
                 this["MaxBitrate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int AlbumListMax {
+            get {
+                return ((int)(this["AlbumListMax"]));
+            }
+            set {
+                this["AlbumListMax"] = value;
+            }
+        }
     }
 }

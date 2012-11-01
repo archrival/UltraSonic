@@ -18,9 +18,9 @@ namespace UltraSonic
                 foreach (var pT in T.GetType().GetProperties())
                 {
                     if (pT.Name != pS.Name) continue;
-                    (pT.GetSetMethod()).Invoke(T, new object[] { pS.GetGetMethod().Invoke(s, null) });
+                    (pT.GetSetMethod()).Invoke(T, new[] { pS.GetGetMethod().Invoke(s, null) });
                 }
-            };
+            }
         }
 
         public static void Shuffle<T>(this IList<T> list)

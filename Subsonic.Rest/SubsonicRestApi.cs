@@ -76,6 +76,6 @@ namespace Subsonic.Rest.Api
         /// <summary>
         /// Subsonic API version supported by the Subsonic server.
         /// </summary>
-        private Version ServerApiVersion { get; set; }
+        public Version ServerApiVersion { get; set; }
     }
 }
