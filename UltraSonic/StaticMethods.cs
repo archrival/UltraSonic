@@ -25,6 +25,7 @@ namespace UltraSonic
                         TrackNumber = child.Track,
                         DiscNumber = child.DiscNumber,
                         Year = child.Year,
+                        BitRate = child.BitRate,
                         Starred = child.Starred != new DateTime(),
                         Rating = child.UserRating
                     });

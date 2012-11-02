@@ -7,6 +7,7 @@ namespace UltraSonic
     {
         public bool Starred { get; set; }
         public string Name { get; set; }
+        public string Artist { get; set; }
         public Child Album { get; set; }
         public BitmapSource Image { get; set; }
     }

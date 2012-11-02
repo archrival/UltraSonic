@@ -173,7 +173,6 @@ namespace UltraSonic
                         MusicDataGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
                         TrackDataGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
                         PlaylistTrackGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
-                        PlaylistsGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
                         PreviousButton.IsEnabled = _currentUser.StreamRole;
                         PlayButton.IsEnabled = _currentUser.StreamRole;
                         StopButton.IsEnabled = _currentUser.StreamRole;

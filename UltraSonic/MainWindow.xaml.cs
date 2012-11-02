@@ -436,7 +436,7 @@ namespace UltraSonic
                 {
                     foreach (Child child in children)
                     {
-                        AlbumItem albumItem = new AlbumItem {Name = child.Album, Album = child, Starred = (child.Starred != default(DateTime))};
+                        AlbumItem albumItem = new AlbumItem { Artist = child.Artist, Name = child.Album, Album = child, Starred = (child.Starred != default(DateTime))};
                         _albumItems.Add(albumItem);
 
                         Task<Image> coverArtTask = SubsonicApi.GetCoverArtAsync(child.Id);

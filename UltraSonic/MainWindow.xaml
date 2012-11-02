@@ -205,6 +205,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True" Width="*"/>
                             <DataGridTextColumn Binding="{Binding Name}" Header="Album" IsReadOnly="True" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -231,13 +232,13 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick" />
-                                <MenuItem x:Name="PlaylistsGridDownload" Header="Download" />
                                 <MenuItem x:Name="PlaylistsGridRefresh" Header="Refresh" Click="PlaylistsDataGridRefreshClick" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>
@@ -269,6 +270,7 @@
                             <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -301,12 +303,12 @@
                     <Label Content="Proxy Port" Height="23" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top" Width="136"/>
                     <Label Content="Proxy Username" Height="23" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Width="136"/>
                     <Label Content="Proxy Password" Height="23" HorizontalAlignment="Left" Margin="10,206,0,0" VerticalAlignment="Top" Width="136"/>
-                    <TextBox x:Name="PreferencesUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,13,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
                     <PasswordBox x:Name="PreferencesPasswordPasswordBox" HorizontalAlignment="Left" Height="23" Margin="159,41,0,0" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,69,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesProxyServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesProxyServerPortTextBox" HorizontalAlignment="Left" Height="23" Margin="159,153,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesProxyServerUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,69,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesProxyServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,125,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesProxyServerPortTextBox" HorizontalAlignment="Left" Height="23" Margin="159,153,0,0"  TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="PreferencesProxyServerUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,181,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
                     <PasswordBox x:Name="PreferencesProxyServerPasswordTextBox" HorizontalAlignment="Left" Height="23" Margin="159,209,0,0" VerticalAlignment="Top" Width="261"/>
                     <Button x:Name="PreferencesSaveButton" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="PreferencesSaveButtonClick"/>
                     <CheckBox x:Name="PreferencesUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Margin="159,101,0,0" VerticalAlignment="Top" Height="19" Width="91" UseLayoutRounding="True" ClickMode="Press" Checked="PreferencesUseProxyCheckboxChecked" Unchecked="PreferencesUseProxyCheckboxUnChecked"/>
@@ -328,7 +330,7 @@
                     <Label Content="License Information" HorizontalAlignment="Right" Margin="0,17,167,0" VerticalAlignment="Top" Width="140" FontWeight="Bold"/>
                     <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Margin="159,332,0,0" VerticalAlignment="Top" Checked="UseDiskCacheCheckboxChecked" Unchecked="UseDiskCacheCheckboxUnChecked"/>
                     <Label Content="Cache Directory" HorizontalAlignment="Left" Margin="10,354,0,0" VerticalAlignment="Top" Width="136"/>
-                    <TextBox x:Name="CacheDirectoryTextBox" HorizontalAlignment="Left" Height="23" Margin="159,357,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
+                    <TextBox x:Name="CacheDirectoryTextBox" HorizontalAlignment="Left" Height="23" Margin="159,357,0,0" VerticalAlignment="Top" Width="261"/>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -402,12 +404,9 @@
         <Button x:Name="SavePlaylistButton" Margin="0,0,303,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="SavePlaylistButtonClick" ToolTip="Save Playlist" HorizontalAlignment="Right" >
             <Image Source="Images/document-save.png"/>
         </Button>
-        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Left" Width="166" Height="32" Grid.Column="0" VerticalAlignment="Bottom" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="208,0,0,61"/>
-        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="197" Height="32" VerticalAlignment="Bottom" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,0,377,61" VerticalContentAlignment="Bottom">
-            <TextBox.Background>
-                <ImageBrush ImageSource="Images/stock_search.png" AlignmentX="Right" Stretch="Uniform" />
-            </TextBox.Background>
-        </TextBox>
+        <Image Source="Images\stock_search.png" Margin="0,4,209,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"/>
+        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Left" Width="155" Grid.Column="0" VerticalAlignment="Top" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="187,5,0,0"/>
+        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="197" VerticalAlignment="Top" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,5,10,0" VerticalContentAlignment="Bottom"/>
     </Grid>    
 </Window>
     

@@ -14,6 +14,7 @@ namespace UltraSonic
         public string Genre { get; set; }
         public TimeSpan Duration { get; set; }
         public int Year { get; set; }
+        public int BitRate { get; set; }
         public int Rating { get; set; }
         public bool Starred { get; set; }
         public Child Track { get; set; }
