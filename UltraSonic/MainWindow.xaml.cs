@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Subsonic.Rest.Api;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using Subsonic.Rest.Api;
 using UltraSonic.Properties;
 using Image = System.Drawing.Image;
 
@@ -25,9 +25,10 @@ namespace UltraSonic
 
         private readonly ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>> _albumArtRequests = new ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>>();
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
-        private readonly string _cacheDirectory;
+        private string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private readonly ConcurrentQueue<Uri> _streams = new ConcurrentQueue<Uri>();
+        private readonly ConcurrentQueue<DownloadItem> _downloadItems = new ConcurrentQueue<DownloadItem>();
         private readonly DispatcherTimer _timer = new DispatcherTimer();
         private string _artistFilter = string.Empty;
         private string _currentArtist = string.Empty;
@@ -39,6 +40,8 @@ namespace UltraSonic
         private int _maxBitrate;
         private int _albumListMax = 10;
         private User _currentUser;
+        private bool _useDiskCache = true;
+        private Playlist _currentPlaylist;
 
         public MainWindow()
         {
@@ -48,8 +51,6 @@ namespace UltraSonic
             {
                 Height = Settings.Default.Height;
                 Width = Settings.Default.Width;
-
-                _cacheDirectory = Path.Combine(Path.Combine(_roamingPath, AppName), "Cache");
 
                 PopulateSettings();
                 MusicPlayStatusLabel.Content = "Stopped";
@@ -73,7 +74,8 @@ namespace UltraSonic
                 }
 
                 _timer.Interval = TimeSpan.FromMilliseconds(1000);
-                _timer.Tick += Ticktock;
+                _timer.Tick += (o, s) => Ticktock();
+                _timer.Tick += (o, s) => DownloadMonitor();
                 _timer.Start();
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
                 MediaPlayer.LoadedBehavior = MediaState.Manual;
@@ -108,6 +110,13 @@ namespace UltraSonic
             _maxSearchResults = Settings.Default.MaxSearchResults;
             _albumListMax = Settings.Default.AlbumListMax;
 
+            if (string.IsNullOrWhiteSpace(Settings.Default.CacheDirectory))
+                _cacheDirectory = Path.Combine(Path.Combine(_roamingPath, AppName), "Cache");
+            else
+                _cacheDirectory = Settings.Default.CacheDirectory;
+
+            _useDiskCache = Settings.Default.UseDiskCache;
+
             PopulateSearchResultItemComboBox();
             PopulateMaxBitrateComboBox();
             PopulateAlbumListMaxComboBox();
@@ -122,8 +131,11 @@ namespace UltraSonic
             PreferencesProxyServerPortTextBox.Text = ProxyPort.ToString(CultureInfo.InvariantCulture);
             PreferencesProxyServerUsernameTextBox.Text = ProxyUsername;
             PreferencesProxyServerPasswordTextBox.Password = ProxyPassword;
+            CacheDirectoryTextBox.Text = _cacheDirectory;
+            UseDiskCacheCheckBox.IsChecked = _useDiskCache;
 
             SetProxyEntryVisibility(UseProxy);
+            SetUseDiskCacheVisibility(_useDiskCache);
         }
 
         private void PopulateSearchResultItemComboBox()
@@ -143,7 +155,7 @@ namespace UltraSonic
                 listData.Add(i);
 
             AlbumListMaxComboBox.ItemsSource = listData;
-            AlbumListMaxComboBox.SelectedItem = _maxSearchResults;
+            AlbumListMaxComboBox.SelectedItem = _albumListMax;
         }
 
         private void PopulateMaxBitrateComboBox()
@@ -204,11 +216,79 @@ namespace UltraSonic
 
         }
 
-        private void Ticktock(object sender, EventArgs e)
+        private void Ticktock()
         {
             ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
             MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
             UpdateTitle();
+        }
+
+        private void DownloadMonitor()
+        {
+            ObservableCollection<DownloadItem> downloadItems = DownloadGrid.ItemsSource as ObservableCollection<DownloadItem>;
+
+            DownloadItem downloadItem;
+
+            if (downloadItems == null)
+                downloadItems = new ObservableCollection<DownloadItem>();
+
+            while (_downloadItems.TryDequeue(out downloadItem))
+            {
+                switch (downloadItem.Task.Status)
+                {
+                    case TaskStatus.Running:
+                    case TaskStatus.WaitingForActivation:
+                        downloadItem.Status = "In Progress";
+                        break;
+                    case TaskStatus.Canceled:
+                        downloadItem.Status = "Canceled";
+                        downloadItem.IsComplete = true;
+                        break;
+                    case TaskStatus.RanToCompletion:
+                        downloadItem.Status = "Complete";
+                        downloadItem.IsComplete = true;
+                        break;
+                    case TaskStatus.WaitingToRun:
+                    case TaskStatus.Created:
+                        downloadItem.Status = "Waiting";
+                        break;
+                }
+
+                downloadItems.Add(downloadItem);
+            }
+
+            Dispatcher.Invoke(() =>
+                                  {
+
+                                      foreach (DownloadItem di in downloadItems.Where(d => !d.IsComplete))
+                                      {
+                                          switch (di.Task.Status)
+                                          {
+                                              case TaskStatus.Running:
+                                              case TaskStatus.WaitingForActivation:
+                                                  di.Status = "In Progress";
+                                                  break;
+                                              case TaskStatus.Canceled:
+                                                  di.Status = "Canceled";
+                                                  di.IsComplete = true;
+                                                  break;
+                                              case TaskStatus.RanToCompletion:
+                                                  di.Status = "Complete";
+                                                  di.IsComplete = true;
+                                                  break;
+                                              case TaskStatus.WaitingToRun:
+                                              case TaskStatus.Created:
+                                                  di.Status = "Waiting";
+                                                  break;
+                                          }
+
+                                          di.Duration = DateTime.Now - di.StartDate;
+                                      }
+
+                                      DownloadGrid.ItemsSource = downloadItems;
+                                      DownloadGrid.DataContext = downloadItems;
+                                      DownloadGrid.Items.Refresh();
+                                  });
         }
 
         private void UpdateArtists()
@@ -262,9 +342,16 @@ namespace UltraSonic
                     Uri uri = new Uri(fileName);
                     _streams.Enqueue(uri);
                     UpdateAlbumArt(child.Id);
-                    Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?) _maxBitrate);
-                    //QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), child); // Works with non-SSL servers
-                    streamTask.ContinueWith(t => QueueTrack(streamTask, child));
+                    
+                    if (_useDiskCache)
+                    {
+                        Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?) _maxBitrate);
+                        streamTask.ContinueWith(t => QueueTrack(streamTask, child));
+                    }
+                    else
+                    {
+                        QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), child); // Works with non-SSL servers
+                    }
                 }
             }
         }
@@ -333,6 +420,14 @@ namespace UltraSonic
                 });
         }
 
+        private void SetUseDiskCacheVisibility(bool isChecked)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                CacheDirectoryTextBox.IsEnabled = isChecked;
+            });
+        }
+
         private void UpdateAlbumGrid(IEnumerable<Child> children)
         {
             _albumItems = new ObservableCollection<AlbumItem>();
@@ -341,7 +436,7 @@ namespace UltraSonic
                 {
                     foreach (Child child in children)
                     {
-                        AlbumItem albumItem = new AlbumItem {Name = child.Album, Album = child};
+                        AlbumItem albumItem = new AlbumItem {Name = child.Album, Album = child, Starred = (child.Starred != default(DateTime))};
                         _albumItems.Add(albumItem);
 
                         Task<Image> coverArtTask = SubsonicApi.GetCoverArtAsync(child.Id);

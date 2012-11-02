@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -40,6 +41,8 @@ namespace UltraSonic
                 _maxSearchResults = (int) MaxSearchResultsComboBox.SelectedValue;
                 _maxBitrate = (int) MaxBitrateComboBox.SelectedValue;
                 _albumListMax = (int) AlbumListMaxComboBox.SelectedValue;
+                _cacheDirectory = CacheDirectoryTextBox.Text;
+                if (UseDiskCacheCheckBox.IsChecked != null) _useDiskCache = UseDiskCacheCheckBox.IsChecked.Value;
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -52,6 +55,8 @@ namespace UltraSonic
                 Settings.Default.MaxSearchResults = _maxSearchResults;
                 Settings.Default.MaxBitrate = _maxBitrate;
                 Settings.Default.AlbumListMax = _albumListMax;
+                Settings.Default.CacheDirectory = _cacheDirectory;
+                Settings.Default.UseDiskCache = _useDiskCache;
 
                 Settings.Default.Save();
 
@@ -324,14 +329,17 @@ namespace UltraSonic
 
         private void SavePlaylistButtonClick(object sender, RoutedEventArgs e)
         {
-            string playlistName = null;
-            SavePlaylist savePlaylist = new SavePlaylist {SavePlaylistLabel = {Content = "Please enter a name for the playlist."}, Owner = this};
-            savePlaylist.ShowDialog();
+            bool updatePlaylist = false;
 
-            if (savePlaylist.PlaylistName != null)
-                playlistName = savePlaylist.PlaylistName;
+            if (_currentPlaylist != null)
+            {
+                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to update the previously loaded playlist? '{0}'", _currentPlaylist.Name), "Save playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                updatePlaylist = (result == MessageBoxResult.Yes);
+            }
 
-            Dispatcher.Invoke(() =>
+            if (updatePlaylist)
+            {
+                Dispatcher.Invoke(() =>
                 {
                     ObservableCollection<TrackItem> observableCollection = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
 
@@ -340,9 +348,32 @@ namespace UltraSonic
                         List<string> playlistTracks = new List<string>();
                         playlistTracks.AddRange(observableCollection.Select(test => test.Track.Id));
 
-                        SubsonicApi.CreatePlaylistAsync(null, playlistName, playlistTracks).ContinueWith(CheckPlaylistSave);
+                        SubsonicApi.CreatePlaylistAsync(_currentPlaylist.Id, null, playlistTracks).ContinueWith(CheckPlaylistSave);
                     }
                 });
+            }
+            else
+            {
+                string playlistName = null;
+                SavePlaylist savePlaylist = new SavePlaylist {SavePlaylistLabel = {Content = "Please enter a name for the playlist."}, Owner = this};
+                savePlaylist.ShowDialog();
+
+                if (savePlaylist.PlaylistName != null)
+                    playlistName = savePlaylist.PlaylistName;
+
+                Dispatcher.Invoke(() =>
+                                      {
+                                          ObservableCollection<TrackItem> observableCollection = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
+
+                                          if (observableCollection != null)
+                                          {
+                                              List<string> playlistTracks = new List<string>();
+                                              playlistTracks.AddRange(observableCollection.Select(test => test.Track.Id));
+
+                                              SubsonicApi.CreatePlaylistAsync(null, playlistName, playlistTracks).ContinueWith(CheckPlaylistSave);
+                                          }
+                                      });
+            }
 
         }
 
@@ -353,6 +384,7 @@ namespace UltraSonic
             if (result == MessageBoxResult.Yes)
                 Dispatcher.Invoke(() =>
                     {
+                        _currentPlaylist = null;
                         PlaylistTrackGrid.ItemsSource = new ObservableCollection<TrackItem>();
                     });
         }
@@ -377,6 +409,7 @@ namespace UltraSonic
                 {
                     Dispatcher.Invoke(() =>
                         {
+                            _currentPlaylist = playlistItem.Playlist;
                             SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id).ContinueWith(UpdatePlaylistGrid);
                         });
                 }
@@ -429,6 +462,16 @@ namespace UltraSonic
         private void PreferencesUseProxyCheckboxChecked(object sender, RoutedEventArgs e)
         {
             SetProxyEntryVisibility(true);
+        }
+
+        private void UseDiskCacheCheckboxUnChecked(object sender, RoutedEventArgs e)
+        {
+            SetUseDiskCacheVisibility(false);
+        }
+
+        private void UseDiskCacheCheckboxChecked(object sender, RoutedEventArgs e)
+        {
+            SetUseDiskCacheVisibility(true);
         }
 
         private void RepeatButtonClick(object sender, RoutedEventArgs e)
@@ -486,9 +529,34 @@ namespace UltraSonic
                         string downloadDirectory = FileDownloadDialog();
 
                         foreach (TrackItem item in selectedItems)
-                            SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
+                        {
+                            Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
+                            DownloadItem downloadItem = new DownloadItem { Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask };
+                            _downloadItems.Enqueue(downloadItem);
+                        }
                     }
                 });
+        }
+
+
+        private void PlaylistTrackGridDownloadClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var selectedItems = PlaylistTrackGrid.SelectedItems;
+
+                if (selectedItems.Count > 0)
+                {
+                    string downloadDirectory = FileDownloadDialog();
+
+                    foreach (TrackItem item in selectedItems)
+                    {
+                        Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
+                        DownloadItem downloadItem = new DownloadItem { Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask };
+                        _downloadItems.Enqueue(downloadItem);
+                    }
+                }
+            });
         }
 
         private void MusicDataGridDownloadClick(object sender, RoutedEventArgs e)
@@ -502,7 +570,11 @@ namespace UltraSonic
                         string downloadDirectory = FileDownloadDialog();
 
                         foreach (AlbumItem item in selectedItems)
-                            SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory);
+                        {
+                            Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory);
+                            DownloadItem downloadItem = new DownloadItem { Source = item.Album.Title, Path= downloadDirectory, Child = item.Album, StartDate = DateTime.Now, Task = downloadTask};
+                            _downloadItems.Enqueue(downloadItem);
+                        }
                     }
                 });
         }
@@ -631,6 +703,23 @@ namespace UltraSonic
                 });
         }
 
+        private void MusicDataGridStarredCheckBoxClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var source = e.Source as CheckBox;
+                var item = MusicDataGrid.CurrentItem as AlbumItem;
+
+                if (item != null && source != null)
+                {
+                    if (source.IsChecked.HasValue && source.IsChecked.Value)
+                        SubsonicApi.StarAsync(new List<string> { item.Album.Id });
+                    else
+                        SubsonicApi.UnStarAsync(new List<string> { item.Album.Id });
+                }
+            });
+        }
+
         private void PlaylistStarredCheckBoxClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -646,6 +735,29 @@ namespace UltraSonic
                             SubsonicApi.UnStarAsync(new List<string> {item.Track.Id});
                     }
                 });
+        }
+
+        private void PlaylistTrackGridMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+            Dispatcher.Invoke(() =>
+                                  {
+                                      MediaPlayer.MediaOpened += MediaPlayerPlayQueuedTrack;
+                                      var playlistEntryItem = PlaylistTrackGrid.SelectedItem as TrackItem;
+
+                                      if (playlistEntryItem != null)
+                                          QueueTrack(playlistEntryItem.Track);
+                                  });
+        }
+
+        private void PlaylistTrackGridUnloadingRow(object sender, DataGridRowEventArgs dataGridRowEventArgs)
+        {
+            Dispatcher.Invoke(() => PlaylistTrackGrid.Items.Refresh());
+        }
+
+        private void ArtistRefreshClick(object sender, RoutedEventArgs e)
+        {
+            UpdateArtists();
         }
     }
 }

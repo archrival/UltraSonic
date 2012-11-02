@@ -79,6 +79,8 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
+                        ArtistItems.Clear();
+
                         foreach (Index index in task.Result.Index)
                         {
                             ArtistItem artistItem = new ArtistItem {Name = index.Name};

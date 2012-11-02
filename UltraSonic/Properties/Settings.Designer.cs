@@ -204,5 +204,31 @@ namespace UltraSonic.Properties {
                 this["AlbumListMax"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool UseDiskCache {
+            get {
+                return ((bool)(this["UseDiskCache"]));
+            }
+            set {
+                this["UseDiskCache"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string CacheDirectory {
+            get {
+                return ((string)(this["CacheDirectory"]));
+            }
+            set {
+                this["CacheDirectory"] = value;
+            }
+        }
     }
 }

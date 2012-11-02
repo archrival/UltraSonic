@@ -5,7 +5,7 @@ namespace UltraSonic
 {
     public class AlbumItem
     {
-        public bool Selected { get; set; }
+        public bool Starred { get; set; }
         public string Name { get; set; }
         public Child Album { get; set; }
         public BitmapSource Image { get; set; }

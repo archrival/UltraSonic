@@ -5,6 +5,95 @@
         Title="UltraSonic" Height="729.851" Width="1077" MinWidth="1077" MinHeight="600" Closed="WindowClosed">
 
     <Window.Resources>
+        <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TreeViewItem">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="19"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <ToggleButton IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press" Name="Expander">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="ToggleButton">
+                                            <Setter Property="UIElement.Focusable" Value="false"/>
+                                            <Setter Property="FrameworkElement.Width" Value="16"/>
+                                            <Setter Property="FrameworkElement.Height" Value="16"/>
+                                            <Setter Property="Control.Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ToggleButton">
+                                                        <Border Padding="5,5,5,5" Background="#00FFFFFF" Width="16" Height="16">
+                                                            <Path Fill="#00FFFFFF" Stroke="#FF989898" Name="ExpandPath">
+                                                                <Path.Data>
+                                                                    <PathGeometry Figures="M0,0L0,6L6,0z"/>
+                                                                </Path.Data>
+                                                                <Path.RenderTransform>
+                                                                    <RotateTransform Angle="135" CenterX="3" CenterY="3"/>
+                                                                </Path.RenderTransform>
+                                                            </Path>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF1BBBFA"/>
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#00FFFFFF"/>
+                                                            </Trigger>
+                                                            <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                                                <Setter TargetName="ExpandPath" Property="UIElement.RenderTransform">
+                                                                    <Setter.Value>
+                                                                        <RotateTransform Angle="180" CenterX="3" CenterY="3"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#FF595959"/>
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF262626"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                </ToggleButton>
+                                <Border x:Name="Bd" HorizontalAlignment="Stretch" BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Padding="{TemplateBinding Control.Padding}" Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True" Grid.Column="1">
+                                    <ContentPresenter x:Name="PART_Header" Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}" ContentSource="Header" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"/>
+                                </Border>
+                                <ItemsPresenter x:Name="ItemsHost" Grid.Column="1" Grid.Row="1"/>
+                            </Grid>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="TreeViewItem.IsExpanded" Value="False">
+                                <Setter TargetName="ItemsHost" Property="UIElement.Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="ItemsControl.HasItems" Value="False">
+                                <Setter TargetName="Expander" Property="UIElement.Visibility" Value="Hidden"/>
+                            </Trigger>
+                            <Trigger Property="TreeViewItem.IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="TreeViewItem.IsSelected" Value="True"/>
+                                    <Condition Property="Selector.IsSelectionActive" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                            </MultiTrigger>
+                            <Trigger Property="UIElement.IsEnabled" Value="False">
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="styleCustomCheckBox" TargetType="{x:Type CheckBox}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -71,35 +160,44 @@
                         <ColumnDefinition Width="309*"/>
                         <ColumnDefinition Width="401*"/>
                     </Grid.ColumnDefinitions>
-                    <TreeView x:Name="MusicTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="MusicTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" Grid.RowSpan="3">
+                    <TreeView x:Name="MusicTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="MusicTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.RowSpan="3">
                         <TreeView.ContextMenu>
                             <ContextMenu >
-                                <MenuItem Header="Refresh" />
+                                <MenuItem x:Name="ArtistRefresh" Header="Refresh" Click="ArtistRefreshClick"/>
                             </ContextMenu>
                         </TreeView.ContextMenu>
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type local:ArtistItem}" ItemsSource="{Binding Path=Children}">
-                                <TextBlock Text="{Binding Path=Name}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Path=Name}"/>
+                                </StackPanel>
                             </HierarchicalDataTemplate>
                         </TreeView.Resources>
                     </TreeView>
-                    <Border BorderThickness="1" Grid.Row="3" BorderBrush="#FF000000">
-                        <Image x:Name="MusicCoverArt" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True" Grid.Row="3" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
+                    <Border BorderThickness="1" Grid.Row="3" Background="White" BorderBrush="#FF000000">
+                        <Image x:Name="MusicCoverArt" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.Row="3" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
                     </Border>
-                    <DataGrid x:Name="MusicDataGrid" AlternatingRowBackground="Gainsboro" MouseLeftButtonUp="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" VerticalContentAlignment="Center" Grid.RowSpan="3">
+                    <DataGrid x:Name="MusicDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="MusicDataGridAdd" Header="Add To Playlist" Click="MusicDataGridAddClick" />
                                 <MenuItem x:Name="MusicDataGridDownload" Header="Download" Click="MusicDataGridDownloadClick" />
                                 <MenuItem x:Name="MusicDataGridRandom" Header="Random" Click="MusicDataGridAlbumListClick"/>
                                 <MenuItem x:Name="MusicDataGridNewest" Header="Newest" Click="MusicDataGridAlbumListClick"/>
-                                <MenuItem x:Name="MusicDataGridHighest" Header="Higest Rated" Click="MusicDataGridAlbumListClick"/>
+                                <MenuItem x:Name="MusicDataGridHighest" Header="Highest Rated" Click="MusicDataGridAlbumListClick"/>
                                 <MenuItem x:Name="MusicDataGridFrequent" Header="Frequently Played" Click="MusicDataGridAlbumListClick"/>
                                 <MenuItem x:Name="MusicDataGridRecent" Header="Recently Played" Click="MusicDataGridAlbumListClick"/>
                                 <MenuItem x:Name="MusicDataGridStarred" Header="Starred" Click="MusicDataGridAlbumListClick"/>                                
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
+                            <DataGridTemplateColumn x:Name="MusicDataGridStarredColumn">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="MusicDataGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="MusicDataGridStarredCheckBoxClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTemplateColumn Header="Cover Art">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -110,7 +208,7 @@
                             <DataGridTextColumn Binding="{Binding Name}" Header="Album" IsReadOnly="True" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="TrackDataGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" MouseDoubleClick="TrackDataGridMouseDoubleClick" Grid.Column="2" Grid.RowSpan="3" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
+                    <DataGrid x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" Grid.Column="2" Grid.RowSpan="3" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="TrackDataGridAdd" Header="Add To Playlist" Click="TrackDataGridAddClick" />
@@ -135,7 +233,7 @@
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
+                    <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick" />
@@ -144,15 +242,15 @@
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="*" />
-                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Tracks" IsReadOnly="True" Width="*" />
-                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="*"/>
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="4*" />
+                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Tracks" IsReadOnly="True" Width="1*" />
+                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="2*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistTrackGrid" AlternatingRowBackground="Gainsboro" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow">
+                    <DataGrid x:Name="PlaylistTrackGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" >
                         <DataGrid.ContextMenu>
                             <ContextMenu >
-                                <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="TrackDataGridDownloadClick" />
+                                <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
@@ -175,7 +273,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="DownloadsTab" Visibility="Collapsed" Header="Downloads">
+            <TabItem x:Name="DownloadsTab" Header="Downloads">
                 <Grid Background="#FFE5E5E5">
                     <DataGrid x:Name="DownloadGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
                         <DataGrid.ContextMenu>
@@ -228,6 +326,9 @@
                     <Label x:Name="PreferencesLicenseKeyLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,110,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
                     <Label x:Name="PreferencesLicenseValidLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,141,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
                     <Label Content="License Information" HorizontalAlignment="Right" Margin="0,17,167,0" VerticalAlignment="Top" Width="140" FontWeight="Bold"/>
+                    <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Margin="159,332,0,0" VerticalAlignment="Top" Checked="UseDiskCacheCheckboxChecked" Unchecked="UseDiskCacheCheckboxUnChecked"/>
+                    <Label Content="Cache Directory" HorizontalAlignment="Left" Margin="10,354,0,0" VerticalAlignment="Top" Width="136"/>
+                    <TextBox x:Name="CacheDirectoryTextBox" HorizontalAlignment="Left" Height="23" Margin="159,357,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="261"/>
                 </Grid>
             </TabItem>
         </TabControl>

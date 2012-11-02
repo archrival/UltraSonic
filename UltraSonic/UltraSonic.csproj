@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ArtistItem.cs" />
+    <Compile Include="DownloadItem.cs" />
     <Compile Include="EventHandlers.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="NativeMethods.cs" />
