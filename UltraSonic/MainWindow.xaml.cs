@@ -209,11 +209,21 @@ namespace UltraSonic
                         PlaylistGridStarred.Visibility = Visibility.Collapsed;
                         TrackDataGridStarred.Visibility = Visibility.Collapsed;
                         MusicDataGridStarred.Visibility = Visibility.Collapsed;
+                        UserShareLabel.Visibility = Visibility.Hidden;
+                        UserShareLabel2.Visibility = Visibility.Hidden;
                     });
             }
+            else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
+            {
+                MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), "Inavlid server API version", MessageBoxButton.OK, MessageBoxImage.Error);
+                SubsonicApi = null;
+            }
 
-            SubsonicApi.GetUserAsync(Username).ContinueWith(UpdateCurrentUser);
-
+            if (SubsonicApi != null)
+            {
+                SubsonicApi.GetUserAsync(Username).ContinueWith(UpdateCurrentUser);
+                ServerApiLabel.Content = SubsonicApi.ServerApiVersion;
+            }
         }
 
         private void Ticktock()

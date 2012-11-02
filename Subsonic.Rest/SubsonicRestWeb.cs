@@ -395,6 +395,12 @@ namespace Subsonic.Rest.Api
                     }
                 }
             }
+            catch (WebException wex)
+            {
+                HttpWebResponse response = wex.Response as HttpWebResponse;
+                if (response != null && response.StatusCode == HttpStatusCode.NotFound)
+                    return null;
+            }
             catch (Exception ex)
             {
                 throw new SubsonicApiException(ex.Message, ex);
@@ -403,7 +409,7 @@ namespace Subsonic.Rest.Api
             if (cancelToken.HasValue)
                 cancelToken.Value.ThrowIfCancellationRequested();
 
-            return  Image.FromStream(content);
+            return Image.FromStream(content);
         }
 
         /// <summary>

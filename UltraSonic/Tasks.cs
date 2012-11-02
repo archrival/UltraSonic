@@ -31,8 +31,13 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
-                        albumItem.Image = task.Result.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
-                        MusicDataGrid.Items.Refresh();
+                        Image coverArtimage = task.Result;
+        
+                        if (coverArtimage != null)
+                        {
+                            albumItem.Image = coverArtimage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                            MusicDataGrid.Items.Refresh();
+                        }
                     });
             }
         }
@@ -180,7 +185,38 @@ namespace UltraSonic
                         NextButton.IsEnabled = _currentUser.StreamRole;
                         SavePlaylistButton.IsEnabled = _currentUser.PlaylistRole;
                         PlaylistsGridDeletePlaylist.Visibility = _currentUser.PlaylistRole ? Visibility.Visible : Visibility.Collapsed;
+
+                        UserEmailLabel.Content = _currentUser.Email;
+                        UserScrobblingLabel.Content = _currentUser.ScrobblingEnabled;
+                        UserAdminLabel.Content = _currentUser.AdminRole;
+                        UserSettingsLabel.Content = _currentUser.SettingsRole;
+                        UserStreamLabel.Content = _currentUser.StreamRole;
+                        UserJukeboxLabel.Content = _currentUser.JukeboxRole;
+                        UserDownloadLabel.Content = _currentUser.DownloadRole;
+                        UserUploadLabel.Content = _currentUser.UploadRole;
+                        UserPlaylistLabel.Content = _currentUser.PlaylistRole;
+                        UserCoverArtLabel.Content = _currentUser.CoverArtRole;
+                        UserCommentLabel.Content = _currentUser.CommentRole;
+                        UserPodcastLabel.Content = _currentUser.PodcastRole;
+                        UserShareLabel.Content = _currentUser.ShareRole;
+
+                        if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
+                            SubsonicApi.GetAvatarAsync(_currentUser.Username).ContinueWith(UpdateUserAvatar);
                     });
+            }
+        }
+
+        private void UpdateUserAvatar(Task<Image> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Image avatarImage = task.Result;
+
+                    if (avatarImage != null)
+                        UserAvatarImage.Source = task.Result.ToBitmapSource();
+                });
             }
         }
     }

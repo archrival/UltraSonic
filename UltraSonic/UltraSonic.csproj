@@ -188,7 +188,11 @@
     <Resource Include="Images\star-active2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\filter.png" />
+    <Resource Include="Images\media-playback-pause-dark-16.png" />
+    <Resource Include="Images\media-playback-start-dark-16.png" />
+    <Resource Include="Images\media-playback-stop-dark-16.png" />
+    <Resource Include="Images\media-skip-backward-dark-16.png" />
+    <Resource Include="Images\media-skip-forward-dark-16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
