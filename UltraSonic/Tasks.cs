@@ -11,8 +11,6 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
-
         private void UpdateAlbumGrid(Task<Directory> task)
         {
             if (task.Status == TaskStatus.RanToCompletion)
@@ -60,7 +58,7 @@ namespace UltraSonic
                 Dispatcher.Invoke(() =>
                     {
                         Uri thisUri;
-                        _streams.TryDequeue(out thisUri);
+                        _streamItems.TryDequeue(out thisUri);
 
                         QueueTrack(thisUri, child);
                     });
@@ -83,19 +81,19 @@ namespace UltraSonic
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 Dispatcher.Invoke(() =>
-                    {
-                        ArtistItems.Clear();
+                                      {
+                                          ArtistItems.Clear();
 
-                        foreach (Index index in task.Result.Index)
-                        {
-                            ArtistItem artistItem = new ArtistItem {Name = index.Name};
+                                          foreach (Index index in task.Result.Index)
+                                          {
+                                              ArtistItem artistItem = new ArtistItem { Name = index.Name };
 
-                            foreach (Artist artist in index.Artist)
-                                artistItem.Children.Add(new ArtistItem {Name = artist.Name, Artist = artist});
+                                              foreach (Artist artist in index.Artist)
+                                                  artistItem.Children.Add(new ArtistItem { Name = artist.Name, Artist = artist });
 
-                            ArtistItems.Add(artistItem);
-                        }
-                    });
+                                              ArtistItems.Add(artistItem);
+                                          }
+                                      });
             }
         }
 
@@ -105,7 +103,7 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
-                        SubsonicApi.GetPlaylistsAsync().ContinueWith(UpdatePlaylists);
+                        SubsonicApi.GetPlaylistsAsync(null, GetCancellationToken("CheckPlaylistSave")).ContinueWith(UpdatePlaylists);
                     });
             }
         }
@@ -201,7 +199,7 @@ namespace UltraSonic
                         UserShareLabel.Content = _currentUser.ShareRole;
 
                         if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
-                            SubsonicApi.GetAvatarAsync(_currentUser.Username).ContinueWith(UpdateUserAvatar);
+                            SubsonicApi.GetAvatarAsync(_currentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
                     });
             }
         }

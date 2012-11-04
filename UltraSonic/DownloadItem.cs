@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using Subsonic.Rest.Api;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace UltraSonic
         public TimeSpan Duration { get; set; }
         public string Status { get; set; }
         public string Source { get; set; }
+        public CancellationTokenSource CancelTokenSource { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)

@@ -1,4 +1,7 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -23,11 +26,12 @@ namespace UltraSonic
     {
         private const string AppName = "UltraSonic";
 
-        private readonly ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>> _albumArtRequests = new ConcurrentQueue<KeyValuePair<Task<Image>, CancellationTokenSource>>();
+
+        private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellableTasks = new ConcurrentDictionary<string, CancellationTokenSource>();
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
         private string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private readonly ConcurrentQueue<Uri> _streams = new ConcurrentQueue<Uri>();
+        private readonly ConcurrentQueue<Uri> _streamItems = new ConcurrentQueue<Uri>();
         private readonly ConcurrentQueue<DownloadItem> _downloadItems = new ConcurrentQueue<DownloadItem>();
         private readonly DispatcherTimer _timer = new DispatcherTimer();
         private string _artistFilter = string.Empty;
@@ -177,17 +181,15 @@ namespace UltraSonic
                     foreach (ArtistItem artistItem in _artistItems)
                     {
                         IEnumerable<ArtistItem> filteredArtistItems = artistItem.Children.Where(c => c.Name.Contains(_artistFilter, StringComparison.OrdinalIgnoreCase));
+                        List<ArtistItem> artistItems = filteredArtistItems as List<ArtistItem> ?? filteredArtistItems.ToList();
 
-                        List<ArtistItem> artistItems = filteredArtistItems as List<ArtistItem> ??
-                                                       filteredArtistItems.ToList();
-                        if (artistItems.Any())
-                        {
-                            var newArtistItem = new ArtistItem();
-                            var children = new ObservableCollection<ArtistItem>(artistItems);
-                            artistItem.CopyTo(newArtistItem);
-                            newArtistItem.Children = children;
-                            _filteredArtistItems.Add(newArtistItem);
-                        }
+                        if (!artistItems.Any()) continue;
+
+                        ArtistItem newArtistItem = new ArtistItem();
+                        ObservableCollection<ArtistItem> children = new ObservableCollection<ArtistItem>(artistItems);
+                        artistItem.CopyTo(newArtistItem);
+                        newArtistItem.Children = children;
+                        _filteredArtistItems.Add(newArtistItem);
                     }
 
                     return _filteredArtistItems;
@@ -221,7 +223,7 @@ namespace UltraSonic
 
             if (SubsonicApi != null)
             {
-                SubsonicApi.GetUserAsync(Username).ContinueWith(UpdateCurrentUser);
+                SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
                 ServerApiLabel.Content = SubsonicApi.ServerApiVersion;
             }
         }
@@ -303,12 +305,12 @@ namespace UltraSonic
 
         private void UpdateArtists()
         {
-            SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView);
+            SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
         }
 
         private void UpdatePlaylists()
         {
-            SubsonicApi.GetPlaylistsAsync().ContinueWith(UpdatePlaylists);
+            SubsonicApi.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
         }
 
         private void UpdateLicenseInformation(License license)
@@ -340,9 +342,9 @@ namespace UltraSonic
 
             var fileNameUri = new Uri(fileName);
 
-            if (_streams != null)
+            if (_streamItems != null)
             {
-                if (_streams.All(s => s.OriginalString == fileName) && IsTrackCached(fileName, child))
+                if (_streamItems.All(s => s.OriginalString == fileName) && IsTrackCached(fileName, child))
                 {
                     UpdateAlbumArt(child.Id);
                     QueueTrack(fileNameUri, child);
@@ -350,12 +352,12 @@ namespace UltraSonic
                 else
                 {
                     Uri uri = new Uri(fileName);
-                    _streams.Enqueue(uri);
+                    _streamItems.Enqueue(uri);
                     UpdateAlbumArt(child.Id);
                     
                     if (_useDiskCache)
                     {
-                        Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?) _maxBitrate);
+                        Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
                         streamTask.ContinueWith(t => QueueTrack(streamTask, child));
                     }
                     else
@@ -364,6 +366,19 @@ namespace UltraSonic
                     }
                 }
             }
+        }
+
+        private void CancelTasks(string tokenType)
+        {
+            CancellationTokenSource token;
+
+            if (_cancellableTasks.TryRemove(tokenType, out token))
+                token.Cancel();
+        }
+
+        private void QueueTask(string tokenType, CancellationTokenSource token)
+        {
+            _cancellableTasks.TryAdd(tokenType, token);
         }
 
         private void QueueTrack(Uri uri, Child child)
@@ -389,18 +404,17 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                 {
-                    var tokenSource = new CancellationTokenSource();
-                    CancellationToken token = tokenSource.Token;
-
-                    KeyValuePair<Task<Image>, CancellationTokenSource> kvp;
-
-                    while (_albumArtRequests.TryDequeue(out kvp))
-                        kvp.Value.Cancel();
-
-                    Task<Image> albumArtTask = SubsonicApi.GetCoverArtAsync(id, null, token);
-                    _albumArtRequests.Enqueue(new KeyValuePair<Task<Image>, CancellationTokenSource>(albumArtTask, tokenSource));
-                    albumArtTask.ContinueWith(UpdateCoverArt);
+                   SubsonicApi.GetCoverArtAsync(id, null, GetCancellationToken("UpdateAlbumArt")).ContinueWith(UpdateCoverArt);
                 });
+        }
+
+        private CancellationToken GetCancellationToken(string tokenType)
+        {
+            CancelTasks(tokenType);
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationToken token = tokenSource.Token;
+            QueueTask(tokenType, tokenSource);
+            return token;
         }
 
         private void ExpandAll(ItemsControl items, bool expand)
@@ -440,7 +454,7 @@ namespace UltraSonic
 
         private void UpdateAlbumGrid(IEnumerable<Child> children)
         {
-            _albumItems = new ObservableCollection<AlbumItem>();
+            ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
 
             Dispatcher.Invoke(() =>
                 {
@@ -479,7 +493,7 @@ namespace UltraSonic
 
                 if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
                 {
-                    Task<Starred> starredTask = SubsonicApi.GetStarredAsync();
+                    Task<Starred> starredTask = SubsonicApi.GetStarredAsync(GetCancellationToken("UpdatePlaylists"));
                     starredTask.ContinueWith(t => AddStarredToPlaylists(starredTask, playlistItems));
                 }
 

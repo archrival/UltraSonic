@@ -23,13 +23,17 @@ namespace Subsonic.Rest.Api
         /// <param name="method">Subsonic API method to call.</param>
         /// <param name="methodApiVersion">Subsonic API version of the method.</param>
         /// <param name="parameters">Parameters used by the method.</param>
+        /// <param name="cancelToken"> </param>
         /// <returns>Response</returns>
-        private async Task<Response> RequestAsync(Methods method, Version methodApiVersion, ICollection parameters = null)
+        private async Task<Response> RequestAsync(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
         {
             Response result;
             string requestUri = BuildRequestUri(method, methodApiVersion, parameters);
 
             HttpWebRequest request = BuildRequest(requestUri);
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
 
             try
             {
@@ -41,11 +45,16 @@ namespace Subsonic.Rest.Api
                     {
                         if (response.ContentType.Contains("text/xml"))
                         {
+                            if (cancelToken.HasValue)
+                                cancelToken.Value.ThrowIfCancellationRequested();
+
                             using (Stream stream = response.GetResponseStream())
                             {
                                 if (stream != null)
+                                {
                                     using (var streamReader = new StreamReader(stream))
                                         restResponse = await streamReader.ReadToEndAsync();
+                                }
                             }
                         }
                         else
@@ -71,6 +80,9 @@ namespace Subsonic.Rest.Api
             {
                 throw new SubsonicApiException(ex.Message, ex);
             }
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
 
             return result;
         }
@@ -146,14 +158,18 @@ namespace Subsonic.Rest.Api
         /// <param name="method">Subsonic API method to call.</param>
         /// <param name="methodApiVersion">Subsonic API version of the method.</param>
         /// <param name="parameters">Parameters used by the method.</param>
+        /// <param name="cancelToken"> </param>
         /// <returns>long</returns>
-        private async Task<long> RequestAsync(string path, bool pathOverride, Methods method, Version methodApiVersion, ICollection parameters = null)
+        private async Task<long> RequestAsync(string path, bool pathOverride, Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
         {
             long bytesTransferred = 0;
             string requestUri = BuildRequestUri(method, methodApiVersion, parameters);
 
             HttpWebRequest request = BuildRequest(requestUri);
             bool download = true;
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
 
             try
             {
@@ -185,11 +201,16 @@ namespace Subsonic.Rest.Api
                             string restResponse = null;
                             var result = new Response();
 
+                            if (cancelToken.HasValue)
+                                cancelToken.Value.ThrowIfCancellationRequested();
+
                             using (Stream stream = response.GetResponseStream())
                             {
                                 if (stream != null)
+                                {
                                     using (var streamReader = new StreamReader(stream))
                                         restResponse = await streamReader.ReadToEndAsync();
+                                }
                             }
 
                             if (!string.IsNullOrEmpty(restResponse))
@@ -215,11 +236,20 @@ namespace Subsonic.Rest.Api
 
                         if (download)
                         {
+                            if (cancelToken.HasValue)
+                                cancelToken.Value.ThrowIfCancellationRequested();
+
                             using (Stream stream = response.GetResponseStream())
                             using (FileStream fileStream = File.Create(path))
                             {
-                                if (stream != null) await stream.CopyToAsync(fileStream);
-                                bytesTransferred = fileStream.Length;
+                                if (stream != null)
+                                {
+                                    if (cancelToken.HasValue)
+                                        cancelToken.Value.ThrowIfCancellationRequested();
+
+                                    await stream.CopyToAsync(fileStream);
+                                    bytesTransferred = fileStream.Length;
+                                }
                             }
 
                             File.SetLastWriteTime(path, response.LastModified);
@@ -231,6 +261,9 @@ namespace Subsonic.Rest.Api
             {
                 throw new SubsonicApiException(ex.Message, ex);
             }
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
 
             return bytesTransferred;
         }
@@ -365,19 +398,20 @@ namespace Subsonic.Rest.Api
                     {
                         if (!response.ContentType.Contains("text/xml"))
                         {
+                            if (cancelToken.HasValue)
+                                cancelToken.Value.ThrowIfCancellationRequested();
+
                             using (Stream stream = response.GetResponseStream())
                                 if (stream != null)
-                                {
-                                    if (cancelToken.HasValue)
-                                        cancelToken.Value.ThrowIfCancellationRequested();
-
                                     await stream.CopyToAsync(content);
-                                }
                         }
                         else
                         {
                             string restResponse = null;
                             var result = new Response();
+
+                            if (cancelToken.HasValue)
+                                cancelToken.Value.ThrowIfCancellationRequested();
 
                             using (Stream stream = response.GetResponseStream())
                                 if (stream != null)

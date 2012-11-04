@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -167,7 +169,11 @@ namespace UltraSonic
             string title = AppName;
 
             if (MediaPlayer.Source != null)
+            {
                 title = string.Format("{0} - {1} - {2} [{3}]", AppName, _currentArtist, _currentTitle, MusicPlayStatusLabel.Content);
+                MusicArtistLabel.Content = _currentArtist;
+                MusicTitleLabel.Content = _currentTitle;
+            }
 
             Title = title;
         }
@@ -295,7 +301,7 @@ namespace UltraSonic
             var dataItem = e.NewValue as ArtistItem;
 
             if (dataItem != null && dataItem.Artist != null)
-                Dispatcher.Invoke(() => { SubsonicApi.GetMusicDirectoryAsync(dataItem.Artist.Id).ContinueWith(UpdateAlbumGrid); });
+                Dispatcher.Invoke(() => { SubsonicApi.GetMusicDirectoryAsync(dataItem.Artist.Id, GetCancellationToken("MusicTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid); });
         }
 
         private void VolumeSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -322,7 +328,7 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
-                        SubsonicApi.GetMusicDirectoryAsync(albumItem.Album.Id).ContinueWith(UpdateTrackListingGrid);
+                        SubsonicApi.GetMusicDirectoryAsync(albumItem.Album.Id, GetCancellationToken("MusicDataGridSelectionChanged")).ContinueWith(UpdateTrackListingGrid);
                     });
             }
         }
@@ -389,12 +395,9 @@ namespace UltraSonic
                     });
         }
 
-        private void PlaylistsDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void PlaylistsDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
         {
-            PlaylistItem playlistItem = null;
-
-            if (e.AddedItems.Count > 0)
-                playlistItem = e.AddedItems[0] as PlaylistItem;
+            PlaylistItem playlistItem = PlaylistsDataGrid.SelectedItem as PlaylistItem;
 
             if (playlistItem != null)
             {
@@ -402,7 +405,7 @@ namespace UltraSonic
                 {
                     Dispatcher.Invoke(() =>
                         {
-                            SubsonicApi.GetStarredAsync().ContinueWith(UpdatePlaylistGrid);
+                            SubsonicApi.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                         });
                 }
                 else
@@ -410,7 +413,7 @@ namespace UltraSonic
                     Dispatcher.Invoke(() =>
                         {
                             _currentPlaylist = playlistItem.Playlist;
-                            SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id).ContinueWith(UpdatePlaylistGrid);
+                            SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                         });
                 }
             }
@@ -448,7 +451,7 @@ namespace UltraSonic
                 {
                     Dispatcher.Invoke(() =>
                         {
-                            SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Album.Id).ContinueWith(AddAlbumToPlaylist);
+                            SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Album.Id, GetCancellationToken("MusicDataGridMouseDoubleClick")).ContinueWith(AddAlbumToPlaylist);
                         });
                 }
             }
@@ -514,49 +517,37 @@ namespace UltraSonic
                 string searchQuery = GlobalSearchTextBox.Text;
 
                 if (!string.IsNullOrWhiteSpace(searchQuery))
-                    SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0).ContinueWith(PopulateSearchResults);
+                    SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
             }
         }
 
         private void TrackDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(() =>
-                {
-                    var selectedItems = TrackDataGrid.SelectedItems;
-
-                    if (selectedItems.Count > 0)
-                    {
-                        string downloadDirectory = FileDownloadDialog();
-
-                        foreach (TrackItem item in selectedItems)
-                        {
-                            Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
-                            DownloadItem downloadItem = new DownloadItem { Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask };
-                            _downloadItems.Enqueue(downloadItem);
-                        }
-                    }
-                });
+            Dispatcher.Invoke(() => DownloadTracks(TrackDataGrid.SelectedItems));
         }
 
 
+        private void DownloadTracks(IList selectedItems)
+        {
+            if (selectedItems.Count > 0)
+            {
+                string downloadDirectory = FileDownloadDialog();
+
+                foreach (TrackItem item in selectedItems)
+                {
+                    CancellationTokenSource tokenSource = new CancellationTokenSource();
+                    CancellationToken token = tokenSource.Token;
+
+                    Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory, false, token);
+                    DownloadItem downloadItem = new DownloadItem {Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask, CancelTokenSource = tokenSource};
+                    _downloadItems.Enqueue(downloadItem);
+                }
+            }
+        }
+
         private void PlaylistTrackGridDownloadClick(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(() =>
-            {
-                var selectedItems = PlaylistTrackGrid.SelectedItems;
-
-                if (selectedItems.Count > 0)
-                {
-                    string downloadDirectory = FileDownloadDialog();
-
-                    foreach (TrackItem item in selectedItems)
-                    {
-                        Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory);
-                        DownloadItem downloadItem = new DownloadItem { Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask };
-                        _downloadItems.Enqueue(downloadItem);
-                    }
-                }
-            });
+            Dispatcher.Invoke(() => DownloadTracks(PlaylistTrackGrid.SelectedItems));
         }
 
         private void MusicDataGridDownloadClick(object sender, RoutedEventArgs e)
@@ -614,7 +605,7 @@ namespace UltraSonic
 
                 Dispatcher.Invoke(() =>
                     {
-                        SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax).ContinueWith(UpdateAlbumGrid);
+                        SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax, null, GetCancellationToken("MusicDataGridAlbumListClick")).ContinueWith(UpdateAlbumGrid);
                     });
             }
         }
@@ -656,8 +647,7 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
                 {
                     foreach (AlbumItem item in selectedItems)
-                        SubsonicApi.GetMusicDirectoryAsync(item.Album.Id).ContinueWith(
-                            AddAlbumToPlaylist);
+                        SubsonicApi.GetMusicDirectoryAsync(item.Album.Id, GetCancellationToken("MusicDataGridAddClick")).ContinueWith(AddAlbumToPlaylist);
                 });
 
         }

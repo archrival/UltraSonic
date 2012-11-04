@@ -144,7 +144,9 @@
         </Grid.ColumnDefinitions>
         <StatusBar VerticalAlignment="Bottom" Height="29">
             <Label x:Name="MusicTimeRemainingLabel" Content="0:00 / 0:00" Width="100" FontSize="10"/>
-            <Label x:Name="MusicPlayStatusLabel" Content="" Width="100" FontSize="10"/>
+            <Label x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
+            <Label x:Name="MusicArtistLabel"  Width="175" FontSize="10" FontWeight="Bold"/>
+            <Label x:Name="MusicTitleLabel" Width="175" FontSize="10" FontStyle="Italic"/>
         </StatusBar>
         <TabControl Margin="10,5,10,98">
             <TabItem Header="Music" x:Name="MusicTab">
@@ -235,7 +237,7 @@
                             <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
+                    <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick" />
@@ -277,7 +279,7 @@
             </TabItem>
             <TabItem x:Name="DownloadsTab" Header="Downloads">
                 <Grid Background="#FFE5E5E5">
-                    <DataGrid x:Name="DownloadGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" SelectionChanged="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
+                    <DataGrid x:Name="DownloadGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem Header="Cancel" />

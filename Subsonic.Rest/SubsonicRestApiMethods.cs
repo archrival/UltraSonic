@@ -27,15 +27,16 @@ namespace Subsonic.Rest.Api
         /// <param name="method">Subsonic API method to call.</param>
         /// <param name="methodApiVersion">Subsonic API version of the method.</param>
         /// <param name="parameters">Parameters used by the method.</param>
+        /// <param name="cancelToken"> </param>
         /// <returns>bool</returns>
-        private async Task<bool> GetResponseAsync(Methods method, Version methodApiVersion, ICollection parameters = null)
+        private async Task<bool> GetResponseAsync(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
         {
             bool success = false;
 
             if (ServerApiVersion != null && methodApiVersion > ServerApiVersion)
                 throw new SubsonicInvalidApiException(string.Format(CultureInfo.CurrentCulture, "Method {0} requires Subsonic Server API version {1}, but the actual Subsonic Server API version is {2}.", Enum.GetName(typeof(Methods), method), methodApiVersion, ServerApiVersion));
 
-            Response response = await RequestAsync(method, methodApiVersion, parameters);
+            Response response = await RequestAsync(method, methodApiVersion, parameters, cancelToken);
 
             switch (response.Status)
             {
@@ -90,15 +91,16 @@ namespace Subsonic.Rest.Api
         /// <param name="method">Subsonic API method to call.</param>
         /// <param name="methodApiVersion">Subsonic API version of the method.</param>
         /// <param name="parameters">Parameters used by the method.</param>
+        /// <param name="cancelToken"> </param>
         /// <returns>T</returns>
-        private async Task<T> GetResponseAsync<T>(Methods method, Version methodApiVersion, ICollection parameters = null)
+        private async Task<T> GetResponseAsync<T>(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
         {
             T result = default(T);
 
             if (ServerApiVersion != null && methodApiVersion > ServerApiVersion)
                 throw new SubsonicInvalidApiException(string.Format(CultureInfo.CurrentCulture, "Method {0} requires Subsonic Server API version {1}, but the actual Subsonic Server API version is {2}.", Enum.GetName(typeof(Methods), method), methodApiVersion, ServerApiVersion));
 
-            Response response = await RequestAsync(method, methodApiVersion, parameters);
+            Response response = await RequestAsync(method, methodApiVersion, parameters, cancelToken);
 
             switch (response.Status)
             {
@@ -200,9 +202,9 @@ namespace Subsonic.Rest.Api
         /// Get details about the software license. Please note that access to the REST API requires that the server has a valid license (after a 30-day trial period). To get a license key you can give a donation to the Subsonic project.
         /// </summary>
         /// <returns>License</returns>
-        public async Task<License> GetLicenseAsync()
+        public async Task<License> GetLicenseAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<License>(Methods.getLicense, _version100);
+            return await GetResponseAsync<License>(Methods.getLicense, _version100, null, cancelToken);
         }
 
         /// <summary>
@@ -218,9 +220,9 @@ namespace Subsonic.Rest.Api
         /// Returns all configured top-level music folders.
         /// </summary>
         /// <returns>MusicFolders</returns>
-        public async Task<MusicFolders> GetMusicFoldersAsync()
+        public async Task<MusicFolders> GetMusicFoldersAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<MusicFolders>(Methods.getMusicFolders, _version100);
+            return await GetResponseAsync<MusicFolders>(Methods.getMusicFolders, _version100, null, cancelToken);
         }
 
         /// <summary>
@@ -236,9 +238,9 @@ namespace Subsonic.Rest.Api
         /// Returns what is currently being played by all users.
         /// </summary>
         /// <returns>NowPlaying</returns>
-        public async Task<NowPlaying> GetNowPlayingAsync()
+        public async Task<NowPlaying> GetNowPlayingAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<NowPlaying>(Methods.getNowPlaying, _version100);
+            return await GetResponseAsync<NowPlaying>(Methods.getNowPlaying, _version100, null, cancelToken);
         }
 
         /// <summary>
@@ -254,9 +256,9 @@ namespace Subsonic.Rest.Api
         /// Returns starred songs, albums and artists.
         /// </summary>
         /// <returns>Starred</returns>
-        public async Task<Starred> GetStarredAsync()
+        public async Task<Starred> GetStarredAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<Starred>(Methods.getStarred, _version180);
+            return await GetResponseAsync<Starred>(Methods.getStarred, _version180, null, cancelToken);
         }
 
         /// <summary>
@@ -272,9 +274,9 @@ namespace Subsonic.Rest.Api
         /// Similar to getStarred, but organizes music according to ID3 tags.
         /// </summary>
         /// <returns>Starred2</returns>
-        public async Task<Starred2> GetStarred2Async()
+        public async Task<Starred2> GetStarred2Async(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<Starred2>(Methods.getStarred2, _version180);
+            return await GetResponseAsync<Starred2>(Methods.getStarred2, _version180, null, cancelToken);
         }
 
         /// <summary>
@@ -292,7 +294,7 @@ namespace Subsonic.Rest.Api
         /// <param name="musicFolderId">If specified, only return artists in the music folder with the given ID.</param>
         /// <param name="ifModifiedSince">If specified, only return a result if the artist collection has changed since the given time.</param>
         /// <returns>Indexes</returns>
-        public async Task<Indexes> GetIndexesAsync(string musicFolderId = null, long? ifModifiedSince = null)
+        public async Task<Indexes> GetIndexesAsync(string musicFolderId = null, long? ifModifiedSince = null, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable();
 
@@ -302,7 +304,7 @@ namespace Subsonic.Rest.Api
             if (ifModifiedSince != null)
                 parameters.Add("ifModifiedSince", ifModifiedSince);
 
-            return await GetResponseAsync<Indexes>(Methods.getIndexes, _version100, parameters);
+            return await GetResponseAsync<Indexes>(Methods.getIndexes, _version100, parameters, cancelToken);
         }
 
         /// <summary>
@@ -329,10 +331,10 @@ namespace Subsonic.Rest.Api
         /// </summary>
         /// <param name="id">A string which uniquely identifies the music folder. Obtained by calls to GetIndexes or GetMusicDirectory.</param>
         /// <returns>Directory</returns>
-        public async Task<Directory> GetMusicDirectoryAsync(string id)
+        public async Task<Directory> GetMusicDirectoryAsync(string id, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "id", id } };
-            return await GetResponseAsync<Directory>(Methods.getMusicDirectory, _version100, parameters);
+            return await GetResponseAsync<Directory>(Methods.getMusicDirectory, _version100, parameters, cancelToken);
         }
 
         /// <summary>
@@ -351,10 +353,10 @@ namespace Subsonic.Rest.Api
         /// </summary>
         /// <param name="id">The artist ID.</param>
         /// <returns>ArtistID3</returns>
-        public async Task<ArtistWithAlbumsID3> GetArtistAsync(string id)
+        public async Task<ArtistWithAlbumsID3> GetArtistAsync(string id, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "id", id } };
-            return await GetResponseAsync<ArtistWithAlbumsID3>(Methods.getArtist, _version180, parameters);
+            return await GetResponseAsync<ArtistWithAlbumsID3>(Methods.getArtist, _version180, parameters, cancelToken);
         }
 
         /// <summary>
@@ -372,9 +374,9 @@ namespace Subsonic.Rest.Api
         /// Similar to getIndexes, but organizes music according to ID3 tags.
         /// </summary>
         /// <returns>ArtistsID3</returns>
-        public async Task<ArtistsID3> GetArtistsAsync()
+        public async Task<ArtistsID3> GetArtistsAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<ArtistsID3>(Methods.getArtists, _version180);
+            return await GetResponseAsync<ArtistsID3>(Methods.getArtists, _version180, null, cancelToken);
         }
 
         /// <summary>
@@ -390,11 +392,12 @@ namespace Subsonic.Rest.Api
         /// Returns details for an album, including a list of songs. This method organizes music according to ID3 tags.
         /// </summary>
         /// <param name="id">The album ID.</param>
+        /// <param name="cancelToken"> </param>
         /// <returns>AlbumID3</returns>
-        public async Task<AlbumID3> GetAlbumAsync(string id)
+        public async Task<AlbumID3> GetAlbumAsync(string id, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "id", id } };
-            return await GetResponseAsync<AlbumID3>(Methods.getAlbum, _version180, parameters);
+            return await GetResponseAsync<AlbumID3>(Methods.getAlbum, _version180, parameters, cancelToken);
         }
 
         /// <summary>
@@ -413,10 +416,10 @@ namespace Subsonic.Rest.Api
         /// </summary>
         /// <param name="id">The song ID.</param>
         /// <returns>Song</returns>
-        public async Task<Child> GetSongAsync(string id)
+        public async Task<Child> GetSongAsync(string id, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "id", id } };
-            return await GetResponseAsync<Child>(Methods.getSong, _version180, parameters);
+            return await GetResponseAsync<Child>(Methods.getSong, _version180, parameters, cancelToken);
         }
 
         /// <summary>
@@ -434,9 +437,9 @@ namespace Subsonic.Rest.Api
         /// Returns all video files.
         /// </summary>
         /// <returns>Videos</returns>
-        public async Task<Videos> GetVideosAsync()
+        public async Task<Videos> GetVideosAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<Videos>(Methods.getVideos, _version180);
+            return await GetResponseAsync<Videos>(Methods.getVideos, _version180, null, cancelToken);
         }
 
         /// <summary>
@@ -537,7 +540,7 @@ namespace Subsonic.Rest.Api
         /// <param name="songCount">Maximum number of songs to return. [Default = 20]</param>
         /// <param name="songOffset">Search result offset for songs. Used for paging. [Default = 0]</param>
         /// <returns>SearchResult2</returns>
-        public async Task<SearchResult2> Search2Async(string query, int? artistCount = null, int? artistOffset = null, int? albumCount = null, int? albumOffset = null, int? songCount = null, int? songOffset = null)
+        public async Task<SearchResult2> Search2Async(string query, int? artistCount = null, int? artistOffset = null, int? albumCount = null, int? albumOffset = null, int? songCount = null, int? songOffset = null, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "query", query } };
 
@@ -559,7 +562,7 @@ namespace Subsonic.Rest.Api
             if (songOffset != null)
                 parameters.Add("songOffset", songOffset);
 
-            return await GetResponseAsync<SearchResult2>(Methods.search2, _version140, parameters);
+            return await GetResponseAsync<SearchResult2>(Methods.search2, _version140, parameters, cancelToken);
         }
 
         /// <summary>
@@ -609,7 +612,7 @@ namespace Subsonic.Rest.Api
         /// <param name="songCount">Maximum number of songs to return. [Default = 20]</param>
         /// <param name="songOffset">Search result offset for songs. Used for paging. [Default = 0]</param>
         /// <returns>SearchResult3</returns>
-        public async Task<SearchResult3> Search3Async(string query, int? artistCount = null, int? artistOffset = null, int? albumCount = null, int? albumOffset = null, int? songCount = null, int? songOffset = null)
+        public async Task<SearchResult3> Search3Async(string query, int? artistCount = null, int? artistOffset = null, int? albumCount = null, int? albumOffset = null, int? songCount = null, int? songOffset = null, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "query", query } };
 
@@ -631,7 +634,7 @@ namespace Subsonic.Rest.Api
             if (songOffset != null)
                 parameters.Add("songOffset", songOffset);
 
-            return await GetResponseAsync<SearchResult3>(Methods.search3, _version180, parameters);
+            return await GetResponseAsync<SearchResult3>(Methods.search3, _version180, parameters, cancelToken);
         }
 
         /// <summary>
@@ -675,7 +678,7 @@ namespace Subsonic.Rest.Api
         /// </summary>
         /// <param name="username">(Since 1.8.0) If specified, return playlists for this user rather than for the authenticated user. The authenticated user must have admin role if this parameter is used.</param>
         /// <returns>Playlists</returns>
-        public async Task<Playlists> GetPlaylistsAsync(string username = null)
+        public async Task<Playlists> GetPlaylistsAsync(string username = null, CancellationToken? cancelToken = null)
         {
             Version methodApiVersion = _version100;
 
@@ -687,7 +690,7 @@ namespace Subsonic.Rest.Api
                 methodApiVersion = _version180;
             }
 
-            return await GetResponseAsync<Playlists>(Methods.getPlaylists, methodApiVersion, parameters);
+            return await GetResponseAsync<Playlists>(Methods.getPlaylists, methodApiVersion, parameters, cancelToken);
         }
 
         /// <summary>
@@ -715,10 +718,10 @@ namespace Subsonic.Rest.Api
         /// </summary>
         /// <param name="id">ID of the playlist to return, as obtained by GetPlaylists.</param>
         /// <returns>PlaylistWithSongs</returns>
-        public async Task<PlaylistWithSongs> GetPlaylistAsync(string id)
+        public async Task<PlaylistWithSongs> GetPlaylistAsync(string id, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "id", id } };
-            return await GetResponseAsync<PlaylistWithSongs>(Methods.getPlaylist, _version100, parameters);
+            return await GetResponseAsync<PlaylistWithSongs>(Methods.getPlaylist, _version100, parameters, cancelToken);
         }
 
         /// <summary>
@@ -877,10 +880,10 @@ namespace Subsonic.Rest.Api
         /// <param name="path"> </param>
         /// <param name="pathOverride"> </param>
         /// <returns>long</returns>
-        public async Task<long> DownloadAsync(string id, string path, bool pathOverride = false)
+        public async Task<long> DownloadAsync(string id, string path, bool pathOverride = false, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "id", id } };
-            return await RequestAsync(path, pathOverride, Methods.download, _version100, parameters);
+            return await RequestAsync(path, pathOverride, Methods.download, _version100, parameters, cancelToken);
         }
 
         /// <summary>
@@ -907,7 +910,7 @@ namespace Subsonic.Rest.Api
         /// <param name="size">(Since 1.6.0) Only applicable to video streaming. Requested video size specified as WxH, for instance "640x480".</param>
         /// <param name="estimateContentLength">(Since 1.8.0). If set to "true", the Content-Length HTTP header will be set to an estimated value for transcoded or downsampled media.</param>
         /// <returns>long</returns>
-        public async Task<long> StreamAsync(string id, string path, int? maxBitRate = null, StreamFormat? format = null, int? timeOffset = null, string size = null, bool? estimateContentLength = null)
+        public async Task<long> StreamAsync(string id, string path, int? maxBitRate = null, StreamFormat? format = null, int? timeOffset = null, string size = null, bool? estimateContentLength = null, CancellationToken? cancelToken = null)
         {
             Version methodApiVersion = _version120;
             Hashtable parameters = new Hashtable { { "id", id } };
@@ -940,7 +943,7 @@ namespace Subsonic.Rest.Api
                 methodApiVersion = _version180;
             }
 
-            return await RequestAsync(path, true, Methods.stream, methodApiVersion, parameters);
+            return await RequestAsync(path, true, Methods.stream, methodApiVersion, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1121,9 +1124,9 @@ namespace Subsonic.Rest.Api
         /// Returns information about shared media this user is allowed to manage.
         /// </summary>
         /// <returns>Shares</returns>
-        public async Task<Shares> GetSharesAsync()
+        public async Task<Shares> GetSharesAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<Shares>(Methods.getShares, _version160);
+            return await GetResponseAsync<Shares>(Methods.getShares, _version160, null, cancelToken);
         }
 
         /// <summary>
@@ -1176,10 +1179,10 @@ namespace Subsonic.Rest.Api
         /// </summary>
         /// <param name="username">The name of the user to retrieve. You can only retrieve your own user unless you have admin privileges.</param>
         /// <returns>User</returns>
-        public async Task<User> GetUserAsync(string username)
+        public async Task<User> GetUserAsync(string username, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "username", username } };
-            return await GetResponseAsync<User>(Methods.getUser, _version130, parameters);
+            return await GetResponseAsync<User>(Methods.getUser, _version130, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1507,14 +1510,14 @@ namespace Subsonic.Rest.Api
         /// </summary>Only return messages that are newer than this time. Given as milliseconds since Jan 1, 1970.
         /// <param name="since"></param>
         /// <returns>ChatMessages</returns>
-        public async Task<ChatMessages> GetChatMessagesAsync(long? since = null)
+        public async Task<ChatMessages> GetChatMessagesAsync(long? since = null, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable();
 
             if (since != null)
                 parameters.Add("since", since);
 
-            return await GetResponseAsync<ChatMessages>(Methods.getChatMessages, _version120, parameters);
+            return await GetResponseAsync<ChatMessages>(Methods.getChatMessages, _version120, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1561,7 +1564,7 @@ namespace Subsonic.Rest.Api
         /// <param name="size">The number of albums to return. Max 500. [Default = 10]</param>
         /// <param name="offset">The list offset. Useful if you for example want to page through the list of newest albums. [Default = 0]</param>
         /// <returns>AlbumList</returns>
-        public async Task<AlbumList> GetAlbumListAsync(AlbumListType type, int? size = null, int? offset = null)
+        public async Task<AlbumList> GetAlbumListAsync(AlbumListType type, int? size = null, int? offset = null, CancellationToken? cancelToken = null)
         {
             Version methodApiVersion = _version120;
 
@@ -1578,7 +1581,7 @@ namespace Subsonic.Rest.Api
             if (offset != null)
                 parameters.Add("offset", offset);
 
-            return await GetResponseAsync<AlbumList>(Methods.getAlbumList, methodApiVersion, parameters);
+            return await GetResponseAsync<AlbumList>(Methods.getAlbumList, methodApiVersion, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1615,7 +1618,7 @@ namespace Subsonic.Rest.Api
         /// <param name="size">The number of albums to return. Max 500. [Default = 10]</param>
         /// <param name="offset">The list offset. Useful if you for example want to page through the list of newest albums. [Default = 0]</param>
         /// <returns>AlbumList</returns>
-        public async Task<AlbumList2> GetAlbumList2Async(AlbumListType type, int? size = null, int? offset = null)
+        public async Task<AlbumList2> GetAlbumList2Async(AlbumListType type, int? size = null, int? offset = null, CancellationToken? cancelToken = null)
         {
             string albumListTypeName = Enum.GetName(typeof(AlbumListType), type);
 
@@ -1627,7 +1630,7 @@ namespace Subsonic.Rest.Api
             if (offset != null)
                 parameters.Add("offset", offset);
 
-            return await GetResponseAsync<AlbumList2>(Methods.getAlbumList2, _version180, parameters);
+            return await GetResponseAsync<AlbumList2>(Methods.getAlbumList2, _version180, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1661,7 +1664,7 @@ namespace Subsonic.Rest.Api
         /// <param name="toYear">Only return songs published before or in this year.</param>
         /// <param name="musicFolderId">Only return songs in the music folder with the given ID. See GetMusicFolders.</param>
         /// <returns>RandomSongs</returns>
-        public async Task<RandomSongs> GetRandomSongsAsync(int? size = null, string genre = null, int? fromYear = null, int? toYear = null, string musicFolderId = null)
+        public async Task<RandomSongs> GetRandomSongsAsync(int? size = null, string genre = null, int? fromYear = null, int? toYear = null, string musicFolderId = null, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable();
 
@@ -1680,7 +1683,7 @@ namespace Subsonic.Rest.Api
             if (!string.IsNullOrWhiteSpace(musicFolderId))
                 parameters.Add("musicFolderId", musicFolderId);
 
-            return await GetResponseAsync<RandomSongs>(Methods.getRandomSongs, _version120, parameters);
+            return await GetResponseAsync<RandomSongs>(Methods.getRandomSongs, _version120, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1720,7 +1723,7 @@ namespace Subsonic.Rest.Api
         /// <param name="artist">The artist name.</param>
         /// <param name="title">The song title.</param>
         /// <returns>Lyrics</returns>
-        public async Task<Lyrics> GetLyricsAsync(string artist = null, string title = null)
+        public async Task<Lyrics> GetLyricsAsync(string artist = null, string title = null, CancellationToken? cancelToken = null)
         {
             if (string.IsNullOrWhiteSpace(artist) && string.IsNullOrWhiteSpace(title))
                 throw new SubsonicApiException("You must specify an artist and/or a title");
@@ -1733,7 +1736,7 @@ namespace Subsonic.Rest.Api
             if (!string.IsNullOrWhiteSpace(title))
                 parameters.Add("title", title);
 
-            return await GetResponseAsync<Lyrics>(Methods.getLyrics, _version120, parameters);
+            return await GetResponseAsync<Lyrics>(Methods.getLyrics, _version120, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1762,10 +1765,10 @@ namespace Subsonic.Rest.Api
         /// Retrieves the jukebox playlist. Note: The user must be authorized to control the jukebox (see Settings > Users > User is allowed to play files in jukebox mode).
         /// </summary>
         /// <returns>JukeboxPlaylist</returns>
-        public async Task<JukeboxPlaylist> JukeboxControlAsync()
+        public async Task<JukeboxPlaylist> JukeboxControlAsync(CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable { { "action", "get" } };
-            return await GetResponseAsync<JukeboxPlaylist>(Methods.jukeboxControl, _version120, parameters);
+            return await GetResponseAsync<JukeboxPlaylist>(Methods.jukeboxControl, _version120, parameters, cancelToken);
         }
 
         /// <summary>
@@ -1866,9 +1869,9 @@ namespace Subsonic.Rest.Api
         /// Returns all podcast channels the server subscribes to and their episodes.
         /// </summary>
         /// <returns>Podcasts</returns>
-        public async Task<Podcasts> GetPodcastsAsync()
+        public async Task<Podcasts> GetPodcastsAsync(CancellationToken? cancelToken = null)
         {
-            return await GetResponseAsync<Podcasts>(Methods.getPodcasts, _version160);
+            return await GetResponseAsync<Podcasts>(Methods.getPodcasts, _version160, null, cancelToken);
         }
 
         /// <summary>

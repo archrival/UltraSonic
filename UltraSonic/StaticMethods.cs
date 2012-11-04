@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Threading.Tasks;
+using System.Windows.Forms;
 using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;

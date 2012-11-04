@@ -1,9 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using Subsonic.Rest.Api;
 
 namespace UltraSonic
 {
-    public class TrackItem
+    public class TrackItem : INotifyPropertyChanged
     {
         public bool Selected { get; set; }
         public int DiscNumber { get; set; }
@@ -18,5 +19,12 @@ namespace UltraSonic
         public int Rating { get; set; }
         public bool Starred { get; set; }
         public Child Track { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
