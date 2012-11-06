@@ -4,7 +4,7 @@ using Subsonic.Rest.Api;
 
 namespace UltraSonic
 {
-    public class AlbumItem : INotifyPropertyChanged
+    public sealed class AlbumItem : INotifyPropertyChanged
     {
         public bool Starred { get; set; }
         public string Name { get; set; }
@@ -13,7 +13,7 @@ namespace UltraSonic
         public BitmapSource Image { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));

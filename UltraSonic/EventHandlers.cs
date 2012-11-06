@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -79,37 +79,28 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.StackTrace), string.Format("Exception in {0}", AppName), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            ObservableCollection<TrackItem> playlist = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
-            e.CanExecute = MediaPlayer != null && playlist != null && playlist.Any();
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any();
         }
 
         private void PreviousCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            ObservableCollection<TrackItem> playlist = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
-            e.CanExecute = MediaPlayer != null && playlist != null && playlist.Any() && PlaylistTrackGrid.SelectedIndex > 0;
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && PlaylistTrackGrid.SelectedIndex > 0;
         }
 
         private void NextCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            ObservableCollection<TrackItem> playlist = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
-            e.CanExecute = MediaPlayer != null && playlist != null && playlist.Any() && PlaylistTrackGrid.SelectedIndex < PlaylistTrackGrid.Items.Count - 1;
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && PlaylistTrackGrid.SelectedIndex < PlaylistTrackGrid.Items.Count - 1;
         }
 
         private void ShuffleButtonClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            Dispatcher.Invoke(() =>
-                {
-                    ObservableCollection<TrackItem> playlist = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
-
-                    if (playlist != null)
-                        playlist.Shuffle();
-                });
+            Dispatcher.Invoke(() => _playlistTrackItems.Shuffle());
         }
 
         private void MuteButtonClick(object sender, RoutedEventArgs e)
@@ -154,7 +145,6 @@ namespace UltraSonic
                             if (PlaylistTrackGrid.SelectedIndex == -1)
                                 PlaylistTrackGrid.SelectedIndex = 0;
 
-                            MediaPlayer.MediaOpened += MediaPlayerPlayQueuedTrack;
                             var playlistEntryItem = PlaylistTrackGrid.SelectedItem as TrackItem;
 
                             if (playlistEntryItem != null)
@@ -180,27 +170,28 @@ namespace UltraSonic
 
         private void PlayMusic()
         {
-            MediaPlayer.Play();
+            if (MediaPlayer.Source != null)
+                MediaPlayer.Play();
+
             MusicPlayStatusLabel.Content = "Playing";
         }
 
         private void PauseMusic()
         {
-            MediaPlayer.Pause();
+            if (MediaPlayer.Source != null)
+                MediaPlayer.Pause();
+
             MusicPlayStatusLabel.Content = "Paused";
         }
 
         private void StopMusic()
         {
-            MediaPlayer.Stop();
-            MediaPlayer.Source = null;
+            if (MediaPlayer.Source != null)
+            {
+                MediaPlayer.Stop();
+                MediaPlayer.Source = null;
+            }
             MusicPlayStatusLabel.Content = "Stopped";
-        }
-
-        private void MediaPlayerPlayQueuedTrack(object sender, RoutedEventArgs routedEventArgs)
-        {
-            MediaPlayer.MediaOpened -= MediaPlayerPlayQueuedTrack;
-            PlayMusic();
         }
 
         private void PauseButtonClick(object sender, ExecutedRoutedEventArgs e)
@@ -337,9 +328,9 @@ namespace UltraSonic
         {
             bool updatePlaylist = false;
 
-            if (_currentPlaylist != null)
+            if (CurrentPlaylist != null)
             {
-                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to update the previously loaded playlist? '{0}'", _currentPlaylist.Name), "Save playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to update the previously loaded playlist? '{0}'", CurrentPlaylist.Name), "Save playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                 updatePlaylist = (result == MessageBoxResult.Yes);
             }
 
@@ -347,15 +338,10 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                 {
-                    ObservableCollection<TrackItem> observableCollection = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
-
-                    if (observableCollection != null)
-                    {
                         List<string> playlistTracks = new List<string>();
-                        playlistTracks.AddRange(observableCollection.Select(test => test.Track.Id));
+                        playlistTracks.AddRange(_playlistTrackItems.Select(test => test.Track.Id));
 
-                        SubsonicApi.CreatePlaylistAsync(_currentPlaylist.Id, null, playlistTracks).ContinueWith(CheckPlaylistSave);
-                    }
+                        SubsonicApi.CreatePlaylistAsync(CurrentPlaylist.Id, null, playlistTracks).ContinueWith(CheckPlaylistSave);
                 });
             }
             else
@@ -369,18 +355,12 @@ namespace UltraSonic
 
                 Dispatcher.Invoke(() =>
                                       {
-                                          ObservableCollection<TrackItem> observableCollection = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem>;
-
-                                          if (observableCollection != null)
-                                          {
                                               List<string> playlistTracks = new List<string>();
-                                              playlistTracks.AddRange(observableCollection.Select(test => test.Track.Id));
+                                              playlistTracks.AddRange(_playlistTrackItems.Select(test => test.Track.Id));
 
                                               SubsonicApi.CreatePlaylistAsync(null, playlistName, playlistTracks).ContinueWith(CheckPlaylistSave);
-                                          }
                                       });
             }
-
         }
 
         private void NewPlaylistButtonClick(object sender, RoutedEventArgs e)
@@ -390,8 +370,9 @@ namespace UltraSonic
             if (result == MessageBoxResult.Yes)
                 Dispatcher.Invoke(() =>
                     {
-                        _currentPlaylist = null;
-                        PlaylistTrackGrid.ItemsSource = new ObservableCollection<TrackItem>();
+                        CurrentPlaylist = null;
+                        _playlistTrackItems.Clear();
+                        PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
                     });
         }
 
@@ -412,7 +393,7 @@ namespace UltraSonic
                 {
                     Dispatcher.Invoke(() =>
                         {
-                            _currentPlaylist = playlistItem.Playlist;
+                            CurrentPlaylist = playlistItem.Playlist;
                             SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                         });
                 }
@@ -431,9 +412,8 @@ namespace UltraSonic
                 {
                     Dispatcher.Invoke(() =>
                         {
-                            ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
-                            itemsSource.Add(selectedTrack);
-                            PlaylistTrackGrid.ItemsSource = itemsSource;
+                            _playlistTrackItems.Add(selectedTrack);
+                            PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
                         });
                 }
             }
@@ -533,14 +513,17 @@ namespace UltraSonic
             {
                 string downloadDirectory = FileDownloadDialog();
 
-                foreach (TrackItem item in selectedItems)
+                if (string.IsNullOrWhiteSpace(downloadDirectory))
                 {
-                    CancellationTokenSource tokenSource = new CancellationTokenSource();
-                    CancellationToken token = tokenSource.Token;
+                    foreach (TrackItem item in selectedItems)
+                    {
+                        CancellationTokenSource tokenSource = new CancellationTokenSource();
+                        CancellationToken token = tokenSource.Token;
 
-                    Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory, false, token);
-                    DownloadItem downloadItem = new DownloadItem {Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask, CancelTokenSource = tokenSource};
-                    _downloadItems.Enqueue(downloadItem);
+                        Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory, false, token);
+                        DownloadItem downloadItem = new DownloadItem { Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask, CancelTokenSource = tokenSource };
+                        _downloadItems.Enqueue(downloadItem);
+                    }
                 }
             }
         }
@@ -560,11 +543,17 @@ namespace UltraSonic
                     {
                         string downloadDirectory = FileDownloadDialog();
 
-                        foreach (AlbumItem item in selectedItems)
+                        if (!string.IsNullOrWhiteSpace(downloadDirectory))
                         {
-                            Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory);
-                            DownloadItem downloadItem = new DownloadItem { Source = item.Album.Title, Path= downloadDirectory, Child = item.Album, StartDate = DateTime.Now, Task = downloadTask};
-                            _downloadItems.Enqueue(downloadItem);
+                            foreach (AlbumItem item in selectedItems)
+                            {
+                                CancellationTokenSource tokenSource = new CancellationTokenSource();
+                                CancellationToken token = tokenSource.Token;
+
+                                Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory, false, token);
+                                DownloadItem downloadItem = new DownloadItem { Source = item.Album.Title, Path = downloadDirectory, Child = item.Album, StartDate = DateTime.Now, Task = downloadTask, CancelTokenSource = tokenSource };
+                                _downloadItems.Enqueue(downloadItem);
+                            }
                         }
                     }
                 });
@@ -658,12 +647,10 @@ namespace UltraSonic
 
             Dispatcher.Invoke(() =>
                 {
-                    ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
-
                     foreach (TrackItem item in selectedItems)
-                        itemsSource.Add(item);
+                        _playlistTrackItems.Add(item);
 
-                    PlaylistTrackGrid.ItemsSource = itemsSource;
+                    PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
                 });
         }
 
@@ -727,17 +714,18 @@ namespace UltraSonic
                 });
         }
 
-        private void PlaylistTrackGridMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void PlaylistTrackGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
 
             Dispatcher.Invoke(() =>
-                                  {
-                                      MediaPlayer.MediaOpened += MediaPlayerPlayQueuedTrack;
-                                      var playlistEntryItem = PlaylistTrackGrid.SelectedItem as TrackItem;
+                {
+                    StopMusic();
 
-                                      if (playlistEntryItem != null)
-                                          QueueTrack(playlistEntryItem.Track);
-                                  });
+                    var playlistEntryItem = PlaylistTrackGrid.SelectedItem as TrackItem;
+
+                    if (playlistEntryItem != null)
+                        QueueTrack(playlistEntryItem.Track);
+                });
         }
 
         private void PlaylistTrackGridUnloadingRow(object sender, DataGridRowEventArgs dataGridRowEventArgs)
@@ -748,6 +736,20 @@ namespace UltraSonic
         private void ArtistRefreshClick(object sender, RoutedEventArgs e)
         {
             UpdateArtists();
+        }
+
+        private void DownloadCancelMenuItemClick(object sender, RoutedEventArgs e)
+        {
+            foreach (DownloadItem item in DownloadGrid.SelectedItems)
+                item.CancelTokenSource.Cancel();
+        }
+
+        private void DownloadOpenFolderMenuItemClick(object sender, RoutedEventArgs e)
+        {
+            DownloadItem downloadItem = DownloadGrid.SelectedItem as DownloadItem;
+
+            if (downloadItem != null)
+                Process.Start(downloadItem.Path);
         }
     }
 }

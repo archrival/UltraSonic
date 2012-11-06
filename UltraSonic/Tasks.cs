@@ -1,11 +1,10 @@
-﻿using Subsonic.Rest.Api;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Subsonic.Rest.Api;
 
 namespace UltraSonic
 {
@@ -120,13 +119,12 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
-                        ObservableCollection<TrackItem> itemsSource = PlaylistTrackGrid.ItemsSource as ObservableCollection<TrackItem> ?? new ObservableCollection<TrackItem>();
                         IEnumerable<TrackItem> albumSource = GetTrackItemCollection(task.Result);
 
                         foreach (var trackItem in albumSource)
-                            itemsSource.Add(trackItem);
+                            _playlistTrackItems.Add(trackItem);
 
-                        PlaylistTrackGrid.ItemsSource = itemsSource;
+                        PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
                     });
             }
         }
@@ -137,7 +135,12 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
-                        PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Entry);
+                        _playlistTrackItems.Clear();
+
+                        foreach (var t in GetTrackItemCollection(task.Result.Entry))
+                            _playlistTrackItems.Add(t);
+
+                        PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
                     });
             }
         }
@@ -148,7 +151,12 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
-                        PlaylistTrackGrid.ItemsSource = GetTrackItemCollection(task.Result.Song);
+                        _playlistTrackItems.Clear();
+                        
+                        foreach (var t in GetTrackItemCollection(task.Result.Song))
+                            _playlistTrackItems.Add(t);
+
+                        PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
                     });
             }
         }
@@ -168,38 +176,38 @@ namespace UltraSonic
         {
             if (task.Status == TaskStatus.RanToCompletion)
             {
-                _currentUser = task.Result;
+                CurrentUser = task.Result;
 
                 Dispatcher.Invoke(() =>
                     {
-                        DownloadsTab.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
-                        MusicDataGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
-                        TrackDataGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
-                        PlaylistTrackGridDownload.Visibility = _currentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
-                        PreviousButton.IsEnabled = _currentUser.StreamRole;
-                        PlayButton.IsEnabled = _currentUser.StreamRole;
-                        StopButton.IsEnabled = _currentUser.StreamRole;
-                        PauseButton.IsEnabled = _currentUser.StreamRole;
-                        NextButton.IsEnabled = _currentUser.StreamRole;
-                        SavePlaylistButton.IsEnabled = _currentUser.PlaylistRole;
-                        PlaylistsGridDeletePlaylist.Visibility = _currentUser.PlaylistRole ? Visibility.Visible : Visibility.Collapsed;
+                        DownloadsTab.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        MusicDataGridDownload.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        TrackDataGridDownload.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        PlaylistTrackGridDownload.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
+                        PreviousButton.IsEnabled = CurrentUser.StreamRole;
+                        PlayButton.IsEnabled = CurrentUser.StreamRole;
+                        StopButton.IsEnabled = CurrentUser.StreamRole;
+                        PauseButton.IsEnabled = CurrentUser.StreamRole;
+                        NextButton.IsEnabled = CurrentUser.StreamRole;
+                        SavePlaylistButton.IsEnabled = CurrentUser.PlaylistRole;
+                        PlaylistsGridDeletePlaylist.Visibility = CurrentUser.PlaylistRole ? Visibility.Visible : Visibility.Collapsed;
 
-                        UserEmailLabel.Content = _currentUser.Email;
-                        UserScrobblingLabel.Content = _currentUser.ScrobblingEnabled;
-                        UserAdminLabel.Content = _currentUser.AdminRole;
-                        UserSettingsLabel.Content = _currentUser.SettingsRole;
-                        UserStreamLabel.Content = _currentUser.StreamRole;
-                        UserJukeboxLabel.Content = _currentUser.JukeboxRole;
-                        UserDownloadLabel.Content = _currentUser.DownloadRole;
-                        UserUploadLabel.Content = _currentUser.UploadRole;
-                        UserPlaylistLabel.Content = _currentUser.PlaylistRole;
-                        UserCoverArtLabel.Content = _currentUser.CoverArtRole;
-                        UserCommentLabel.Content = _currentUser.CommentRole;
-                        UserPodcastLabel.Content = _currentUser.PodcastRole;
-                        UserShareLabel.Content = _currentUser.ShareRole;
+                        UserEmailLabel.Content = CurrentUser.Email;
+                        UserScrobblingLabel.Content = CurrentUser.ScrobblingEnabled;
+                        UserAdminLabel.Content = CurrentUser.AdminRole;
+                        UserSettingsLabel.Content = CurrentUser.SettingsRole;
+                        UserStreamLabel.Content = CurrentUser.StreamRole;
+                        UserJukeboxLabel.Content = CurrentUser.JukeboxRole;
+                        UserDownloadLabel.Content = CurrentUser.DownloadRole;
+                        UserUploadLabel.Content = CurrentUser.UploadRole;
+                        UserPlaylistLabel.Content = CurrentUser.PlaylistRole;
+                        UserCoverArtLabel.Content = CurrentUser.CoverArtRole;
+                        UserCommentLabel.Content = CurrentUser.CommentRole;
+                        UserPodcastLabel.Content = CurrentUser.PodcastRole;
+                        UserShareLabel.Content = CurrentUser.ShareRole;
 
                         if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
-                            SubsonicApi.GetAvatarAsync(_currentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
+                            SubsonicApi.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
                     });
             }
         }

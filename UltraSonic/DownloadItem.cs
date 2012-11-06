@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UltraSonic
 {
-    public class DownloadItem : INotifyPropertyChanged 
+    public sealed class DownloadItem : INotifyPropertyChanged 
     {
         public Task<long> Task { get; set; }
         public Child Child { get; set; }
@@ -19,7 +19,7 @@ namespace UltraSonic
         public CancellationTokenSource CancelTokenSource { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));

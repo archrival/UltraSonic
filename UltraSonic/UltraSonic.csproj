@@ -59,6 +59,7 @@
     </ApplicationDefinition>
     <Compile Include="ArtistItem.cs" />
     <Compile Include="DownloadItem.cs" />
+    <Compile Include="DataGridDragAndDrop.cs" />
     <Compile Include="EventHandlers.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="NativeMethods.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="StaticMethods.cs" />
     <Compile Include="Tasks.cs" />
     <Compile Include="TrackItem.cs" />
+    <Compile Include="UIHelpers.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -193,6 +195,10 @@
     <Resource Include="Images\media-playback-stop-dark-16.png" />
     <Resource Include="Images\media-skip-backward-dark-16.png" />
     <Resource Include="Images\media-skip-forward-dark-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\view-sort.png" />
+    <Content Include="WPFToolkit.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

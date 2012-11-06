@@ -135,7 +135,7 @@
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
 
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
@@ -250,7 +250,7 @@
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="2*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistTrackGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" >
+                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" >
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick" />
@@ -273,8 +273,17 @@
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                         </DataGrid.Columns>
+                      </DataGrid> 
+                    <!-- Drag and Drop Popup -->
+                    <Popup x:Name="playlistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">                         
+                        <Border BorderBrush="LightSteelBlue" BorderThickness="2" Background="White" Opacity="0.75">
+                            <StackPanel Orientation="Horizontal" Margin="4,3,8,3">
+                                <Image Source="/Images/view-sort.png" Width="24" Height="24" />
+                                <TextBlock FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding ElementName=me, Path=DraggedItem.Name}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                 </Grid>
             </TabItem>
             <TabItem x:Name="DownloadsTab" Header="Downloads">
@@ -282,9 +291,8 @@
                     <DataGrid x:Name="DownloadGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
-                                <MenuItem Header="Cancel" />
-                                <!--<MenuItem Header="Open" />
-                                <MenuItem Header="Open Folder" />-->
+                                <!--<MenuItem x:Name="DownloadCancelMenuItem" Header="Cancel" Click="DownloadCancelMenuItemClick"/>-->
+                                <MenuItem x:Name="DownloadOpenFolderMenuItem" Header="Open Folder" Click="DownloadOpenFolderMenuItemClick" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
@@ -432,7 +440,7 @@
         </Button>
         <Slider x:Name="VolumeSlider" Margin="0,0,10,61" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="32" VerticalContentAlignment="Center" UseLayoutRounding="True" MinHeight="32" MaxHeight="32"/>
         <Slider x:Name="ProgressSlider" Margin="10,0,10,34" VerticalAlignment="Bottom" PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22"/>
-        <MediaElement x:Name="MediaPlayer" HorizontalAlignment="Left" Height="1" VerticalAlignment="Top" Width="1" Margin="0,0,0,0" Visibility="Hidden" MediaOpened="MediaPlayerMediaOpened" UnloadedBehavior="Stop" LoadedBehavior="Manual"/>
+        <MediaElement x:Name="MediaPlayer" HorizontalAlignment="Left" Height="1" VerticalAlignment="Top" Width="1" Margin="0,0,0,0" Visibility="Hidden" MediaOpened="MediaPlayerMediaOpened" UnloadedBehavior="Manual" LoadedBehavior="Manual"/>
         <Button x:Name="NewPlaylistButton" Margin="0,0,340,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="NewPlaylistButtonClick" ToolTip="New Playlist" HorizontalAlignment="Right" >
             <Image Source="Images/document-new.png"/>
         </Button>

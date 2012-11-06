@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Subsonic.Rest.Api;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using Subsonic.Rest.Api;
 using UltraSonic.Properties;
 using Image = System.Drawing.Image;
 
@@ -25,7 +22,6 @@ namespace UltraSonic
     public partial class MainWindow
     {
         private const string AppName = "UltraSonic";
-
 
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellableTasks = new ConcurrentDictionary<string, CancellationTokenSource>();
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
@@ -43,22 +39,32 @@ namespace UltraSonic
         private int _maxSearchResults = 25;
         private int _maxBitrate;
         private int _albumListMax = 10;
-        private User _currentUser;
+        private User CurrentUser { get; set; }
         private bool _useDiskCache = true;
-        private Playlist _currentPlaylist;
+        private Playlist CurrentPlaylist { get; set; }
 
         public MainWindow()
         {
+
             InitializeComponent();
 
             try
             {
+                _playlistTrackItems = new ObservableCollection<TrackItem>();
+
                 Height = Settings.Default.Height;
                 Width = Settings.Default.Width;
 
                 PopulateSettings();
                 MusicPlayStatusLabel.Content = "Stopped";
                 MusicTreeView.DataContext = ArtistItems;
+                var playlistTrackDragAndDrop = DataGridDragAndDrop<TrackItem>.Create(_playlistTrackItems, PlaylistTrackGrid, this, playlistDragPopup);
+
+                PlaylistTrackGrid.BeginningEdit += playlistTrackDragAndDrop.DataGridOnBeginEdit;
+                PlaylistTrackGrid.CellEditEnding += playlistTrackDragAndDrop.DataGridOnEndEdit;
+                PlaylistTrackGrid.PreviewMouseLeftButtonDown += playlistTrackDragAndDrop.DataGridOnMouseLeftButtonDown;
+                MainGrid.MouseLeftButtonUp += playlistTrackDragAndDrop.DataGridOnMouseLeftButtonUp;
+                MainGrid.MouseMove += playlistTrackDragAndDrop.DataGridOnMouseMove;
 
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
                 {
@@ -82,12 +88,12 @@ namespace UltraSonic
                 _timer.Tick += (o, s) => DownloadMonitor();
                 _timer.Start();
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
-                MediaPlayer.LoadedBehavior = MediaState.Manual;
                 MediaPlayer.Volume = Settings.Default.Volume;
                 VolumeSlider.Value = MediaPlayer.Volume*10;
             }
             catch (Exception ex)
             {
+                MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.StackTrace), string.Format("Exception in {0}", AppName), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -113,12 +119,7 @@ namespace UltraSonic
             UseProxy = Settings.Default.UseProxy;
             _maxSearchResults = Settings.Default.MaxSearchResults;
             _albumListMax = Settings.Default.AlbumListMax;
-
-            if (string.IsNullOrWhiteSpace(Settings.Default.CacheDirectory))
-                _cacheDirectory = Path.Combine(Path.Combine(_roamingPath, AppName), "Cache");
-            else
-                _cacheDirectory = Settings.Default.CacheDirectory;
-
+            _cacheDirectory = string.IsNullOrWhiteSpace(Settings.Default.CacheDirectory) ? Path.Combine(Path.Combine(_roamingPath, AppName), "Cache") : Settings.Default.CacheDirectory;
             _useDiskCache = Settings.Default.UseDiskCache;
 
             PopulateSearchResultItemComboBox();
@@ -126,7 +127,6 @@ namespace UltraSonic
             PopulateAlbumListMaxComboBox();
 
             PreferencesUseProxyCheckbox.IsChecked = UseProxy;
-
             PreferencesUsernameTextBox.Text = Username;
             PreferencesPasswordPasswordBox.Password = Password;
             PreferencesServerAddressTextBox.Text = ServerUrl;
@@ -169,6 +169,8 @@ namespace UltraSonic
             MaxBitrateComboBox.ItemsSource = listData;
             MaxBitrateComboBox.SelectedItem = _maxBitrate;
         }
+
+        private readonly ObservableCollection<TrackItem> _playlistTrackItems;
 
         private ObservableCollection<ArtistItem> ArtistItems
         {
@@ -385,11 +387,19 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                 {
-                    StopMusic();
-                    _currentArtist = child.Artist;
-                    _currentTitle = child.Title;
-                    MediaPlayer.Source = uri;
-                    ProgressSlider.Value = 0;
+                    try
+                    {
+                        StopMusic();
+                        MediaPlayer.Source = uri;
+                        ProgressSlider.Value = 0;
+                        _currentArtist = child.Artist;
+                        _currentTitle = child.Title;
+                        PlayMusic();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.StackTrace), string.Format("Exception in {0}", AppName), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 });
         }
 
@@ -397,7 +407,6 @@ namespace UltraSonic
         {
             UpdateAlbumArt(child.Id);
             QueueTrack(child);
-            MediaPlayer.MediaOpened += MediaPlayerPlayQueuedTrack;
         }
 
         private void UpdateAlbumArt(string id)

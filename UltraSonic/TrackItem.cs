@@ -4,7 +4,7 @@ using Subsonic.Rest.Api;
 
 namespace UltraSonic
 {
-    public class TrackItem : INotifyPropertyChanged
+    public sealed class TrackItem : INotifyPropertyChanged
     {
         public bool Selected { get; set; }
         public int DiscNumber { get; set; }
@@ -21,7 +21,7 @@ namespace UltraSonic
         public Child Track { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));

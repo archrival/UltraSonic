@@ -5,7 +5,7 @@ using Subsonic.Rest.Api;
 
 namespace UltraSonic
 {
-    public class ArtistItem : INotifyPropertyChanged
+    public sealed class ArtistItem : INotifyPropertyChanged
     {
         public ArtistItem()
         {
@@ -17,7 +17,7 @@ namespace UltraSonic
         public Artist Artist { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
