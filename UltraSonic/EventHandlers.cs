@@ -535,20 +535,9 @@ namespace UltraSonic
 
         private void DownloadTracks(ICollection selectedItems)
         {
-            if (selectedItems.Count > 0)
+            foreach (TrackItem item in selectedItems)
             {
-                string downloadDirectory = FileDownloadDialog();
-
-                if (string.IsNullOrWhiteSpace(downloadDirectory))
-                {
-                    foreach (TrackItem item in selectedItems)
-                    {
-                        CancellationTokenSource tokenSource = new CancellationTokenSource();
-                        CancellationToken token = tokenSource.Token;
-
-                        Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory, false, token);
-                    }
-                }
+                Process.Start(SubsonicApi.BuildDownloadUrl(item.Track.Id));
             }
         }
 
@@ -559,26 +548,12 @@ namespace UltraSonic
 
         private void MusicDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(() =>
-                {
-                    var selectedItems = MusicDataGrid.SelectedItems;
+            var selectedItems = MusicDataGrid.SelectedItems;
 
-                    if (selectedItems.Count > 0)
-                    {
-                        string downloadDirectory = FileDownloadDialog();
-
-                        if (!string.IsNullOrWhiteSpace(downloadDirectory))
-                        {
-                            foreach (AlbumItem item in selectedItems)
-                            {
-                                CancellationTokenSource tokenSource = new CancellationTokenSource();
-                                CancellationToken token = tokenSource.Token;
-
-                                Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory, false, token);
-                            }
-                        }
-                    }
-                });
+            foreach (AlbumItem item in selectedItems)
+            {
+                Process.Start(SubsonicApi.BuildDownloadUrl(item.Album.Id));
+            }
         }
 
         private void MusicDataGridAlbumListClick(object sender, RoutedEventArgs e)

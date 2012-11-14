@@ -89,10 +89,10 @@ namespace UltraSonic
         {
             if (task.Status == TaskStatus.RanToCompletion)
             {
-                Image coverArtimage = task.Result;
+                _currentAlbumArt = task.Result;
 
-                if (coverArtimage != null)
-                    Dispatcher.Invoke(() => MusicCoverArt.Source = coverArtimage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) MusicCoverArt.Width, (int) MusicCoverArt.Height));
+                if (_currentAlbumArt != null)
+                    Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) MusicCoverArt.Width, (int) MusicCoverArt.Height));
             }
         }
 

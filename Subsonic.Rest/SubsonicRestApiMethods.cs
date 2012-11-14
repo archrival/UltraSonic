@@ -994,6 +994,17 @@ namespace Subsonic.Rest.Api
         }
 
         /// <summary>
+        /// Downloads a given media file. Similar to stream, but this method returns the original media data without transcoding or downsampling.
+        /// </summary>
+        /// <param name="id">A string which uniquely identifies the file to download. Obtained by calls to GetMusicDirectory.</param>W
+        /// <returns>long</returns>
+        public string BuildDownloadUrl(string id)
+        {
+            Hashtable parameters = new Hashtable { { "id", id } };
+            return BuildRequestUriUser(Methods.download, _version100, parameters);
+        }
+
+        /// <summary>
         /// Streams a given media file.
         /// </summary>
         /// <param name="id">A string which uniquely identifies the file to stream. Obtained by calls to getMusicDirectory.</param>

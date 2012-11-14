@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Subsonic.Rest.Api;
 using UltraSonic.Properties;
@@ -35,6 +36,8 @@ namespace UltraSonic
         private string _currentArtist = string.Empty;
         private string _currentTitle = string.Empty;
         private string _currentAlbum = string.Empty;
+        private Image _currentAlbumArt;
+        public AlbumArt AlbumArtWindow;
         private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
         private TimeSpan _position;
         private bool _repeatPlaylist;
@@ -512,6 +515,37 @@ namespace UltraSonic
 
                         playlistItems.Add(starredItem);
                     });
+            }
+        }
+
+        private void MusicCoverArtMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (_currentAlbumArt != null && AlbumArtWindow == null)
+            {
+                BitmapSource bitmap;
+
+                if (_currentAlbumArt.Height > (SystemParameters.VirtualScreenHeight * 0.83))
+                {
+                    int newHeight = (int)(SystemParameters.VirtualScreenHeight * 0.83);
+                    bitmap = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 0, newHeight);
+                }
+                else
+                {
+                    bitmap = _currentAlbumArt.ToBitmapSource();
+                }
+
+                AlbumArt albumArtWindow = new AlbumArt
+                                              {
+                                                  Height = bitmap.Height,
+                                                  Width = bitmap.Width, 
+                                                  PopupAlbumArtImage = {Source = bitmap},
+                                                  Owner = this,
+                                              };
+
+                Dwm.DropShadowToWindow(albumArtWindow);
+                AlbumArtWindow = albumArtWindow;
+                albumArtWindow.Show();
+
             }
         }
     }

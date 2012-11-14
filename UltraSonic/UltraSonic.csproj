@@ -57,7 +57,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AlbumArt.xaml.cs">
+      <DependentUpon>AlbumArt.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ArtistItem.cs" />
+    <Compile Include="Dwm.cs" />
     <Compile Include="NowPlayingItem.cs" />
     <Compile Include="DataGridDragAndDrop.cs" />
     <Compile Include="EventHandlers.cs" />
@@ -71,6 +75,10 @@
     <Compile Include="Tasks.cs" />
     <Compile Include="TrackItem.cs" />
     <Compile Include="UIHelpers.cs" />
+    <Page Include="AlbumArt.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -397,7 +397,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1"/>
+        <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" MouseLeftButtonUp="MusicCoverArtMouseLeftButtonUp"/>
         <Label x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="55,0,0,83" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="10" Grid.Column="1"/>
         <Label x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="55,0,0,69" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="10" Grid.Column="1"/>
         <Label x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="55,0,0,55" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="10" Grid.Column="1"/>
