@@ -58,7 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ArtistItem.cs" />
-    <Compile Include="DownloadItem.cs" />
+    <Compile Include="NowPlayingItem.cs" />
     <Compile Include="DataGridDragAndDrop.cs" />
     <Compile Include="EventHandlers.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -198,7 +198,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\view-sort.png" />
-    <Content Include="WPFToolkit.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -137,30 +137,27 @@
 
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="168*"/>
+            <RowDefinition Height="55*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <StatusBar VerticalAlignment="Bottom" Height="29">
-            <Label x:Name="MusicTimeRemainingLabel" Content="0:00 / 0:00" Width="100" FontSize="10"/>
-            <Label x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
-            <Label x:Name="MusicArtistLabel"  Width="175" FontSize="10" FontWeight="Bold"/>
-            <Label x:Name="MusicTitleLabel" Width="175" FontSize="10" FontStyle="Italic"/>
+        <StatusBar VerticalAlignment="Bottom" Height="29" Grid.ColumnSpan="3" Grid.Row="1">
+            <StatusBarItem x:Name="MusicTimeRemainingLabel" Width="100" FontSize="10"/>
+            <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
+            <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
+            <StatusBarItem x:Name="DownloadStatusLabel" Width="100" FontSize="10"/>
         </StatusBar>
-        <TabControl Margin="10,5,10,98">
+        <TabControl Margin="10,5,10,108" Grid.ColumnSpan="3" Grid.RowSpan="2">
             <TabItem Header="Music" x:Name="MusicTab">
-                <Grid Background="#FFE5E5E5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="6*"/>
-                        <RowDefinition Height="32*"/>
-                        <RowDefinition Height="273*"/>
-                        <RowDefinition Height="264*"/>
-                    </Grid.RowDefinitions>
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="329*"/>
-                        <ColumnDefinition Width="309*"/>
-                        <ColumnDefinition Width="401*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <TreeView x:Name="MusicTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="MusicTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.RowSpan="3">
                         <TreeView.ContextMenu>
@@ -176,10 +173,7 @@
                             </HierarchicalDataTemplate>
                         </TreeView.Resources>
                     </TreeView>
-                    <Border BorderThickness="1" Grid.Row="3" Background="White" BorderBrush="#FF000000">
-                        <Image x:Name="MusicCoverArt" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.Row="3" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
-                    </Border>
-                    <DataGrid x:Name="MusicDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="3">
+                    <DataGrid x:Name="MusicDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="MusicDataGridSelectionChanged" MouseDoubleClick="MusicDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.Column="1" Grid.RowSpan="4">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="MusicDataGridAdd" Header="Add To Playlist" Click="MusicDataGridAddClick" />
@@ -211,7 +205,7 @@
                             <DataGridTextColumn Binding="{Binding Name}" Header="Album" IsReadOnly="True" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" Grid.Column="2" Grid.RowSpan="3" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
+                    <DataGrid x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" Grid.Column="2" Grid.RowSpan="4" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="TrackDataGridAdd" Header="Add To Playlist" Click="TrackDataGridAddClick" />
@@ -227,7 +221,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
-                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Title" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True"/>
@@ -237,7 +231,24 @@
                             <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="PlaylistsDataGridSelectionChanged" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" LoadingRow="DataGridLoadingRow">
+                    <!-- Drag and Drop Popup -->
+                    <Popup x:Name="playlistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">                         
+                        <Border BorderBrush="LightSteelBlue" BorderThickness="2" Background="White" Opacity="0.75">
+                            <StackPanel Orientation="Horizontal" Margin="4,3,8,3">
+                                <Image Source="/Images/view-sort.png" Width="24" Height="24" />
+                                <TextBlock FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding ElementName=me, Path=DraggedItem.Name}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </Popup>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Playlists" x:Name="PlaylistTab">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="124*"/>
+                        <ColumnDefinition Width="124*"/>
+                    </Grid.ColumnDefinitions>
+                    <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="PlaylistsDataGridSelectionChanged" LoadingRow="DataGridLoadingRow" Grid.Column="0">
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick" />
@@ -245,12 +256,12 @@
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="4*" />
-                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Tracks" IsReadOnly="True" Width="1*" />
-                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="2*"/>
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="auto" />
+                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Titles" IsReadOnly="True" Width="auto" />
+                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="auto"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" >
+                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" >
                         <DataGrid.ContextMenu>
                             <ContextMenu >
                                 <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick" />
@@ -265,7 +276,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True" />
-                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Track" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Title" IsReadOnly="True" />
                             <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True"/>
@@ -273,39 +284,49 @@
                             <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
-                         </DataGrid.Columns>
-                      </DataGrid> 
-                    <!-- Drag and Drop Popup -->
-                    <Popup x:Name="playlistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">                         
-                        <Border BorderBrush="LightSteelBlue" BorderThickness="2" Background="White" Opacity="0.75">
-                            <StackPanel Orientation="Horizontal" Margin="4,3,8,3">
-                                <Image Source="/Images/view-sort.png" Width="24" Height="24" />
-                                <TextBlock FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding ElementName=me, Path=DraggedItem.Name}" Margin="8,0,0,0" />
-                            </StackPanel>
-                        </Border>
-                    </Popup>
-                </Grid>
-            </TabItem>
-            <TabItem x:Name="DownloadsTab" Header="Downloads">
-                <Grid Background="#FFE5E5E5">
-                    <DataGrid x:Name="DownloadGrid" GridLinesVisibility="None" AlternatingRowBackground="Gainsboro" CanUserResizeRows="False" CanUserAddRows="False"  CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsTextSearchEnabled="True" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="3" ToolTip="Playlists">
-                        <DataGrid.ContextMenu>
-                            <ContextMenu >
-                                <!--<MenuItem x:Name="DownloadCancelMenuItem" Header="Cancel" Click="DownloadCancelMenuItemClick"/>-->
-                                <MenuItem x:Name="DownloadOpenFolderMenuItem" Header="Open Folder" Click="DownloadOpenFolderMenuItemClick" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Source}" Header="Source" IsReadOnly="True" Width="*" />
-                            <DataGridTextColumn Binding="{Binding Path}" Header="Path" IsReadOnly="True" Width="*" />
-                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="*"/>
-                            <DataGridTextColumn Binding="{Binding Status}" Header="Status" IsReadOnly="True" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
+            <TabItem x:Name="SocialTab" Header="Social">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="497*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <DataGrid x:Name="NowPlayingDataGrid" Grid.Column="0" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.RowSpan="2">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn x:Name="NowPlayingGridStarredColumn">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="NowPlayingGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="NowPlayingGridStarredCheckBoxClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Cover Art">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Image}" Height="150" Width="150" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding User}" Header="User" IsReadOnly="True" Width="auto"/>
+                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True" Width="auto"/>
+                            <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True" Width="auto"/>
+                            <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True" Width="auto"/>
+                            <DataGridTextColumn Binding="{Binding When}" Header="When" IsReadOnly="True" Width="auto"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <ListView x:Name="ChatListView" Grid.Column="1"/>
+                    <TextBox x:Name="ChatListInput" Grid.Column="1" Grid.Row="1" KeyDown="ChatListTextBoxKeyDown" />
+                </Grid>
+            </TabItem>
             <TabItem Header="Settings">
-                <Grid Background="#FFE5E5E5">
+                <Grid>
                     <Label Content="Username" Height="23" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="136"/>
                     <Label Content="Password" Height="23" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="136"/>
                     <Label Content="Server Address" Height="23" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="136"/>
@@ -340,6 +361,10 @@
                     <Label Content="License Information" HorizontalAlignment="Right" Margin="0,17,167,0" VerticalAlignment="Top" Width="140" FontWeight="Bold"/>
                     <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Margin="159,332,0,0" VerticalAlignment="Top" Checked="UseDiskCacheCheckboxChecked" Unchecked="UseDiskCacheCheckboxUnChecked"/>
                     <Label Content="Cache Directory" HorizontalAlignment="Left" Margin="10,354,0,0" VerticalAlignment="Top" Width="136"/>
+                    <Label Content="Now Playing Interval" HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Width="136"/>
+                    <ComboBox x:Name="NowPlayingIntervalComboBox" HorizontalAlignment="Left" Margin="159,385,0,0" VerticalAlignment="Top" Width="261"/>
+                    <Label Content="Chat Messages Interval" HorizontalAlignment="Left" Margin="10,416,0,0" VerticalAlignment="Top" Width="136"/>
+                    <ComboBox x:Name="ChatMessagesIntervalComboBox" HorizontalAlignment="Left" Margin="159,416,0,0" VerticalAlignment="Top" Width="261"/>
                     <TextBox x:Name="CacheDirectoryTextBox" HorizontalAlignment="Left" Height="23" Margin="159,357,0,0" VerticalAlignment="Top" Width="261"/>
                     <Label Content="Server Information" HorizontalAlignment="Right" Margin="0,181,113,0" VerticalAlignment="Top" Width="194" FontWeight="Bold"/>
                     <Label Content="REST API:" HorizontalAlignment="Right" Margin="0,212,242,0" VerticalAlignment="Top" Width="65"/>
@@ -377,22 +402,26 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button x:Name="PreviousButton" HorizontalAlignment="Left" Margin="10,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.PreviousTrack" ToolTip="Previous Track">
+        <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1"/>
+        <Label x:Name="MusicArtistLabel"  Width="175" FontSize="10" FontWeight="Normal" Margin="55,0,0,83" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="1"/>
+        <Label x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="55,0,0,69" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="1"/>
+        <Label x:Name="MusicAlbumLabel"  Width="175" FontSize="10" FontWeight="Bold" Margin="55,0,0,55" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="1"/>
+        <Button x:Name="PreviousButton" HorizontalAlignment="Left" Margin="10,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.PreviousTrack" ToolTip="Previous Title" Grid.Row="1">
             <Image Source="Images/media-skip-backward.png"/>
         </Button>
-        <Button x:Name="StopButton" HorizontalAlignment="Left" Margin="47,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.Stop" ToolTip="Stop">
+        <Button x:Name="StopButton" HorizontalAlignment="Left" Margin="47,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.Stop" ToolTip="Stop" Grid.Row="1">
             <Image Source="Images/media-playback-stop.png"/>
         </Button>
-        <Button x:Name="PlayButton" HorizontalAlignment="Left" Margin="84,0,0,61" VerticalAlignment="Bottom" Width="45" Height="32" Command="MediaCommands.Play" ToolTip="Play">
+        <Button x:Name="PlayButton" HorizontalAlignment="Left" Margin="84,0,0,61" VerticalAlignment="Bottom" Width="45" Height="32" Command="MediaCommands.Play" ToolTip="Play" Grid.Row="1">
             <Image Source="Images/media-playback-start.png"/>
         </Button>
-        <Button x:Name="PauseButton" HorizontalAlignment="Left" Margin="134,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.Pause" ToolTip="Pause">
+        <Button x:Name="PauseButton" HorizontalAlignment="Left" Margin="134,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.Pause" ToolTip="Pause" Grid.Row="1">
             <Image Source="Images/media-playback-pause.png"/>
         </Button>
-        <Button x:Name="NextButton" HorizontalAlignment="Left" Margin="171,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.NextTrack" ToolTip="Next Track">
+        <Button x:Name="NextButton" HorizontalAlignment="Left" Margin="171,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.NextTrack" ToolTip="Next Title" Grid.Row="1">
             <Image Source="Images/media-skip-forward.png"/>
         </Button>
-        <Button x:Name="RepeatButton" HorizontalAlignment="Right" Margin="0,0,266,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="RepeatButtonClick" ToolTip="Repeat: Disabled">
+        <Button x:Name="RepeatButton" HorizontalAlignment="Right" Margin="0,0,266,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="RepeatButtonClick" ToolTip="Repeat: Disabled" Grid.Column="2" Grid.Row="1">
             <Image x:Name="RepeatButtonIcon">
                 <Image.Style>
                     <Style TargetType="Image" >
@@ -409,10 +438,10 @@
                 </Image.Style>
             </Image>
         </Button>
-        <Button x:Name="ShuffleButton" HorizontalAlignment="Right" Margin="0,0,231,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="ShuffleButtonClick" ToolTip="Shuffle Playlist">
+        <Button x:Name="ShuffleButton" HorizontalAlignment="Right" Margin="0,0,231,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="ShuffleButtonClick" ToolTip="Shuffle Playlist" Grid.Column="2" Grid.Row="1">
             <Image Source="Images/media-playlist-shuffle.png"/>
         </Button>
-        <Button x:Name="MuteButton"  HorizontalAlignment="Right" Margin="0,0,196,61" VerticalAlignment="Bottom" Height="32" Width="32" Click="MuteButtonClick" ToolTip="Mute Volume">
+        <Button x:Name="MuteButton"  HorizontalAlignment="Right" Margin="0,0,196,61" VerticalAlignment="Bottom" Height="32" Width="32" Click="MuteButtonClick" ToolTip="Mute Volume" Grid.Column="2" Grid.Row="1">
             <Image x:Name="MuteButtonIcon">
                 <Image.Style>
                     <Style TargetType="Image" >
@@ -438,18 +467,18 @@
                 </Image.Style>
             </Image>
         </Button>
-        <Slider x:Name="VolumeSlider" Margin="0,0,10,61" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="32" VerticalContentAlignment="Center" UseLayoutRounding="True" MinHeight="32" MaxHeight="32"/>
-        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" VerticalAlignment="Bottom" PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22"/>
+        <Slider x:Name="VolumeSlider" Margin="0,0,10,61" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="32" VerticalContentAlignment="Center" UseLayoutRounding="True" MinHeight="32" MaxHeight="32" Grid.Column="2" Grid.Row="1"/>
+        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" VerticalAlignment="Bottom" PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22" Grid.ColumnSpan="3" Grid.Row="1"/>
         <MediaElement x:Name="MediaPlayer" HorizontalAlignment="Left" Height="1" VerticalAlignment="Top" Width="1" Margin="0,0,0,0" Visibility="Hidden" MediaOpened="MediaPlayerMediaOpened" UnloadedBehavior="Manual" LoadedBehavior="Manual"/>
-        <Button x:Name="NewPlaylistButton" Margin="0,0,340,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="NewPlaylistButtonClick" ToolTip="New Playlist" HorizontalAlignment="Right" >
+        <Button x:Name="NewPlaylistButton" Margin="0,0,340,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="NewPlaylistButtonClick" ToolTip="New Playlist" HorizontalAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" >
             <Image Source="Images/document-new.png"/>
         </Button>
-        <Button x:Name="SavePlaylistButton" Margin="0,0,303,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="SavePlaylistButtonClick" ToolTip="Save Playlist" HorizontalAlignment="Right" >
+        <Button x:Name="SavePlaylistButton" Margin="0,0,303,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="SavePlaylistButtonClick" ToolTip="Save Playlist" HorizontalAlignment="Right" Grid.Column="2" Grid.Row="1" >
             <Image Source="Images/document-save.png"/>
         </Button>
-        <Image Source="Images\stock_search.png" Margin="0,4,209,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"/>
-        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Left" Width="155" Grid.Column="0" VerticalAlignment="Top" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="187,5,0,0"/>
-        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="197" VerticalAlignment="Top" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,5,10,0" VerticalContentAlignment="Bottom"/>
+        <Image Source="Images\stock_search.png" Margin="0,5,215,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Grid.Column="2"/>
+        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Right" Width="200" VerticalAlignment="Top" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="0,5,240,0" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="200" VerticalAlignment="Top" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,5,10,0" Grid.Column="2" />
     </Grid>    
 </Window>
     

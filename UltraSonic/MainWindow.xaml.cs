@@ -28,20 +28,25 @@ namespace UltraSonic
         private string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private readonly ConcurrentQueue<Uri> _streamItems = new ConcurrentQueue<Uri>();
-        private readonly ConcurrentQueue<DownloadItem> _downloadItems = new ConcurrentQueue<DownloadItem>();
         private readonly DispatcherTimer _timer = new DispatcherTimer();
+        private readonly DispatcherTimer _nowPlayingTimer = new DispatcherTimer();
+        private readonly DispatcherTimer _chatMessagesTimer = new DispatcherTimer();
         private string _artistFilter = string.Empty;
         private string _currentArtist = string.Empty;
         private string _currentTitle = string.Empty;
+        private string _currentAlbum = string.Empty;
         private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
         private TimeSpan _position;
         private bool _repeatPlaylist;
         private int _maxSearchResults = 25;
         private int _maxBitrate;
         private int _albumListMax = 10;
+        private int _nowPlayingInterval = 30;
+        private int _chatMessagesInterval = 5;
         private User CurrentUser { get; set; }
         private bool _useDiskCache = true;
         private Playlist CurrentPlaylist { get; set; }
+        private readonly ObservableCollection<NowPlayingItem> _nowPlayingItems = new ObservableCollection<NowPlayingItem>();
 
         public MainWindow()
         {
@@ -80,16 +85,25 @@ namespace UltraSonic
                     {
                         UpdateArtists();
                         UpdatePlaylists();
+                        UpdateNowPlaying();
+                        UpdateChatMessages();
                     }
                 }
 
-                _timer.Interval = TimeSpan.FromMilliseconds(1000);
+                _timer.Interval = TimeSpan.FromMilliseconds(500);
                 _timer.Tick += (o, s) => Ticktock();
-                _timer.Tick += (o, s) => DownloadMonitor();
                 _timer.Start();
+                _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
+                _nowPlayingTimer.Tick += (o, s) => UpdateNowPlaying();
+                _nowPlayingTimer.Start();
+                _chatMessagesTimer.Interval = TimeSpan.FromSeconds(_chatMessagesInterval);
+                _chatMessagesTimer.Tick += (o, s) => UpdateChatMessages();
+                _chatMessagesTimer.Start();
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
                 MediaPlayer.Volume = Settings.Default.Volume;
                 VolumeSlider.Value = MediaPlayer.Volume*10;
+                NowPlayingDataGrid.ItemsSource = _nowPlayingItems;
+                NowPlayingDataGrid.DataContext = _nowPlayingItems;
             }
             catch (Exception ex)
             {
@@ -121,10 +135,14 @@ namespace UltraSonic
             _albumListMax = Settings.Default.AlbumListMax;
             _cacheDirectory = string.IsNullOrWhiteSpace(Settings.Default.CacheDirectory) ? Path.Combine(Path.Combine(_roamingPath, AppName), "Cache") : Settings.Default.CacheDirectory;
             _useDiskCache = Settings.Default.UseDiskCache;
+            _nowPlayingInterval = Settings.Default.NowPlayingInterval;
+            _chatMessagesInterval = Settings.Default.ChatMessagesInterval;
 
             PopulateSearchResultItemComboBox();
             PopulateMaxBitrateComboBox();
             PopulateAlbumListMaxComboBox();
+            PopulateNowPlayingIntervalComboBox();
+            PopulateChatMessagesIntervalComboBox();
 
             PreferencesUseProxyCheckbox.IsChecked = UseProxy;
             PreferencesUsernameTextBox.Text = Username;
@@ -160,6 +178,26 @@ namespace UltraSonic
 
             AlbumListMaxComboBox.ItemsSource = listData;
             AlbumListMaxComboBox.SelectedItem = _albumListMax;
+        }
+
+        private void PopulateNowPlayingIntervalComboBox()
+        {
+            List<int> listData = new List<int>();
+            for (int i = 1; i <= 300; i++)
+                listData.Add(i);
+
+            NowPlayingIntervalComboBox.ItemsSource = listData;
+            NowPlayingIntervalComboBox.SelectedItem = _nowPlayingInterval;
+        }
+
+        private void PopulateChatMessagesIntervalComboBox()
+        {
+            List<int> listData = new List<int>();
+            for (int i = 1; i <= 300; i++)
+                listData.Add(i);
+
+            ChatMessagesIntervalComboBox.ItemsSource = listData;
+            ChatMessagesIntervalComboBox.SelectedItem = _chatMessagesInterval;
         }
 
         private void PopulateMaxBitrateComboBox()
@@ -237,74 +275,6 @@ namespace UltraSonic
             UpdateTitle();
         }
 
-        private void DownloadMonitor()
-        {
-            ObservableCollection<DownloadItem> downloadItems = DownloadGrid.ItemsSource as ObservableCollection<DownloadItem>;
-
-            DownloadItem downloadItem;
-
-            if (downloadItems == null)
-                downloadItems = new ObservableCollection<DownloadItem>();
-
-            while (_downloadItems.TryDequeue(out downloadItem))
-            {
-                switch (downloadItem.Task.Status)
-                {
-                    case TaskStatus.Running:
-                    case TaskStatus.WaitingForActivation:
-                        downloadItem.Status = "In Progress";
-                        break;
-                    case TaskStatus.Canceled:
-                        downloadItem.Status = "Canceled";
-                        downloadItem.IsComplete = true;
-                        break;
-                    case TaskStatus.RanToCompletion:
-                        downloadItem.Status = "Complete";
-                        downloadItem.IsComplete = true;
-                        break;
-                    case TaskStatus.WaitingToRun:
-                    case TaskStatus.Created:
-                        downloadItem.Status = "Waiting";
-                        break;
-                }
-
-                downloadItems.Add(downloadItem);
-            }
-
-            Dispatcher.Invoke(() =>
-                                  {
-
-                                      foreach (DownloadItem di in downloadItems.Where(d => !d.IsComplete))
-                                      {
-                                          switch (di.Task.Status)
-                                          {
-                                              case TaskStatus.Running:
-                                              case TaskStatus.WaitingForActivation:
-                                                  di.Status = "In Progress";
-                                                  break;
-                                              case TaskStatus.Canceled:
-                                                  di.Status = "Canceled";
-                                                  di.IsComplete = true;
-                                                  break;
-                                              case TaskStatus.RanToCompletion:
-                                                  di.Status = "Complete";
-                                                  di.IsComplete = true;
-                                                  break;
-                                              case TaskStatus.WaitingToRun:
-                                              case TaskStatus.Created:
-                                                  di.Status = "Waiting";
-                                                  break;
-                                          }
-
-                                          di.Duration = DateTime.Now - di.StartDate;
-                                      }
-
-                                      DownloadGrid.ItemsSource = downloadItems;
-                                      DownloadGrid.DataContext = downloadItems;
-                                      DownloadGrid.Items.Refresh();
-                                  });
-        }
-
         private void UpdateArtists()
         {
             SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
@@ -313,6 +283,16 @@ namespace UltraSonic
         private void UpdatePlaylists()
         {
             SubsonicApi.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
+        }
+
+        private void UpdateNowPlaying()
+        {
+            SubsonicApi.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
+        }
+
+        private void UpdateChatMessages()
+        {
+            SubsonicApi.GetChatMessagesAsync(null, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
         }
 
         private void UpdateLicenseInformation(License license)
@@ -348,8 +328,8 @@ namespace UltraSonic
             {
                 if (_streamItems.All(s => s.OriginalString == fileName) && IsTrackCached(fileName, child))
                 {
-                    UpdateAlbumArt(child.Id);
                     QueueTrack(fileNameUri, child);
+                    UpdateAlbumArt(child.Id);
                 }
                 else
                 {
@@ -359,6 +339,7 @@ namespace UltraSonic
                     
                     if (_useDiskCache)
                     {
+                        DownloadStatusLabel.Content = "Caching...";
                         Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
                         streamTask.ContinueWith(t => QueueTrack(streamTask, child));
                     }
@@ -394,6 +375,7 @@ namespace UltraSonic
                         ProgressSlider.Value = 0;
                         _currentArtist = child.Artist;
                         _currentTitle = child.Title;
+                        _currentAlbum = child.Album;
                         PlayMusic();
                     }
                     catch (Exception ex)

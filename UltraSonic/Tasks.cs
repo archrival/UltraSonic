@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using Subsonic.Rest.Api;
+using Image = System.Drawing.Image;
 
 namespace UltraSonic
 {
@@ -39,6 +41,23 @@ namespace UltraSonic
             }
         }
 
+        private void UpdateNowPlayingAlbumImageArt(Task<Image> task, NowPlayingItem nowPlayingItem)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Image coverArtimage = task.Result;
+
+                    if (coverArtimage != null)
+                    {
+                        nowPlayingItem.Image = coverArtimage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                        NowPlayingDataGrid.Items.Refresh();
+                    }
+                });
+            }
+        }
+
         private void UpdateTrackListingGrid(Task<Directory> task)
         {
             if (task.Status == TaskStatus.RanToCompletion)
@@ -52,16 +71,18 @@ namespace UltraSonic
 
         private void QueueTrack(Task<long> task, Child child)
         {
-            if (task.Status == TaskStatus.RanToCompletion)
-            {
-                Dispatcher.Invoke(() =>
-                    {
-                        Uri thisUri;
-                        _streamItems.TryDequeue(out thisUri);
+            Dispatcher.Invoke(() =>
+                                  {
+                                      DownloadStatusLabel.Content = string.Empty;
 
-                        QueueTrack(thisUri, child);
-                    });
-            }
+                                      if (task.Status == TaskStatus.RanToCompletion)
+                                      {
+                                          Uri thisUri;
+                                          _streamItems.TryDequeue(out thisUri);
+
+                                          QueueTrack(thisUri, child);
+                                      }
+                                  });
         }
 
         private void UpdateCoverArt(Task<Image> task)
@@ -71,7 +92,7 @@ namespace UltraSonic
                 Image coverArtimage = task.Result;
 
                 if (coverArtimage != null)
-                    Dispatcher.Invoke(() => MusicCoverArt.Source = coverArtimage.ToBitmapSource());
+                    Dispatcher.Invoke(() => MusicCoverArt.Source = coverArtimage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) MusicCoverArt.Width, (int) MusicCoverArt.Height));
             }
         }
 
@@ -163,12 +184,64 @@ namespace UltraSonic
 
         private void PopulateSearchResults(Task<SearchResult2> task)
         {
+            Dispatcher.Invoke(() =>
+                                  {
+                                      SearchStatusLabel.Content = string.Empty;
+
+                                      if (task.Status == TaskStatus.RanToCompletion)
+                                      {
+                                          SearchResult2 searchResult = task.Result;
+
+                                          UpdateAlbumGrid(searchResult.Album);
+                                          UpdateTrackListingGrid(searchResult.Song);
+                                      }
+                                  });
+        }
+
+        private void UpdateNowPlaying(Task<NowPlaying> task)
+        {
             if (task.Status == TaskStatus.RanToCompletion)
             {
-                SearchResult2 searchResult = task.Result;
+                Dispatcher.Invoke(() =>
+                                      {
+                                          foreach (var item in task.Result.Entry)
+                                          {
+                                              NowPlayingItem nowPlayingItem = new NowPlayingItem
+                                                                                  {
+                                                                                      Album = item.Album,
+                                                                                      Artist = item.Artist,
+                                                                                      Entry = item,
+                                                                                      Starred = (item.Starred != default(DateTime)),
+                                                                                      Title = item.Title,
+                                                                                      User = item.Username,
+                                                                                      When = (DateTime.Now - TimeSpan.FromMinutes(item.MinutesAgo)).ToShortTimeString()
+                                                                                  };
 
-                UpdateAlbumGrid(searchResult.Album);
-                UpdateTrackListingGrid(searchResult.Song);
+                                              if (!_nowPlayingItems.Any(a => a.Album == nowPlayingItem.Album && a.Artist == nowPlayingItem.Artist && a.Starred == nowPlayingItem.Starred && a.Title == nowPlayingItem.Title))
+                                              {
+                                                  _nowPlayingItems.Add(nowPlayingItem);
+                                                  Task<Image> coverArtTask = SubsonicApi.GetCoverArtAsync(item.CoverArt);
+                                                  coverArtTask.ContinueWith(t => UpdateNowPlayingAlbumImageArt(coverArtTask, nowPlayingItem));
+                                              }
+                                          }
+                                      });
+            }
+        }
+
+        private void UpdateChatMessages(Task<ChatMessages> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                Dispatcher.Invoke(() =>
+                                      {
+                                          ChatListView.Items.Clear();
+                                          foreach (var item in task.Result.ChatMessage)
+                                          {
+                                              DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                                              dtDateTime = dtDateTime.AddMilliseconds(item.Time).ToLocalTime();
+                                              ChatListView.Items.Add(string.Format("[{0}] <{1}> {2}", dtDateTime, item.Username, item.Message));
+                                          }
+                                      });
             }
         }
 
@@ -180,7 +253,6 @@ namespace UltraSonic
 
                 Dispatcher.Invoke(() =>
                     {
-                        DownloadsTab.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
                         MusicDataGridDownload.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
                         TrackDataGridDownload.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
                         PlaylistTrackGridDownload.Visibility = CurrentUser.DownloadRole ? Visibility.Visible : Visibility.Collapsed;
@@ -208,6 +280,8 @@ namespace UltraSonic
 
                         if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
                             SubsonicApi.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
+                        else
+                            UserAvatarImage.Visibility = Visibility.Collapsed;
                     });
             }
         }

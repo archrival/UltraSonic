@@ -43,8 +43,12 @@ namespace UltraSonic
                 _maxSearchResults = (int) MaxSearchResultsComboBox.SelectedValue;
                 _maxBitrate = (int) MaxBitrateComboBox.SelectedValue;
                 _albumListMax = (int) AlbumListMaxComboBox.SelectedValue;
+                _nowPlayingInterval = (int) NowPlayingIntervalComboBox.SelectedValue;
+                _chatMessagesInterval = (int) ChatMessagesIntervalComboBox.SelectedValue;
                 _cacheDirectory = CacheDirectoryTextBox.Text;
                 if (UseDiskCacheCheckBox.IsChecked != null) _useDiskCache = UseDiskCacheCheckBox.IsChecked.Value;
+
+                _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -59,6 +63,8 @@ namespace UltraSonic
                 Settings.Default.AlbumListMax = _albumListMax;
                 Settings.Default.CacheDirectory = _cacheDirectory;
                 Settings.Default.UseDiskCache = _useDiskCache;
+                Settings.Default.NowPlayingInterval = _nowPlayingInterval;
+                Settings.Default.ChatMessagesInterval = _chatMessagesInterval;
 
                 Settings.Default.Save();
 
@@ -163,6 +169,7 @@ namespace UltraSonic
                 title = string.Format("{0} - {1} - {2} [{3}]", AppName, _currentArtist, _currentTitle, MusicPlayStatusLabel.Content);
                 MusicArtistLabel.Content = _currentArtist;
                 MusicTitleLabel.Content = _currentTitle;
+                MusicAlbumLabel.Content = _currentAlbum;
             }
 
             Title = title;
@@ -497,7 +504,26 @@ namespace UltraSonic
                 string searchQuery = GlobalSearchTextBox.Text;
 
                 if (!string.IsNullOrWhiteSpace(searchQuery))
+                {
+                    MusicDataGrid.ItemsSource = null;
+                    TrackDataGrid.ItemsSource = null;
+                    SearchStatusLabel.Content = "Searching...";
                     SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
+                }
+            }
+        }
+
+        private void ChatListTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                string chatMessage = ChatListInput.Text;
+
+                if (!string.IsNullOrWhiteSpace(chatMessage))
+                {
+                    SubsonicApi.AddChatMessageAsync(chatMessage).ContinueWith(t => UpdateChatMessages());
+                    ChatListInput.Text = string.Empty;
+                }
             }
         }
 
@@ -507,7 +533,7 @@ namespace UltraSonic
         }
 
 
-        private void DownloadTracks(IList selectedItems)
+        private void DownloadTracks(ICollection selectedItems)
         {
             if (selectedItems.Count > 0)
             {
@@ -521,8 +547,6 @@ namespace UltraSonic
                         CancellationToken token = tokenSource.Token;
 
                         Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Track.Id, downloadDirectory, false, token);
-                        DownloadItem downloadItem = new DownloadItem { Source = item.Track.Title, Path = downloadDirectory, Child = item.Track, StartDate = DateTime.Now, Task = downloadTask, CancelTokenSource = tokenSource };
-                        _downloadItems.Enqueue(downloadItem);
                     }
                 }
             }
@@ -551,8 +575,6 @@ namespace UltraSonic
                                 CancellationToken token = tokenSource.Token;
 
                                 Task<long> downloadTask = SubsonicApi.DownloadAsync(item.Album.Id, downloadDirectory, false, token);
-                                DownloadItem downloadItem = new DownloadItem { Source = item.Album.Title, Path = downloadDirectory, Child = item.Album, StartDate = DateTime.Now, Task = downloadTask, CancelTokenSource = tokenSource };
-                                _downloadItems.Enqueue(downloadItem);
                             }
                         }
                     }
@@ -697,6 +719,23 @@ namespace UltraSonic
             });
         }
 
+        private void NowPlayingGridStarredCheckBoxClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var source = e.Source as CheckBox;
+                var item = NowPlayingDataGrid.CurrentItem as NowPlayingItem;
+
+                if (item != null && source != null)
+                {
+                    if (source.IsChecked.HasValue && source.IsChecked.Value)
+                        SubsonicApi.StarAsync(new List<string> { item.Entry.Id });
+                    else
+                        SubsonicApi.UnStarAsync(new List<string> { item.Entry.Id });
+                }
+            });
+        }
+
         private void PlaylistStarredCheckBoxClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -736,20 +775,6 @@ namespace UltraSonic
         private void ArtistRefreshClick(object sender, RoutedEventArgs e)
         {
             UpdateArtists();
-        }
-
-        private void DownloadCancelMenuItemClick(object sender, RoutedEventArgs e)
-        {
-            foreach (DownloadItem item in DownloadGrid.SelectedItems)
-                item.CancelTokenSource.Cancel();
-        }
-
-        private void DownloadOpenFolderMenuItemClick(object sender, RoutedEventArgs e)
-        {
-            DownloadItem downloadItem = DownloadGrid.SelectedItem as DownloadItem;
-
-            if (downloadItem != null)
-                Process.Start(downloadItem.Path);
         }
     }
 }
