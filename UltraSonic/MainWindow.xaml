@@ -105,6 +105,49 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="FlashingHeader" TargetType="TabItem">
+            <Setter Property="TabItem.HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <!--Make The Header -->
+                        <TextBlock x:Name="header" Foreground ="Black" Text="{Binding}"/>
+                        <!--Make The Background Flash-->
+                        <DataTemplate.Triggers>
+                            <Trigger Property="Visibility" Value="Visible">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard Storyboard.TargetName="header" AutoReverse="True" RepeatBehavior="Forever" Storyboard.TargetProperty="Foreground.Color">
+                                            <ColorAnimation To="Transparent" AutoReverse="True" Duration="0:0:.75" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="ChatMessageUserCellTemplate">
+            <TextBlock FontWeight="Bold" Foreground="Black" TextAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}&lt;{0}&gt;">
+                        <Binding Path="User"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="ChatMessageTimeStampCellTemplate">
+            <TextBlock Foreground="Black" TextAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}[{0}]">
+                        <Binding Path="TimeStamp"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="ChatMessageCellTemplate">
+            <TextBlock FontWeight="Normal" Foreground="Black" TextAlignment="Left" Text="{Binding Path=Message}" Width="Auto"/>
+        </DataTemplate>
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="MediaCommands.Play" Executed="PlayButtonClick" CanExecute="CommandCanExecute"/>
@@ -257,7 +300,7 @@
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="auto"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" Grid.ColumnSpan="2">
+                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" Grid.ColumnSpan="2" PreviewKeyDown="PreviewKeyDownHandler">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick"/>
@@ -284,7 +327,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="SocialTab" Header="Social">
+            <TabItem x:Name="SocialTab" Header="Social" GotFocus="SocialTabGotFocus">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="497*"/>
@@ -294,7 +337,7 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <DataGrid x:Name="NowPlayingDataGrid" Grid.Column="0" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.RowSpan="2">
+                    <DataGrid x:Name="NowPlayingDataGrid" Grid.Column="0" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.RowSpan="2" MouseDoubleClick="NowPlayingDataGridMouseDoubleClick">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem x:Name="NowPlayingRefresh" Header="Refresh" Click="NowPlayingRefreshClick"/>
@@ -323,11 +366,23 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <ListView x:Name="ChatListView" Grid.Column="1">
+                        <ListView.Resources>
+                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </ListView.Resources>
                         <ListView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem x:Name="ChatListRefresh" Header="Refresh" Click="ChatListRefreshClick"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn CellTemplate="{StaticResource ChatMessageTimeStampCellTemplate}"/>
+                                <GridViewColumn CellTemplate="{StaticResource ChatMessageUserCellTemplate}"/>                                
+                                <GridViewColumn CellTemplate="{StaticResource ChatMessageCellTemplate}"/>
+                            </GridView>
+                        </ListView.View>
                     </ListView>
                     <TextBox x:Name="ChatListInput" Grid.Column="1" Grid.Row="1" KeyDown="ChatListTextBoxKeyDown"/>
                 </Grid>
@@ -410,9 +465,11 @@
             </TabItem>
         </TabControl>
         <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" MouseLeftButtonUp="MusicCoverArtMouseLeftButtonUp" RenderTransformOrigin="0.689,0.343"/>
-        <TextBlock x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="55,0,0,90" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="13" Grid.Column="1"/>
-        <TextBlock x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="55,0,0,75" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="13" Grid.Column="1"/>
-        <TextBlock x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="55,0,0,60" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="13" Grid.Column="1" />
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" Height="40" Margin="55,0,0,61" Width="175" MouseLeftButtonUp="StackPanelMouseLeftButtonUp">
+            <TextBlock x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="0,0,0,0" Height="13" />
+            <TextBlock x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="0,0,0,0" Height="13" />
+            <TextBlock x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="0,0,0,0" Height="13" />
+        </StackPanel>
         <Button x:Name="PreviousButton" HorizontalAlignment="Left" Margin="10,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.PreviousTrack" ToolTip="Previous Title">
             <Image Source="Images/media-skip-backward.png"/>
         </Button>

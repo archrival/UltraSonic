@@ -61,6 +61,7 @@
       <DependentUpon>AlbumArt.xaml</DependentUpon>
     </Compile>
     <Compile Include="ArtistItem.cs" />
+    <Compile Include="ChatItem.cs" />
     <Compile Include="Dwm.cs" />
     <Compile Include="NowPlayingItem.cs" />
     <Compile Include="DataGridDragAndDrop.cs" />

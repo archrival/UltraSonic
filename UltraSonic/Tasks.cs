@@ -67,7 +67,7 @@ namespace UltraSonic
             Dispatcher.Invoke(() => TrackDataGrid.ItemsSource = GetTrackItemCollection(children));
         }
 
-        private void QueueTrack(Task<long> task, Child child)
+        private void QueueTrack(Task<long> task, TrackItem trackItem)
         {
             Dispatcher.Invoke(() =>
                                   {
@@ -78,7 +78,7 @@ namespace UltraSonic
                                           Uri thisUri;
                                           _streamItems.TryDequeue(out thisUri);
 
-                                          QueueTrack(thisUri, child);
+                                          QueueTrack(thisUri, trackItem);
                                       }
                                   });
         }
@@ -141,11 +141,21 @@ namespace UltraSonic
                         IEnumerable<TrackItem> albumSource = GetTrackItemCollection(task.Result);
 
                         foreach (var trackItem in albumSource)
-                            _playlistTrackItems.Add(trackItem);
-
-                        PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
+                            AddTrackItemToPlaylist(trackItem);
                     });
             }
+        }
+
+        private void AddTrackItemToPlaylist(TrackItem trackItem)
+        {
+            Dispatcher.Invoke(() =>
+                                  {
+                                      TrackItem playlistTrackItem = new TrackItem();
+                                      trackItem.CopyTo(playlistTrackItem);
+                                      playlistTrackItem.PlaylistGuid = Guid.NewGuid();
+
+                                      _playlistTrackItems.Add(playlistTrackItem);
+                                  });
         }
 
         private void UpdatePlaylistGrid(Task<PlaylistWithSongs> task)
@@ -157,9 +167,7 @@ namespace UltraSonic
                         _playlistTrackItems.Clear();
 
                         foreach (var t in GetTrackItemCollection(task.Result.Entry))
-                            _playlistTrackItems.Add(t);
-
-                        PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
+                            AddTrackItemToPlaylist(t);
                     });
             }
         }
@@ -171,11 +179,9 @@ namespace UltraSonic
                 Dispatcher.Invoke(() =>
                     {
                         _playlistTrackItems.Clear();
-                        
-                        foreach (var t in GetTrackItemCollection(task.Result.Song))
-                            _playlistTrackItems.Add(t);
 
-                        PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
+                        foreach (var t in GetTrackItemCollection(task.Result.Song))
+                            AddTrackItemToPlaylist(t);
                     });
             }
         }
@@ -206,9 +212,16 @@ namespace UltraSonic
                                           {
                                               NowPlayingItem nowPlayingItem = new NowPlayingItem
                                                                                   {
+                                                                                      BitRate = item.BitRate,
+                                                                                      DiscNumber = item.DiscNumber,
+                                                                                      Duration = TimeSpan.FromSeconds(item.Duration),
+                                                                                      Genre = item.Genre,
+                                                                                      TrackNumber = item.Track,
+                                                                                      Rating = item.UserRating,
+                                                                                      Year = item.Year,
                                                                                       Album = item.Album,
                                                                                       Artist = item.Artist,
-                                                                                      Entry = item,
+                                                                                      Track = item,
                                                                                       Starred = (item.Starred != default(DateTime)),
                                                                                       Title = item.Title,
                                                                                       User = item.Username,
@@ -239,8 +252,17 @@ namespace UltraSonic
                                           {
                                               DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                                               dtDateTime = dtDateTime.AddMilliseconds(item.Time).ToLocalTime();
-                                              ChatListView.Items.Add(string.Format("[{0}] <{1}> {2}", dtDateTime, item.Username, item.Message));
+
+                                              if (!_chatMessages.Any(c => c.TimeStamp == dtDateTime && c.Message == item.Message && c.User == item.Username))
+                                              {
+                                                  if (!SocialTab.IsSelected && _newChatNotify)
+                                                      SocialTab.SetValue(StyleProperty, Resources["FlashingHeader"]);
+
+                                                  _chatMessages.Add(new ChatItem {User = item.Username, Message = item.Message, TimeStamp = dtDateTime});
+                                              }
                                           }
+
+                                          _newChatNotify = true;
                                       });
             }
         }

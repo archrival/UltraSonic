@@ -1,18 +1,16 @@
-﻿using System;
+﻿using Subsonic.Rest.Api;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Subsonic.Rest.Api;
 using UltraSonic.Properties;
 using Image = System.Drawing.Image;
 
@@ -27,6 +25,7 @@ namespace UltraSonic
 
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellableTasks = new ConcurrentDictionary<string, CancellationTokenSource>();
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
+        private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
         private string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private readonly ConcurrentQueue<Uri> _streamItems = new ConcurrentQueue<Uri>();
@@ -34,9 +33,7 @@ namespace UltraSonic
         private readonly DispatcherTimer _nowPlayingTimer = new DispatcherTimer();
         private readonly DispatcherTimer _chatMessagesTimer = new DispatcherTimer();
         private string _artistFilter = string.Empty;
-        private string _currentArtist = string.Empty;
-        private string _currentTitle = string.Empty;
-        private string _currentAlbum = string.Empty;
+        private TrackItem _nowPlayingTrack;
         private Image _currentAlbumArt;
         public AlbumArt AlbumArtWindow;
         private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
@@ -47,6 +44,7 @@ namespace UltraSonic
         private int _albumListMax = 10;
         private int _nowPlayingInterval = 30;
         private int _chatMessagesInterval = 5;
+        private bool _newChatNotify;
         private User CurrentUser { get; set; }
         private bool _useDiskCache = true;
         private Playlist CurrentPlaylist { get; set; }
@@ -111,9 +109,11 @@ namespace UltraSonic
                 _chatMessagesTimer.Start();
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
                 MediaPlayer.Volume = Settings.Default.Volume;
+                MediaPlayer.IsMuted = Settings.Default.VolumeMuted;
                 VolumeSlider.Value = MediaPlayer.Volume*10;
                 NowPlayingDataGrid.ItemsSource = _nowPlayingItems;
-                NowPlayingDataGrid.DataContext = _nowPlayingItems;
+                ChatListView.ItemsSource = _chatMessages;
+                PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
             }
             catch (Exception ex)
             {
@@ -328,8 +328,10 @@ namespace UltraSonic
             return Path.ChangeExtension(fileName, child.Suffix);
         }
 
-        private void QueueTrack(Child child)
+        private void QueueTrack(TrackItem trackItem)
         {
+            Child child = trackItem.Track;
+
             string fileName = GetFilename(child);
 
             var fileNameUri = new Uri(fileName);
@@ -338,7 +340,7 @@ namespace UltraSonic
             {
                 if (_streamItems.All(s => s.OriginalString == fileName) && IsTrackCached(fileName, child))
                 {
-                    QueueTrack(fileNameUri, child);
+                    QueueTrack(fileNameUri, trackItem);
                     UpdateAlbumArt(child.Id);
                 }
                 else
@@ -351,11 +353,11 @@ namespace UltraSonic
                     {
                         DownloadStatusLabel.Content = "Caching...";
                         Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
-                        streamTask.ContinueWith(t => QueueTrack(streamTask, child));
+                        streamTask.ContinueWith(t => QueueTrack(streamTask, trackItem));
                     }
                     else
                     {
-                        QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), child); // Works with non-SSL servers
+                        QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), trackItem); // Works with non-SSL servers
                     }
                 }
             }
@@ -374,7 +376,7 @@ namespace UltraSonic
             _cancellableTasks.TryAdd(tokenType, token);
         }
 
-        private void QueueTrack(Uri uri, Child child)
+        private void QueueTrack(Uri uri, TrackItem trackItem)
         {
             Dispatcher.Invoke(() =>
                 {
@@ -383,9 +385,7 @@ namespace UltraSonic
                         StopMusic();
                         MediaPlayer.Source = uri;
                         ProgressSlider.Value = 0;
-                        _currentArtist = child.Artist;
-                        _currentTitle = child.Title;
-                        _currentAlbum = child.Album;
+                        _nowPlayingTrack = trackItem;
                         PlayMusic();
                     }
                     catch (Exception ex)
@@ -395,10 +395,10 @@ namespace UltraSonic
                 });
         }
 
-        private void PlayTrack(Child child)
+        private void PlayTrack(TrackItem trackItem)
         {
-            UpdateAlbumArt(child.Id);
-            QueueTrack(child);
+            UpdateAlbumArt(trackItem.Track.Id);
+            QueueTrack(trackItem);
         }
 
         private void UpdateAlbumArt(string id)

@@ -4,7 +4,7 @@ using Subsonic.Rest.Api;
 
 namespace UltraSonic
 {
-    public sealed class TrackItem : INotifyPropertyChanged
+    public class TrackItem : INotifyPropertyChanged
     {
         public bool Selected { get; set; }
         public int DiscNumber { get; set; }
@@ -19,6 +19,7 @@ namespace UltraSonic
         public int Rating { get; set; }
         public bool Starred { get; set; }
         public Child Track { get; set; }
+        public Guid PlaylistGuid { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName)
