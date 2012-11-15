@@ -1521,12 +1521,12 @@ namespace Subsonic.Rest.Api
         /// </summary>Only return messages that are newer than this time. Given as milliseconds since Jan 1, 1970.
         /// <param name="since"></param>
         /// <returns>ChatMessages</returns>
-        public async Task<ChatMessages> GetChatMessagesAsync(long? since = null, CancellationToken? cancelToken = null)
+        public async Task<ChatMessages> GetChatMessagesAsync(double? since = null, CancellationToken? cancelToken = null)
         {
             Hashtable parameters = new Hashtable();
 
             if (since != null)
-                parameters.Add("since", since);
+                parameters.Add("since", (long)since);
 
             return await GetResponseAsync<ChatMessages>(Methods.getChatMessages, _version120, parameters, cancelToken);
         }

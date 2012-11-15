@@ -157,6 +157,7 @@
                         <TreeView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem x:Name="ArtistRefresh" Header="Refresh" Click="ArtistRefreshClick"/>
+                                <MenuItem x:Name="ExpandAllArtists" Header="Expand All" Click="ExpandAllArtistsClick"/>
                             </ContextMenu>
                         </TreeView.ContextMenu>
                         <TreeView.Resources>
@@ -294,6 +295,11 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <DataGrid x:Name="NowPlayingDataGrid" Grid.Column="0" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.RowSpan="2">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="NowPlayingRefresh" Header="Refresh" Click="NowPlayingRefreshClick"/>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
                         <DataGrid.Columns>
                             <DataGridTemplateColumn x:Name="NowPlayingGridStarredColumn">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -316,7 +322,13 @@
                             <DataGridTextColumn Binding="{Binding When}" Header="When" IsReadOnly="True" Width="auto"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <ListView x:Name="ChatListView" Grid.Column="1"/>
+                    <ListView x:Name="ChatListView" Grid.Column="1">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="ChatListRefresh" Header="Refresh" Click="ChatListRefreshClick"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                    </ListView>
                     <TextBox x:Name="ChatListInput" Grid.Column="1" Grid.Row="1" KeyDown="ChatListTextBoxKeyDown"/>
                 </Grid>
             </TabItem>
@@ -397,10 +409,10 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" MouseLeftButtonUp="MusicCoverArtMouseLeftButtonUp"/>
-        <Label x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="55,0,0,83" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="10" Grid.Column="1"/>
-        <Label x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="55,0,0,69" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="10" Grid.Column="1"/>
-        <Label x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="55,0,0,55" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="10" Grid.Column="1"/>
+        <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" MouseLeftButtonUp="MusicCoverArtMouseLeftButtonUp" RenderTransformOrigin="0.689,0.343"/>
+        <TextBlock x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="55,0,0,90" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="13" Grid.Column="1"/>
+        <TextBlock x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="55,0,0,75" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="13" Grid.Column="1"/>
+        <TextBlock x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="55,0,0,60" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="13" Grid.Column="1" />
         <Button x:Name="PreviousButton" HorizontalAlignment="Left" Margin="10,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.PreviousTrack" ToolTip="Previous Title">
             <Image Source="Images/media-skip-backward.png"/>
         </Button>

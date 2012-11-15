@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,6 +51,7 @@ namespace UltraSonic
         private bool _useDiskCache = true;
         private Playlist CurrentPlaylist { get; set; }
         private readonly ObservableCollection<NowPlayingItem> _nowPlayingItems = new ObservableCollection<NowPlayingItem>();
+        private double _chatMessageSince = 0;
 
         public MainWindow()
         {
@@ -60,8 +62,13 @@ namespace UltraSonic
             {
                 _playlistTrackItems = new ObservableCollection<TrackItem>();
 
+                WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+                Left = Settings.Default.WindowX;
+                Top = Settings.Default.WindowY;
                 Height = Settings.Default.Height;
                 Width = Settings.Default.Width;
+                if (Settings.Default.Maximized)
+                    WindowState = WindowState.Maximized;
 
                 PopulateSettings();
                 MusicPlayStatusLabel.Content = "Stopped";
@@ -88,8 +95,8 @@ namespace UltraSonic
                     {
                         UpdateArtists();
                         UpdatePlaylists();
-                        UpdateNowPlaying();
                         UpdateChatMessages();
+                        UpdateNowPlaying();
                     }
                 }
 
@@ -295,7 +302,7 @@ namespace UltraSonic
 
         private void UpdateChatMessages()
         {
-            SubsonicApi.GetChatMessagesAsync(null, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
+            SubsonicApi.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
         }
 
         private void UpdateLicenseInformation(License license)
@@ -413,6 +420,8 @@ namespace UltraSonic
 
         private void ExpandAll(ItemsControl items, bool expand)
         {
+            if (items == null) return;
+
             foreach (object obj in items.Items)
             {
                 var childControl = items.ItemContainerGenerator.ContainerFromItem(obj) as ItemsControl;
@@ -515,37 +524,6 @@ namespace UltraSonic
 
                         playlistItems.Add(starredItem);
                     });
-            }
-        }
-
-        private void MusicCoverArtMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (_currentAlbumArt != null && AlbumArtWindow == null)
-            {
-                BitmapSource bitmap;
-
-                if (_currentAlbumArt.Height > (SystemParameters.VirtualScreenHeight * 0.83))
-                {
-                    int newHeight = (int)(SystemParameters.VirtualScreenHeight * 0.83);
-                    bitmap = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 0, newHeight);
-                }
-                else
-                {
-                    bitmap = _currentAlbumArt.ToBitmapSource();
-                }
-
-                AlbumArt albumArtWindow = new AlbumArt
-                                              {
-                                                  Height = bitmap.Height,
-                                                  Width = bitmap.Width, 
-                                                  PopupAlbumArtImage = {Source = bitmap},
-                                                  Owner = this,
-                                              };
-
-                Dwm.DropShadowToWindow(albumArtWindow);
-                AlbumArtWindow = albumArtWindow;
-                albumArtWindow.Show();
-
             }
         }
     }

@@ -1,9 +1,6 @@
-﻿using System;
+﻿using Subsonic.Rest.Api;
 using System.ComponentModel;
-using System.Threading;
 using System.Windows.Media.Imaging;
-using Subsonic.Rest.Api;
-using System.Threading.Tasks;
 
 namespace UltraSonic
 {

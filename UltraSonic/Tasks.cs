@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Subsonic.Rest.Api;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using Subsonic.Rest.Api;
 using Image = System.Drawing.Image;
 
 namespace UltraSonic
@@ -234,8 +232,10 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                                       {
-                                          ChatListView.Items.Clear();
-                                          foreach (var item in task.Result.ChatMessage)
+                                          TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
+                                          _chatMessageSince = t.TotalMilliseconds;
+
+                                          foreach (var item in task.Result.ChatMessage.OrderBy(c => c.Time))
                                           {
                                               DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                                               dtDateTime = dtDateTime.AddMilliseconds(item.Time).ToLocalTime();

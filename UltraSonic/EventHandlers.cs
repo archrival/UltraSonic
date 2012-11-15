@@ -8,13 +8,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 using Subsonic.Rest.Api;
 using Subsonic.Rest.Api.Enums;
 using UltraSonic.Properties;
 using CheckBox = System.Windows.Controls.CheckBox;
 using DataGrid = System.Windows.Controls.DataGrid;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -167,9 +171,9 @@ namespace UltraSonic
             if (MediaPlayer.Source != null)
             {
                 title = string.Format("{0} - {1} - {2} [{3}]", AppName, _currentArtist, _currentTitle, MusicPlayStatusLabel.Content);
-                MusicArtistLabel.Content = _currentArtist;
-                MusicTitleLabel.Content = _currentTitle;
-                MusicAlbumLabel.Content = _currentAlbum;
+                MusicArtistLabel.Text = _currentArtist;
+                MusicTitleLabel.Text = _currentTitle;
+                MusicAlbumLabel.Text = _currentAlbum;
             }
 
             Title = title;
@@ -482,6 +486,9 @@ namespace UltraSonic
                     Settings.Default.Volume = MediaPlayer.Volume;
                     Settings.Default.Height = Height;
                     Settings.Default.Width = Width;
+                    Settings.Default.WindowX = Left;
+                    Settings.Default.WindowY = Top;
+                    Settings.Default.Maximized = WindowState == WindowState.Maximized;
                     Settings.Default.Save();
                 });
         }
@@ -521,7 +528,7 @@ namespace UltraSonic
 
                 if (!string.IsNullOrWhiteSpace(chatMessage))
                 {
-                    SubsonicApi.AddChatMessageAsync(chatMessage).ContinueWith(t => UpdateChatMessages());
+                    SubsonicApi.AddChatMessageAsync(chatMessage);
                     ChatListInput.Text = string.Empty;
                 }
             }
@@ -536,9 +543,7 @@ namespace UltraSonic
         private void DownloadTracks(ICollection selectedItems)
         {
             foreach (TrackItem item in selectedItems)
-            {
                 Process.Start(SubsonicApi.BuildDownloadUrl(item.Track.Id));
-            }
         }
 
         private void PlaylistTrackGridDownloadClick(object sender, RoutedEventArgs e)
@@ -548,12 +553,8 @@ namespace UltraSonic
 
         private void MusicDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
-            var selectedItems = MusicDataGrid.SelectedItems;
-
-            foreach (AlbumItem item in selectedItems)
-            {
+            foreach (AlbumItem item in MusicDataGrid.SelectedItems)
                 Process.Start(SubsonicApi.BuildDownloadUrl(item.Album.Id));
-            }
         }
 
         private void MusicDataGridAlbumListClick(object sender, RoutedEventArgs e)
@@ -750,6 +751,57 @@ namespace UltraSonic
         private void ArtistRefreshClick(object sender, RoutedEventArgs e)
         {
             UpdateArtists();
+        }
+
+        private void MusicCoverArtMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_currentAlbumArt != null && AlbumArtWindow == null)
+            {
+                BitmapSource bitmap;
+
+                if (_currentAlbumArt.Height > ActualHeight * 0.9)
+                {
+                    int newHeight = (int)(ActualHeight * 0.9);
+                    bitmap = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 0, newHeight);
+                }
+                else
+                {
+                    bitmap = _currentAlbumArt.ToBitmapSource();
+                }
+
+                AlbumArt albumArtWindow = new AlbumArt
+                {
+                    Height = bitmap.Height,
+                    Width = bitmap.Width,
+                    PopupAlbumArtImage = { Source = bitmap },
+                    Owner = this,
+                };
+
+                AlbumArtWindow = albumArtWindow;
+                albumArtWindow.Show();
+                Dwm.DropShadowToWindow(albumArtWindow);
+
+            }
+        }
+
+        private void NowPlayingRefreshClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(UpdateNowPlaying);
+        }
+
+        private void ChatListRefreshClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+                                  {
+                                      _chatMessageSince = 0;
+                                      ChatListView.Items.Clear();
+                                      UpdateChatMessages();
+                                  });
+        }
+
+        private void ExpandAllArtistsClick(object sender, RoutedEventArgs e)
+        {
+            ExpandAll(MusicTreeView, true);
         }
     }
 }
