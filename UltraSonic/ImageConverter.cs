@@ -74,7 +74,7 @@ namespace UltraSonic
                 }
                 else if (height > 0)
                 {
-                    newWidth = Math.Round(height * aspectRatio, 0, MidpointRounding.AwayFromZero);
+                    newWidth = Math.Round(height / aspectRatio, 0, MidpointRounding.AwayFromZero);
                     newHeight = height;
                 }
             }

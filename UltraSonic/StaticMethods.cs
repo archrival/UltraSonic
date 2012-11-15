@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Security.Cryptography;
+using System.Text;
 using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;
@@ -39,16 +39,11 @@ namespace UltraSonic
             return GetTrackItemCollection(directory.Child);
         }
 
-        private static string FileDownloadDialog()
+        private static string CalculateSha256(string text, Encoding enc)
         {
-            FolderBrowserDialog folderDialog = new FolderBrowserDialog
-                {
-                    SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                };
-
-            DialogResult result = folderDialog.ShowDialog();
-
-            return result.ToString() == "OK" ? folderDialog.SelectedPath : null;
+            byte[] buffer = enc.GetBytes(text);
+            SHA256CryptoServiceProvider cryptoTransformSha1 = new SHA256CryptoServiceProvider();
+            return BitConverter.ToString(cryptoTransformSha1.ComputeHash(buffer)).Replace("-", "");
         }
     }
 }

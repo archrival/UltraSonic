@@ -1,9 +1,11 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.IO;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Directory = Subsonic.Rest.Api.Directory;
 using Image = System.Drawing.Image;
 
 namespace UltraSonic
@@ -28,11 +30,14 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                     {
-                        Image coverArtimage = task.Result;
+                        Image coverArtImage = task.Result;
         
-                        if (coverArtimage != null)
+                        if (coverArtImage != null)
                         {
-                            albumItem.Image = coverArtimage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                            string localFileName = GetCoverArtFilename(albumItem.Album);
+                            coverArtImage.Save(localFileName);
+
+                            albumItem.Image = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
                             MusicDataGrid.Items.Refresh();
                         }
                     });
@@ -45,11 +50,14 @@ namespace UltraSonic
             {
                 Dispatcher.Invoke(() =>
                 {
-                    Image coverArtimage = task.Result;
+                    Image coverArtImage = task.Result;
 
-                    if (coverArtimage != null)
+                    if (coverArtImage != null)
                     {
-                        nowPlayingItem.Image = coverArtimage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                        string localFileName = GetCoverArtFilename(nowPlayingItem.Track);
+                        coverArtImage.Save(localFileName);
+
+                        nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
                         NowPlayingDataGrid.Items.Refresh();
                     }
                 });
@@ -83,14 +91,19 @@ namespace UltraSonic
                                   });
         }
 
-        private void UpdateCoverArt(Task<Image> task)
+        private void UpdateCoverArt(Task<Image> task, Child child)
         {
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 _currentAlbumArt = task.Result;
 
                 if (_currentAlbumArt != null)
+                {
+                    string localFileName = GetCoverArtFilename(child);
+                    _currentAlbumArt.Save(localFileName);
+
                     Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) MusicCoverArt.Width, (int) MusicCoverArt.Height));
+                }
             }
         }
 
@@ -231,8 +244,21 @@ namespace UltraSonic
                                               if (!_nowPlayingItems.Any(a => a.Album == nowPlayingItem.Album && a.Artist == nowPlayingItem.Artist && a.Starred == nowPlayingItem.Starred && a.Title == nowPlayingItem.Title))
                                               {
                                                   _nowPlayingItems.Add(nowPlayingItem);
-                                                  Task<Image> coverArtTask = SubsonicApi.GetCoverArtAsync(item.CoverArt);
-                                                  coverArtTask.ContinueWith(t => UpdateNowPlayingAlbumImageArt(coverArtTask, nowPlayingItem));
+
+                                                  string localFileName = GetCoverArtFilename(item);
+                                                  if (File.Exists(localFileName))
+                                                  {
+                                                      Image thisImage = Image.FromFile(localFileName);
+                                                      Dispatcher.Invoke(() =>
+                                                                            {
+                                                                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                                                                                NowPlayingDataGrid.Items.Refresh();
+                                                                            });
+                                                  }
+                                                  else
+                                                  {
+                                                      SubsonicApi.GetCoverArtAsync(item.CoverArt).ContinueWith(t => UpdateNowPlayingAlbumImageArt(t, nowPlayingItem));
+                                                  }
                                               }
                                           }
                                       });

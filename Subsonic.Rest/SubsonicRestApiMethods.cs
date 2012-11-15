@@ -157,6 +157,22 @@ namespace Subsonic.Rest.Api
         /// <param name="parameters">Parameters used by the method.</param>
         /// <param name="cancelToken"> </param>
         /// <returns>T</returns>
+        private async Task<long> GetImageSizeAsync(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
+        {
+            if (ServerApiVersion != null && methodApiVersion > ServerApiVersion)
+                throw new SubsonicInvalidApiException(string.Format(CultureInfo.CurrentCulture, "Method {0} requires Subsonic Server API version {1}, but the actual Subsonic Server API version is {2}.", Enum.GetName(typeof(Methods), method), methodApiVersion, ServerApiVersion));
+
+            return await ImageSizeRequestAsync(method, methodApiVersion, parameters, cancelToken);
+        }
+
+        /// <summary>
+        /// Get a response from the Subsonic server for the given method.
+        /// </summary>
+        /// <param name="method">Subsonic API method to call.</param>
+        /// <param name="methodApiVersion">Subsonic API version of the method.</param>
+        /// <param name="parameters">Parameters used by the method.</param>
+        /// <param name="cancelToken"> </param>
+        /// <returns>T</returns>
         private async Task<Image> GetImageResponseAsync(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
         {
             if (ServerApiVersion != null && methodApiVersion > ServerApiVersion)
@@ -1048,6 +1064,23 @@ namespace Subsonic.Rest.Api
             }
 
             return BuildRequestUriUser(Methods.stream, methodApiVersion, parameters);
+        }
+
+        /// <summary>
+        /// Returns a cover art image.
+        /// </summary>
+        /// <param name="id">A string which uniquely identifies the cover art file to download. Obtained by calls to getMusicDirectory.</param>
+        /// <param name="size">If specified, scale image to this size.</param>
+        /// <param name="cancelToken"> </param>
+        /// <returns>bool</returns>
+        public async Task<long> GetCoverArtSizeAsync(string id, int? size = null, CancellationToken? cancelToken = null)
+        {
+            Hashtable parameters = new Hashtable { { "id", id } };
+
+            if (size != null)
+                parameters.Add("size", size);
+
+            return await GetImageSizeAsync(Methods.getCoverArt, _version100, parameters, cancelToken);
         }
 
         /// <summary>

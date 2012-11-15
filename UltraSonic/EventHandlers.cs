@@ -1,4 +1,6 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.IO;
+using System.Text;
+using Subsonic.Rest.Api;
 using Subsonic.Rest.Api.Enums;
 using System;
 using System.Collections;
@@ -13,6 +15,7 @@ using System.Windows.Media.Imaging;
 using UltraSonic.Properties;
 using CheckBox = System.Windows.Controls.CheckBox;
 using DataGrid = System.Windows.Controls.DataGrid;
+using Directory = System.IO.Directory;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
@@ -46,9 +49,17 @@ namespace UltraSonic
                 _nowPlayingInterval = (int) NowPlayingIntervalComboBox.SelectedValue;
                 _chatMessagesInterval = (int) ChatMessagesIntervalComboBox.SelectedValue;
                 _cacheDirectory = CacheDirectoryTextBox.Text;
+                _serverHash = CalculateSha256(ServerUrl, Encoding.Unicode);
                 if (UseDiskCacheCheckBox.IsChecked != null) _useDiskCache = UseDiskCacheCheckBox.IsChecked.Value;
-
                 _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
+                _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
+                _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
+
+                if (!Directory.Exists(_musicCacheDirectoryName))
+                    Directory.CreateDirectory(_musicCacheDirectoryName);
+
+                if (!Directory.Exists(_coverArtCacheDirectoryName))
+                    Directory.CreateDirectory(_coverArtCacheDirectoryName);
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -196,16 +207,17 @@ namespace UltraSonic
             if (MediaPlayer.Source != null)
             {
                 MediaPlayer.Stop();
-                _nowPlayingTrack = null;
                 MediaPlayer.Position = TimeSpan.FromSeconds(0);
-                _position = TimeSpan.FromSeconds(0);
                 MediaPlayer.Source = null;
+                _nowPlayingTrack = null;
+                _position = TimeSpan.FromSeconds(0);
                 _currentAlbumArt = null;
                 MusicCoverArt.Source = null;
                 MusicArtistLabel.Text = null;
                 MusicAlbumLabel.Text = null;
                 MusicTitleLabel.Text = null;
             }
+
             MusicPlayStatusLabel.Content = "Stopped";
         }
 
@@ -519,7 +531,9 @@ namespace UltraSonic
                 if (!string.IsNullOrWhiteSpace(chatMessage))
                 {
                     if (SubsonicApi != null)
+#pragma warning disable 4014
                         SubsonicApi.AddChatMessageAsync(chatMessage);
+#pragma warning restore 4014
 
                     ChatListInput.Text = string.Empty;
                 }
@@ -658,7 +672,7 @@ namespace UltraSonic
                     var source = e.Source as CheckBox;
                     var item = TrackDataGrid.CurrentItem as TrackItem;
 
-                    if (item != null && source != null)
+                    if (item != null && source != null && SubsonicApi != null)
                     {
                         if (source.IsChecked.HasValue && source.IsChecked.Value)
                             SubsonicApi.StarAsync(new List<string> {item.Track.Id});
@@ -677,7 +691,7 @@ namespace UltraSonic
 
                 if (item != null && source != null)
                 {
-                    if (source.IsChecked.HasValue && source.IsChecked.Value)
+                    if (source.IsChecked.HasValue && source.IsChecked.Value && SubsonicApi != null)
                         SubsonicApi.StarAsync(new List<string> { item.Album.Id });
                     else
                         SubsonicApi.UnStarAsync(new List<string> { item.Album.Id });
@@ -694,7 +708,7 @@ namespace UltraSonic
 
                 if (item != null && source != null)
                 {
-                    if (source.IsChecked.HasValue && source.IsChecked.Value)
+                    if (source.IsChecked.HasValue && source.IsChecked.Value && SubsonicApi != null)
                         SubsonicApi.StarAsync(new List<string> { item.Track.Id });
                     else
                         SubsonicApi.UnStarAsync(new List<string> { item.Track.Id });
@@ -709,11 +723,11 @@ namespace UltraSonic
                     var source = e.Source as CheckBox;
                     var item = PlaylistTrackGrid.CurrentItem as TrackItem;
 
-                    if (item != null && source != null)
+                    if (item != null && source != null && SubsonicApi != null)
                     {
                         if (source.IsChecked.HasValue && source.IsChecked.Value)
                             SubsonicApi.StarAsync(new List<string> {item.Track.Id});
-                        else
+                        else 
                             SubsonicApi.UnStarAsync(new List<string> {item.Track.Id});
                     }
                 });
@@ -812,7 +826,7 @@ namespace UltraSonic
                                   });
         }
 
-        private void NowPlayingDataGridMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void NowPlayingDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DataGrid source = e.Source as DataGrid;
 
@@ -827,7 +841,7 @@ namespace UltraSonic
             }
         }
 
-        private void StackPanelMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void StackPanelMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             PlaylistTab.IsSelected = true;
             PlaylistTrackGrid.SelectedItem = _nowPlayingTrack;

@@ -2,7 +2,6 @@
 using System.Drawing.Printing;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Permissions;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -29,7 +28,7 @@ namespace UltraSonic
         {
             if (!DropShadow(window))
             {
-                window.SourceInitialized += new EventHandler(WindowSourceInitialized);
+                window.SourceInitialized += WindowSourceInitialized;
             }
         }
 
@@ -39,7 +38,7 @@ namespace UltraSonic
 
             DropShadow(window);
 
-            window.SourceInitialized -= new EventHandler(WindowSourceInitialized);
+            window.SourceInitialized -= WindowSourceInitialized;
         }
 
         /// <summary> 
@@ -68,7 +67,7 @@ namespace UltraSonic
 
                  return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Probably dwmapi.dll not found (incompatible OS) 
                 return false;

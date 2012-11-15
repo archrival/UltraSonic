@@ -380,6 +380,78 @@ namespace Subsonic.Rest.Api
         /// <param name="parameters">Parameters used by the method.</param>
         /// <param name="cancelToken"> </param>
         /// <returns>Image</returns>
+        private async Task<long> ImageSizeRequestAsync(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
+        {
+            string requestUri = BuildRequestUri(method, methodApiVersion, parameters);
+
+            HttpWebRequest request = BuildRequest(requestUri, "GET");
+            long length = -1;
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
+
+            try
+            {
+                using (var response = await request.GetResponseAsync())
+                {
+                    if (response != null)
+                    {
+                        if (!response.ContentType.Contains("text/xml"))
+                        {
+                            if (cancelToken.HasValue)
+                                cancelToken.Value.ThrowIfCancellationRequested();
+
+                            length = response.ContentLength;
+                        }
+                        else
+                        {
+                            string restResponse = null;
+                            var result = new Response();
+
+                            if (cancelToken.HasValue)
+                                cancelToken.Value.ThrowIfCancellationRequested();
+
+                            using (Stream stream = response.GetResponseStream())
+                                if (stream != null)
+                                    using (var streamReader = new StreamReader(stream))
+                                        restResponse = streamReader.ReadToEnd();
+
+                            if (!string.IsNullOrEmpty(restResponse))
+                                result = XmlUtilities.DeserializeFromXml<Response>(restResponse);
+
+                            if (result.ItemElementName == ItemChoiceType.Error)
+                                throw new SubsonicErrorException("Error occurred during request.", result.Item as Error);
+
+                            throw new SubsonicApiException(string.Format(CultureInfo.CurrentCulture, "Unexpected response type: {0}", Enum.GetName(typeof(ItemChoiceType), result.ItemElementName)));
+                        }
+                    }
+                }
+            }
+            catch (WebException wex)
+            {
+                HttpWebResponse response = wex.Response as HttpWebResponse;
+                if (response != null && response.StatusCode == HttpStatusCode.NotFound)
+                    return length;
+            }
+            catch (Exception ex)
+            {
+                throw new SubsonicApiException(ex.Message, ex);
+            }
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
+
+            return length;
+        }
+
+        /// <summary>
+        /// Return an Image for the specified method.
+        /// </summary>
+        /// <param name="method">Subsonic API method to call.</param>
+        /// <param name="methodApiVersion">Subsonic API version of the method.</param>
+        /// <param name="parameters">Parameters used by the method.</param>
+        /// <param name="cancelToken"> </param>
+        /// <returns>Image</returns>
         private async Task<Image> ImageRequestAsync(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
         {
             string requestUri = BuildRequestUri(method, methodApiVersion, parameters);
@@ -568,13 +640,13 @@ namespace Subsonic.Rest.Api
         /// </summary>
         /// <param name="requestUri">URI for the request.</param>
         /// <returns>HttpWebRequest</returns>
-        private HttpWebRequest BuildRequest(string requestUri)
+        private HttpWebRequest BuildRequest(string requestUri, string method = "POST")
         {
             var request = WebRequest.Create(requestUri) as HttpWebRequest;
             if (request != null)
             {
                 request.UserAgent = UserAgent;
-                request.Method = "POST";
+                request.Method = method;
 
                 // Add credentials
                 request.Credentials = new NetworkCredential(UserName, Password);

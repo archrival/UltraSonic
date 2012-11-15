@@ -1,5 +1,4 @@
-﻿using Subsonic.Rest.Api;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media.Imaging;
 
 namespace UltraSonic
 {
@@ -8,6 +7,5 @@ namespace UltraSonic
         public string User { get; set; }
         public string When { get; set; }
         public BitmapSource Image { get; set; }
-
     }
 }

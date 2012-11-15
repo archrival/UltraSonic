@@ -67,7 +67,7 @@ namespace UltraSonic
 
             T targetItem = DataGrid.SelectedItem is T ? (T) DataGrid.SelectedItem : default(T);
 
-            if (targetItem == null || !ReferenceEquals(DraggedItem, targetItem))
+            if (!ReferenceEquals(DraggedItem, targetItem))
             {
                 Collection.Remove(DraggedItem);
                 var targetIndex = Collection.IndexOf(targetItem);
