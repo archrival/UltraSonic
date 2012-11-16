@@ -201,6 +201,7 @@
                             <ContextMenu>
                                 <MenuItem x:Name="ArtistRefresh" Header="Refresh" Click="ArtistRefreshClick"/>
                                 <MenuItem x:Name="ExpandAllArtists" Header="Expand All" Click="ExpandAllArtistsClick"/>
+                                <MenuItem x:Name="CollapseAllArtists" Header="Collapse All" Click="CollapseAllArtistsClick"/>
                             </ContextMenu>
                         </TreeView.ContextMenu>
                         <TreeView.Resources>

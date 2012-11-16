@@ -803,6 +803,11 @@ namespace UltraSonic
             ExpandAll(MusicTreeView, true);
         }
 
+        private void CollapseAllArtistsClick(object sender, RoutedEventArgs e)
+        {
+            ExpandAll(MusicTreeView, false);
+        }
+
         private void SocialTabGotFocus(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>

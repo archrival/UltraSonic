@@ -26,8 +26,6 @@ namespace UltraSonic
         private const string AppName = "UltraSonic";
 
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellableTasks = new ConcurrentDictionary<string, CancellationTokenSource>();
-        private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
-        private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
         private string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private readonly ConcurrentQueue<Uri> _streamItems = new ConcurrentQueue<Uri>();
@@ -38,7 +36,6 @@ namespace UltraSonic
         private TrackItem _nowPlayingTrack;
         private Image _currentAlbumArt;
         public AlbumArt AlbumArtWindow;
-        private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
         private TimeSpan _position;
         private bool _repeatPlaylist;
         private int _maxSearchResults = 25;
@@ -54,17 +51,20 @@ namespace UltraSonic
         private string _coverArtCacheDirectoryName = string.Empty;
         private Playlist CurrentPlaylist { get; set; }
         private readonly ObservableCollection<NowPlayingItem> _nowPlayingItems = new ObservableCollection<NowPlayingItem>();
+        private readonly ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
+        private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
+        private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
+        private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
+        private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
+        private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
         private double _chatMessageSince = 0;
 
         public MainWindow()
         {
-
             InitializeComponent();
 
             try
             {
-                _playlistTrackItems = new ObservableCollection<TrackItem>();
-
                 WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
                 Left = Settings.Default.WindowX;
                 Top = Settings.Default.WindowY;
@@ -112,13 +112,17 @@ namespace UltraSonic
                 _chatMessagesTimer.Interval = TimeSpan.FromSeconds(_chatMessagesInterval);
                 _chatMessagesTimer.Tick += (o, s) => UpdateChatMessages();
                 _chatMessagesTimer.Start();
+
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
                 MediaPlayer.Volume = Settings.Default.Volume;
                 MediaPlayer.IsMuted = Settings.Default.VolumeMuted;
                 VolumeSlider.Value = MediaPlayer.Volume*10;
+
+                MusicDataGrid.ItemsSource = _albumItems;
                 NowPlayingDataGrid.ItemsSource = _nowPlayingItems;
                 ChatListView.ItemsSource = _chatMessages;
                 PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
+                PlaylistsDataGrid.ItemsSource = _playlistItems;
             }
             catch (Exception ex)
             {
@@ -231,8 +235,6 @@ namespace UltraSonic
             MaxBitrateComboBox.ItemsSource = listData;
             MaxBitrateComboBox.SelectedItem = _maxBitrate;
         }
-
-        private readonly ObservableCollection<TrackItem> _playlistTrackItems;
 
         private ObservableCollection<ArtistItem> ArtistItems
         {
@@ -351,10 +353,8 @@ namespace UltraSonic
         private void QueueTrack(TrackItem trackItem)
         {
             Child child = trackItem.Track;
-
             string fileName = GetMusicFilename(child);
-
-            var fileNameUri = new Uri(fileName);
+            Uri fileNameUri = new Uri(fileName);
 
             if (_streamItems != null)
             {
@@ -486,85 +486,83 @@ namespace UltraSonic
 
         private void UpdateAlbumGrid(IEnumerable<Child> children)
         {
-            ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
-
             Dispatcher.Invoke(() =>
-                {
-                    foreach (Child child in children)
-                    {
-                        AlbumItem albumItem = new AlbumItem { Artist = child.Artist, Name = child.Album, Album = child, Starred = (child.Starred != default(DateTime))};
-                        _albumItems.Add(albumItem);
+                                  {
+                                      _albumItems.Clear();
 
-                        string localFileName = GetCoverArtFilename(child);
-                        if (File.Exists(localFileName))
-                        {
-                            Image thisImage = Image.FromFile(localFileName);
-                            Dispatcher.Invoke(() =>
-                                                  {
-                                                      albumItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
-                                                      MusicDataGrid.Items.Refresh();
-                                                  });
-                        }
-                        else
-                        {
-                            SubsonicApi.GetCoverArtAsync(child.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
-                        }
-                    }
+                                      foreach (Child child in children)
+                                      {
+                                          AlbumItem albumItem = new AlbumItem {Artist = child.Artist, Name = child.Album, Album = child, Starred = (child.Starred != default(DateTime))};
+                                          _albumItems.Add(albumItem);
+                                      }
 
-                    MusicDataGrid.ItemsSource = _albumItems;
-                    MusicDataGrid.DataContext = _albumItems;
-                });
+                                      UpdateAlbumGridArt();
+                                  });
+        }
+
+        private void UpdateAlbumGridArt()
+        {
+            Dispatcher.Invoke(() =>
+                                  {
+                                      foreach (AlbumItem albumItem in _albumItems)
+                                      {
+                                          try
+                                          {
+                                              Image thisImage = Image.FromFile(GetCoverArtFilename(albumItem.Album));
+                                              albumItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                                              thisImage.Dispose();
+                                          }
+                                          catch
+                                          {
+                                              SubsonicApi.GetCoverArtAsync(albumItem.Album.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
+                                          }
+
+                                          GC.Collect();
+                                      }
+                                  });
         }
 
         private void UpdatePlaylists(IEnumerable<Playlist> playlists)
         {
-            var playlistItems = new ObservableCollection<PlaylistItem>();
-
             Dispatcher.Invoke(() =>
-            {
-                foreach (Playlist playlist in playlists)
-                {
-                    PlaylistItem playlistItem = new PlaylistItem
-                        {
-                            Duration = TimeSpan.FromSeconds(playlist.Duration),
-                            Name = playlist.Name,
-                            Tracks = playlist.SongCount,
-                            Playlist = playlist
-                        };
+                                  {
+                                      _playlistItems.Clear();
 
-                    playlistItems.Add(playlistItem);
-                }
+                                      foreach (PlaylistItem playlistItem in playlists.Select(playlist => new PlaylistItem
+                                                                                                             {
+                                                                                                                 Duration = TimeSpan.FromSeconds(playlist.Duration),
+                                                                                                                 Name = playlist.Name,
+                                                                                                                 Tracks = playlist.SongCount,
+                                                                                                                 Playlist = playlist
+                                                                                                             }))
+                                      {
+                                          _playlistItems.Add(playlistItem);
+                                      }
 
-                if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
-                {
-                    Task<Starred> starredTask = SubsonicApi.GetStarredAsync(GetCancellationToken("UpdatePlaylists"));
-                    starredTask.ContinueWith(t => AddStarredToPlaylists(starredTask, playlistItems));
-                }
-
-                PlaylistsDataGrid.ItemsSource = playlistItems;
-            });
+                                      if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
+                                          SubsonicApi.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
+                                  });
         }
 
-        private void AddStarredToPlaylists(Task<Starred> task, ICollection<PlaylistItem> playlistItems)
+        private void AddStarredToPlaylists(Task<Starred> task)
         {
             if (task.Status == TaskStatus.RanToCompletion)
             {
                 Dispatcher.Invoke(() =>
-                    {
-                        Starred starred = task.Result;
+                                      {
+                                          Starred starred = task.Result;
+                                          int starDuration = starred.Song.Sum(child => child.Duration);
 
-                        int starDuration = starred.Song.Sum(child => child.Duration);
+                                          PlaylistItem starredItem = new PlaylistItem
+                                                                         {
+                                                                             Duration = TimeSpan.FromSeconds(starDuration),
+                                                                             Name = "Starred",
+                                                                             Tracks = starred.Song.Count,
+                                                                             Playlist = null
+                                                                         };
 
-                        PlaylistItem starredItem = new PlaylistItem
-                            {
-                                Duration = TimeSpan.FromSeconds(starDuration),
-                                Name = "Starred",
-                                Tracks = starred.Song.Count,
-                                Playlist = null
-                            };
-
-                        playlistItems.Add(starredItem);
-                    });
+                                          _playlistItems.Add(starredItem);
+                                      });
             }
         }
     }

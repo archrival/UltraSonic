@@ -39,6 +39,7 @@ namespace UltraSonic
 
                             albumItem.Image = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
                             MusicDataGrid.Items.Refresh();
+                            coverArtImage.Dispose();
                         }
                     });
             }
