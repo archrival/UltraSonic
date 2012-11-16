@@ -17,9 +17,7 @@ namespace UltraSonic
         public static BitmapSource ToBitmapSource(this Image source)
         {
             Bitmap bitmap = new Bitmap(source);
-
-            var bitSrc = bitmap.ToBitmapSource();
-
+            BitmapSource bitSrc = bitmap.ToBitmapSource();
             bitmap.Dispose();
 
             return bitSrc;
@@ -36,7 +34,7 @@ namespace UltraSonic
         {
             BitmapSource bitSrc;
 
-            var hBitmap = source.GetHbitmap();
+            IntPtr hBitmap = source.GetHbitmap();
 
             try
             {
@@ -56,7 +54,7 @@ namespace UltraSonic
 
         public static BitmapFrame Resize(this BitmapSource photo, BitmapScalingMode scalingMode, bool preserveAspect, int width, int height)
         {
-            var group = new DrawingGroup();
+            DrawingGroup group = new DrawingGroup();
 
             double sourceHeight = photo.Height;
             double sourceWidth = photo.Width;
@@ -86,13 +84,14 @@ namespace UltraSonic
 
             RenderOptions.SetBitmapScalingMode(group, scalingMode);
             group.Children.Add(new ImageDrawing(photo, new Rect(0, 0, newWidth, newHeight)));
-            var targetVisual = new DrawingVisual();
-            var targetContext = targetVisual.RenderOpen();
+            DrawingVisual targetVisual = new DrawingVisual();
+            DrawingContext targetContext = targetVisual.RenderOpen();
             targetContext.DrawDrawing(group);
-            var target = new RenderTargetBitmap((int)newWidth, (int)newHeight, 96, 96, PixelFormats.Default);
+            RenderTargetBitmap target = new RenderTargetBitmap((int)newWidth, (int)newHeight, 96, 96, PixelFormats.Default);
             targetContext.Close();
             target.Render(targetVisual);
-            var targetFrame = BitmapFrame.Create(target);
+            BitmapFrame targetFrame = BitmapFrame.Create(target);
+
             return targetFrame;
         }
     }

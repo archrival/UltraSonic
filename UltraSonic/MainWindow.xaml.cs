@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Drawing.Imaging;
+using System.Text;
+using System.Windows.Media.Imaging;
 using Subsonic.Rest.Api;
 using System;
 using System.Collections.Concurrent;
@@ -429,7 +431,7 @@ namespace UltraSonic
                                       if (File.Exists(localFileName))
                                       {
                                           _currentAlbumArt = Image.FromFile(localFileName);
-                                          Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)MusicCoverArt.Width, (int)MusicCoverArt.Height));
+                                          Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) MusicCoverArt.Width, (int) MusicCoverArt.Height));
                                       }
                                       else
                                       {
@@ -449,20 +451,23 @@ namespace UltraSonic
 
         private void ExpandAll(ItemsControl items, bool expand)
         {
-            if (items == null) return;
+            Dispatcher.Invoke(() =>
+                                  {
+                                      if (items == null) return;
 
-            foreach (object obj in items.Items)
-            {
-                var childControl = items.ItemContainerGenerator.ContainerFromItem(obj) as ItemsControl;
+                                      foreach (object obj in items.Items)
+                                      {
+                                          var childControl = items.ItemContainerGenerator.ContainerFromItem(obj) as ItemsControl;
 
-                if (childControl != null)
-                    ExpandAll(childControl, expand);
+                                          if (childControl != null)
+                                              ExpandAll(childControl, expand);
 
-                var item = childControl as TreeViewItem;
+                                          var item = childControl as TreeViewItem;
 
-                if (item != null)
-                    item.IsExpanded = expand;
-            }
+                                          if (item != null)
+                                              item.IsExpanded = expand;
+                                      }
+                                  });
         }
 
         private void SetProxyEntryVisibility(bool isChecked)
@@ -490,14 +495,46 @@ namespace UltraSonic
                                   {
                                       _albumItems.Clear();
 
+                                      SemaphoreSlim throttler = new SemaphoreSlim(initialCount: 50);
+
                                       foreach (Child child in children)
                                       {
                                           AlbumItem albumItem = new AlbumItem {Artist = child.Artist, Name = child.Album, Album = child, Starred = (child.Starred != default(DateTime))};
                                           _albumItems.Add(albumItem);
-                                      }
 
-                                      UpdateAlbumGridArt();
+                                          throttler.WaitAsync();
+
+                                          try
+                                          {
+                                              Task.Run(async () =>
+                                                                 {
+                                                                     try
+                                                                     {
+                                                                         await Task.Delay(1);
+                                                                         Image image = Image.FromFile(GetCoverArtFilename(albumItem.Album));
+                                                                         BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                                                                         image.Dispose();
+                                                                         bitmapFrame.Freeze();
+                                                                         GC.Collect();
+                                                                         return bitmapFrame;
+                                                                     }
+                                                                     finally
+                                                                     {
+                                                                         throttler.Release();
+                                                                     }    
+                                                                 }).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
+                                          }
+                                          catch
+                                          {
+                                              DownloadCoverArt(albumItem);
+                                          }
+                                      }
                                   });
+        }
+
+        private void DownloadCoverArt(AlbumItem albumItem)
+        {
+            SubsonicApi.GetCoverArtAsync(albumItem.Album.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
         }
 
         private void UpdateAlbumGridArt()
@@ -544,26 +581,21 @@ namespace UltraSonic
                                   });
         }
 
-        private void AddStarredToPlaylists(Task<Starred> task)
+        private void AddTrackItemToPlaylist(TrackItem trackItem)
         {
-            if (task.Status == TaskStatus.RanToCompletion)
+            Dispatcher.Invoke(() =>
             {
-                Dispatcher.Invoke(() =>
-                                      {
-                                          Starred starred = task.Result;
-                                          int starDuration = starred.Song.Sum(child => child.Duration);
+                TrackItem playlistTrackItem = new TrackItem();
+                trackItem.CopyTo(playlistTrackItem);
+                playlistTrackItem.PlaylistGuid = Guid.NewGuid();
 
-                                          PlaylistItem starredItem = new PlaylistItem
-                                                                         {
-                                                                             Duration = TimeSpan.FromSeconds(starDuration),
-                                                                             Name = "Starred",
-                                                                             Tracks = starred.Song.Count,
-                                                                             Playlist = null
-                                                                         };
+                _playlistTrackItems.Add(playlistTrackItem);
+            });
+        }
 
-                                          _playlistItems.Add(starredItem);
-                                      });
-            }
+        private void UpdateTrackListingGrid(IEnumerable<Child> children)
+        {
+            Dispatcher.Invoke(() => TrackDataGrid.ItemsSource = GetTrackItemCollection(children));
         }
     }
 }

@@ -840,9 +840,7 @@ namespace UltraSonic
                 NowPlayingItem selectedTrack = source.CurrentItem as NowPlayingItem;
 
                 if (selectedTrack != null)
-                {
                     Dispatcher.Invoke(() => AddTrackItemToPlaylist(selectedTrack));
-                }
             }
         }
 
