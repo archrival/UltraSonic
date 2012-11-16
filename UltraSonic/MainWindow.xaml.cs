@@ -104,6 +104,10 @@ namespace UltraSonic
                         UpdateNowPlaying();
                     }
                 }
+                else
+                {
+                    SettingsTab.IsSelected = true;
+                }
 
                 _timer.Interval = TimeSpan.FromMilliseconds(500);
                 _timer.Tick += (o, s) => Ticktock();
@@ -162,11 +166,14 @@ namespace UltraSonic
             _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
             _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
 
-            if (!Directory.Exists(_musicCacheDirectoryName))
-                Directory.CreateDirectory(_musicCacheDirectoryName);
+            if (!string.IsNullOrWhiteSpace(ServerUrl))
+            {
+                if (!Directory.Exists(_musicCacheDirectoryName))
+                    Directory.CreateDirectory(_musicCacheDirectoryName);
 
-            if (!Directory.Exists(_coverArtCacheDirectoryName))
-                Directory.CreateDirectory(_coverArtCacheDirectoryName);
+                if (!Directory.Exists(_coverArtCacheDirectoryName))
+                    Directory.CreateDirectory(_coverArtCacheDirectoryName);
+            }
 
             PopulateSearchResultItemComboBox();
             PopulateMaxBitrateComboBox();
@@ -305,22 +312,26 @@ namespace UltraSonic
 
         private void UpdateArtists()
         {
-            SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
+            if (SubsonicApi != null)
+                SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
         }
 
         private void UpdatePlaylists()
         {
-            SubsonicApi.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
+            if (SubsonicApi != null)
+                SubsonicApi.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
         }
 
         private void UpdateNowPlaying()
         {
-            SubsonicApi.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
+            if (SubsonicApi != null)
+                SubsonicApi.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
         }
 
         private void UpdateChatMessages()
         {
-            SubsonicApi.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
+            if (SubsonicApi != null)
+                SubsonicApi.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
         }
 
         private void UpdateLicenseInformation(License license)

@@ -55,11 +55,14 @@ namespace UltraSonic
                 _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
                 _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
 
-                if (!Directory.Exists(_musicCacheDirectoryName))
-                    Directory.CreateDirectory(_musicCacheDirectoryName);
+                if (!string.IsNullOrWhiteSpace(ServerUrl))
+                {
+                    if (!Directory.Exists(_musicCacheDirectoryName))
+                        Directory.CreateDirectory(_musicCacheDirectoryName);
 
-                if (!Directory.Exists(_coverArtCacheDirectoryName))
-                    Directory.CreateDirectory(_coverArtCacheDirectoryName);
+                    if (!Directory.Exists(_coverArtCacheDirectoryName))
+                        Directory.CreateDirectory(_coverArtCacheDirectoryName);
+                }
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;

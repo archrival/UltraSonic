@@ -388,7 +388,7 @@
                     <TextBox x:Name="ChatListInput" Grid.Column="1" Grid.Row="1" KeyDown="ChatListTextBoxKeyDown"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Settings">
+            <TabItem x:Name="SettingsTab" Header="Settings">
                 <Grid>
                     <Label Content="Username" Height="23" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="136"/>
                     <Label Content="Password" Height="23" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="136"/>
