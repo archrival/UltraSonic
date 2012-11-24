@@ -88,7 +88,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="styleCustomCheckBox" TargetType="{x:Type CheckBox}">
+        <Style x:Key="StyleCustomCheckBox" TargetType="{x:Type CheckBox}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type CheckBox}">
@@ -182,7 +182,7 @@
             <StatusBarItem x:Name="MusicTimeRemainingLabel" Width="100" FontSize="10"/>
             <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
             <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
-            <StatusBarItem x:Name="DownloadStatusLabel" Width="100" FontSize="10"/>
+            <StatusBarItem x:Name="DownloadStatusLabel" Width="200" FontSize="10"/>
         </StatusBar>
         <TabControl Margin="10,5,10,108" Grid.ColumnSpan="3">
             <TabItem Header="Music" x:Name="MusicTab">
@@ -229,7 +229,7 @@
                             <DataGridTemplateColumn x:Name="MusicDataGridStarredColumn">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="MusicDataGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="MusicDataGridStarredCheckBoxClick"/>
+                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="MusicDataGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="MusicDataGridStarredCheckBoxClick"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -255,7 +255,7 @@
                             <DataGridTemplateColumn x:Name="TrackDataGridStarred">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -271,7 +271,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <!-- Drag and Drop Popup -->
-                    <Popup x:Name="playlistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">
+                    <Popup x:Name="PlaylistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">
                         <Border BorderBrush="LightSteelBlue" BorderThickness="2" Background="White" Opacity="0.75">
                             <StackPanel Orientation="Horizontal" Margin="4,3,8,3">
                                 <Image Source="/Images/view-sort.png" Width="24" Height="24"/>
@@ -301,7 +301,7 @@
                             <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="auto"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" Grid.ColumnSpan="2" PreviewKeyDown="PreviewKeyDownHandler">
+                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" Grid.ColumnSpan="2">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick"/>
@@ -311,7 +311,7 @@
                             <DataGridTemplateColumn x:Name="PlaylistGridStarred">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="PlaylistStarredCheckBoxClick"/>
+                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="PlaylistStarredCheckBoxClick"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -348,7 +348,7 @@
                             <DataGridTemplateColumn x:Name="NowPlayingGridStarredColumn">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox Style="{StaticResource styleCustomCheckBox}" x:Name="NowPlayingGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="NowPlayingGridStarredCheckBoxClick"/>
+                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="NowPlayingGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="NowPlayingGridStarredCheckBoxClick"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -374,14 +374,14 @@
                         </ListView.Resources>
                         <ListView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem x:Name="ChatListRefresh" Header="Refresh" Click="ChatListRefreshClick"/>
+                                <MenuItem Header="Refresh" Click="ChatListRefreshClick"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn CellTemplate="{StaticResource ChatMessageTimeStampCellTemplate}"/>
-                                <GridViewColumn CellTemplate="{StaticResource ChatMessageUserCellTemplate}"/>                                
-                                <GridViewColumn CellTemplate="{StaticResource ChatMessageCellTemplate}"/>
+                                <GridViewColumn CellTemplate="{StaticResource ChatMessageUserCellTemplate}"/>
+                                <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageCellTemplate}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -390,78 +390,144 @@
             </TabItem>
             <TabItem x:Name="SettingsTab" Header="Settings">
                 <Grid>
-                    <Label Content="Username" Height="23" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Password" Height="23" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Server Address" Height="23" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Proxy Address" Height="23" HorizontalAlignment="Left" Margin="10,122,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Proxy Port" Height="23" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Proxy Username" Height="23" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Proxy Password" Height="23" HorizontalAlignment="Left" Margin="10,206,0,0" VerticalAlignment="Top" Width="136"/>
-                    <TextBox x:Name="PreferencesUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,13,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
-                    <PasswordBox x:Name="PreferencesPasswordPasswordBox" HorizontalAlignment="Left" Height="23" Margin="159,41,0,0" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,69,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesProxyServerAddressTextBox" HorizontalAlignment="Left" Height="23" Margin="159,125,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesProxyServerPortTextBox" HorizontalAlignment="Left" Height="23" Margin="159,153,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="PreferencesProxyServerUsernameTextBox" HorizontalAlignment="Left" Height="23" Margin="159,181,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="261"/>
-                    <PasswordBox x:Name="PreferencesProxyServerPasswordTextBox" HorizontalAlignment="Left" Height="23" Margin="159,209,0,0" VerticalAlignment="Top" Width="261"/>
-                    <Button x:Name="PreferencesSaveButton" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="PreferencesSaveButtonClick"/>
-                    <CheckBox x:Name="PreferencesUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Margin="159,101,0,0" VerticalAlignment="Top" Height="19" Width="91" UseLayoutRounding="True" ClickMode="Press" Checked="PreferencesUseProxyCheckboxChecked" Unchecked="PreferencesUseProxyCheckboxUnChecked"/>
-                    <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Margin="159,237,0,0" VerticalAlignment="Top" Width="261"/>
-                    <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Margin="159,268,0,0" VerticalAlignment="Top" Width="261"/>
-                    <ComboBox x:Name="AlbumListMaxComboBox" HorizontalAlignment="Left" Margin="159,299,0,0" VerticalAlignment="Top" Width="261"/>
-                    <Label Content="Max Search Results" HorizontalAlignment="Left" Margin="10,237,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Max Bitrate" HorizontalAlignment="Left" Margin="10,268,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Album List Max" HorizontalAlignment="Left" Margin="10,299,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Button x:Name="PreferencesCancelButton" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Click="PreferencesCancelButtonClick"/>
-                    <Label Content="Email:" HorizontalAlignment="Right" Margin="0,48,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseEmailLabel}"/>
-                    <Label Content="Date:" HorizontalAlignment="Right" Margin="0,79,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseDateLabel}"/>
-                    <Label Content="Key:" HorizontalAlignment="Right" Margin="0,110,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseKeyLabel}"/>
-                    <Label Content="Valid:" HorizontalAlignment="Right" Margin="0,141,267,0" VerticalAlignment="Top" Width="40" Target="{Binding ElementName=PreferencesLicenseValidLabel}"/>
-                    <Label x:Name="PreferencesLicenseEmailLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,48,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
-                    <Label x:Name="PreferencesLicenseDateLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,79,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
-                    <Label x:Name="PreferencesLicenseKeyLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,110,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
-                    <Label x:Name="PreferencesLicenseValidLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,141,0,0" VerticalAlignment="Top" Width="262" Height="24"/>
-                    <Label Content="License Information" HorizontalAlignment="Right" Margin="0,17,167,0" VerticalAlignment="Top" Width="140" FontWeight="Bold"/>
-                    <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Margin="159,332,0,0" VerticalAlignment="Top" Checked="UseDiskCacheCheckboxChecked" Unchecked="UseDiskCacheCheckboxUnChecked"/>
-                    <Label Content="Cache Directory" HorizontalAlignment="Left" Margin="10,354,0,0" VerticalAlignment="Top" Width="136"/>
-                    <Label Content="Now Playing Interval" HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top" Width="136"/>
-                    <ComboBox x:Name="NowPlayingIntervalComboBox" HorizontalAlignment="Left" Margin="159,385,0,0" VerticalAlignment="Top" Width="261"/>
-                    <Label Content="Chat Messages Interval" HorizontalAlignment="Left" Margin="10,416,0,0" VerticalAlignment="Top" Width="136"/>
-                    <ComboBox x:Name="ChatMessagesIntervalComboBox" HorizontalAlignment="Left" Margin="159,416,0,0" VerticalAlignment="Top" Width="261"/>
-                    <TextBox x:Name="CacheDirectoryTextBox" HorizontalAlignment="Left" Height="23" Margin="159,357,0,0" VerticalAlignment="Top" Width="261"/>
-                    <Label Content="Server Information" HorizontalAlignment="Right" Margin="0,181,113,0" VerticalAlignment="Top" Width="194" FontWeight="Bold"/>
-                    <Label Content="REST API:" HorizontalAlignment="Right" Margin="0,212,242,0" VerticalAlignment="Top" Width="65"/>
-                    <Label x:Name="ServerApiLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,212,90,0" VerticalAlignment="Top" Width="145"/>
-                    <Label Content="User Information" HorizontalAlignment="Right" Margin="0,15,448,0" VerticalAlignment="Top" Width="113" FontWeight="Bold"/>
-                    <Label Content="Email:" HorizontalAlignment="Right" Margin="0,48,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Scrobble:" HorizontalAlignment="Right" Margin="0,79,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Admin:" HorizontalAlignment="Right" Margin="0,110,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Settings:" HorizontalAlignment="Right" Margin="0,141,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Stream:" HorizontalAlignment="Right" Margin="0,172,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Jukebox:" HorizontalAlignment="Right" Margin="0,203,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Download:" HorizontalAlignment="Right" Margin="0,234,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Upload:" HorizontalAlignment="Right" Margin="0,265,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Playlist:" HorizontalAlignment="Right" Margin="0,296,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Cover Art:" HorizontalAlignment="Right" Margin="0,327,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Comment:" HorizontalAlignment="Right" Margin="0,358,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label Content="Podcast:" HorizontalAlignment="Right" Margin="0,389,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label x:Name="UserShareLabel2" Content="Share:" HorizontalAlignment="Right" Margin="0,420,483,0" VerticalAlignment="Top" Width="78"/>
-                    <Label x:Name="UserEmailLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,48,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserScrobblingLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,79,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserAdminLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,110,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserSettingsLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,141,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserStreamLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,172,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserJukeboxLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,203,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserDownloadLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,234,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserUploadLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,265,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserPlaylistLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,296,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserCoverArtLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,327,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserCommentLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,358,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserPodcastLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,389,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="UserShareLabel" Content="N/A" HorizontalAlignment="Right" Margin="0,420,312,0" VerticalAlignment="Top" Width="166"/>
-                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Right" Height="36" Margin="0,10,407,0" VerticalAlignment="Top" Width="36">
-                        <Image x:Name="UserAvatarImage" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
-                    </Border>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0" Grid.ColumnSpan="1">
+                        <StackPanel>
+                            <Expander Header="Server Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type PasswordBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="Server Address" HorizontalAlignment="Left" Width="Auto"/>
+                                    <TextBox x:Name="PreferencesServerAddressTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap"/>
+                                    <TextBlock Text="Username" HorizontalAlignment="Left"  Width="Auto"/>
+                                    <TextBox x:Name="PreferencesUsernameTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap"/>
+                                    <TextBlock Text="Password" HorizontalAlignment="Left" Width="Auto"/>
+                                    <PasswordBox x:Name="PreferencesPasswordPasswordBox" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Expander>
+                            <Expander Header="Proxy Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type PasswordBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type CheckBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <CheckBox x:Name="PreferencesUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Width="Auto" UseLayoutRounding="True" ClickMode="Press" Checked="PreferencesUseProxyCheckboxChecked" Unchecked="PreferencesUseProxyCheckboxUnChecked"/>
+                                    <TextBlock Text="Proxy Address" HorizontalAlignment="Left" Width="Auto"/>
+                                    <TextBox x:Name="PreferencesProxyServerAddressTextBox" TextWrapping="NoWrap" Width="Auto"/>
+                                    <TextBlock Text="Proxy Port" HorizontalAlignment="Left" Width="Auto"/>
+                                    <TextBox x:Name="PreferencesProxyServerPortTextBox" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="75"/>
+                                    <TextBlock Text="Proxy Username" HorizontalAlignment="Left" Width="Auto"/>
+                                    <TextBox x:Name="PreferencesProxyServerUsernameTextBox" TextWrapping="NoWrap" Width="Auto"/>
+                                    <TextBlock Text="Proxy Password" HorizontalAlignment="Left" Width="Auto"/>
+                                    <PasswordBox x:Name="PreferencesProxyServerPasswordTextBox" Width="Auto"/>
+                                </StackPanel>
+                            </Expander>
+                            <Expander Header="Social Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type ComboBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="Now Playing Interval" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="NowPlayingIntervalComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <TextBlock Text="Chat Messages Interval" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="ChatMessagesIntervalComboBox" HorizontalAlignment="Left" Width="75"/>
+                                </StackPanel>
+                            </Expander>
+                            <Expander Header="Playback Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type ComboBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type CheckBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <CheckBox x:Name="PlaybackFollowsCursorCheckBox" Content="Playback Follows Cursor" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Checked="UseDiskCacheCheckboxChecked" Unchecked="UseDiskCacheCheckboxUnChecked"/>
+                                    <TextBlock Text="Cache Directory" HorizontalAlignment="Left" Width="Auto"/>
+                                    <TextBox x:Name="CacheDirectoryTextBox" Width="Auto"/>
+                                    <TextBlock Text="Max Bitrate" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <TextBlock Text="Cache Download Limit" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="CacheDownloadLimitComboBox" HorizontalAlignment="Left" Width="75"/>
+                                </StackPanel>
+                            </Expander>
+                            <Expander  Header="Search Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type ComboBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="Album List Max" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="AlbumListMaxComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <TextBlock Text="Max Search Results" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Width="75"/>
+                                </StackPanel>
+                            </Expander>
+                            <Expander Header="Interface Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type ComboBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="Throttle" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="ThrottleComboBox" HorizontalAlignment="Left" Width="75"/>
+                                </StackPanel>
+                            </Expander>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <DockPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="2">
+                        <DockPanel.Resources>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Margin" Value="2,0,2,0"/>
+                            </Style>
+                        </DockPanel.Resources>
+                        <Button Content="Save" Width="75" Click="PreferencesSaveButtonClick"/>
+                        <Button Content="Cancel" Width="75" Click="PreferencesCancelButtonClick"/>
+                    </DockPanel>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -1,5 +1,6 @@
 ﻿using System.Drawing.Imaging;
 using System.Text;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Subsonic.Rest.Api;
 using System;
@@ -45,8 +46,11 @@ namespace UltraSonic
         private int _albumListMax = 10;
         private int _nowPlayingInterval = 30;
         private int _chatMessagesInterval = 5;
+        private int _cacheDownloadLimit;
+        private int _throttle = 50;
         private string _serverHash;
         private bool _newChatNotify;
+        private bool _playbackFollowsCursor;
         private User CurrentUser { get; set; }
         private bool _useDiskCache = true;
         private string _musicCacheDirectoryName = string.Empty;
@@ -78,7 +82,7 @@ namespace UltraSonic
                 PopulateSettings();
                 MusicPlayStatusLabel.Content = "Stopped";
                 MusicTreeView.DataContext = ArtistItems;
-                var playlistTrackDragAndDrop = DataGridDragAndDrop<TrackItem>.Create(_playlistTrackItems, PlaylistTrackGrid, this, playlistDragPopup);
+                var playlistTrackDragAndDrop = DataGridDragAndDrop<TrackItem>.Create(_playlistTrackItems, PlaylistTrackGrid, this, PlaylistDragPopup);
 
                 PlaylistTrackGrid.BeginningEdit += playlistTrackDragAndDrop.DataGridOnBeginEdit;
                 PlaylistTrackGrid.CellEditEnding += playlistTrackDragAndDrop.DataGridOnEndEdit;
@@ -158,6 +162,8 @@ namespace UltraSonic
             UseProxy = Settings.Default.UseProxy;
             _maxSearchResults = Settings.Default.MaxSearchResults;
             _albumListMax = Settings.Default.AlbumListMax;
+            _throttle = Settings.Default.Throttle;
+            _cacheDownloadLimit = Settings.Default.CacheDownloadLimit;
             _cacheDirectory = string.IsNullOrWhiteSpace(Settings.Default.CacheDirectory) ? Path.Combine(Path.Combine(_roamingPath, AppName), "Cache") : Settings.Default.CacheDirectory;
             _useDiskCache = Settings.Default.UseDiskCache;
             _nowPlayingInterval = Settings.Default.NowPlayingInterval;
@@ -165,6 +171,7 @@ namespace UltraSonic
             _serverHash = CalculateSha256(ServerUrl, Encoding.Unicode);
             _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
             _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
+            _playbackFollowsCursor = Settings.Default.PlaybackFollowsCursor;
 
             if (!string.IsNullOrWhiteSpace(ServerUrl))
             {
@@ -180,6 +187,8 @@ namespace UltraSonic
             PopulateAlbumListMaxComboBox();
             PopulateNowPlayingIntervalComboBox();
             PopulateChatMessagesIntervalComboBox();
+            PopulateCacheDownloadLimitComboBox();
+            PopulateThrottleComboBox();
 
             PreferencesUseProxyCheckbox.IsChecked = UseProxy;
             PreferencesUsernameTextBox.Text = Username;
@@ -192,6 +201,7 @@ namespace UltraSonic
             PreferencesProxyServerPasswordTextBox.Password = ProxyPassword;
             CacheDirectoryTextBox.Text = _cacheDirectory;
             UseDiskCacheCheckBox.IsChecked = _useDiskCache;
+            PlaybackFollowsCursorCheckBox.IsChecked = _playbackFollowsCursor;
 
             SetProxyEntryVisibility(UseProxy);
             SetUseDiskCacheVisibility(_useDiskCache);
@@ -245,6 +255,26 @@ namespace UltraSonic
             MaxBitrateComboBox.SelectedItem = _maxBitrate;
         }
 
+        private void PopulateCacheDownloadLimitComboBox()
+        {
+            List<int> listData = new List<int>();
+            for (int i = 0; i <= 300; i++)
+                listData.Add(i);
+
+            CacheDownloadLimitComboBox.ItemsSource = listData;
+            CacheDownloadLimitComboBox.SelectedItem = _cacheDownloadLimit;
+        }
+
+        private void PopulateThrottleComboBox()
+        {
+            List<int> listData = new List<int>();
+            for (int i = 1; i <= 1000; i++)
+                listData.Add(i);
+
+            ThrottleComboBox.ItemsSource = listData;
+            ThrottleComboBox.SelectedItem = _throttle;
+        }
+
         private ObservableCollection<ArtistItem> ArtistItems
         {
             get
@@ -286,8 +316,8 @@ namespace UltraSonic
                         PlaylistGridStarred.Visibility = Visibility.Collapsed;
                         TrackDataGridStarred.Visibility = Visibility.Collapsed;
                         MusicDataGridStarred.Visibility = Visibility.Collapsed;
-                        UserShareLabel.Visibility = Visibility.Hidden;
-                        UserShareLabel2.Visibility = Visibility.Hidden;
+                        //UserShareLabel.Visibility = Visibility.Hidden;
+                        //UserShareLabel2.Visibility = Visibility.Hidden;
                     });
             }
             else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
@@ -299,15 +329,18 @@ namespace UltraSonic
             if (SubsonicApi != null)
             {
                 SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
-                ServerApiLabel.Content = SubsonicApi.ServerApiVersion;
+                //ServerApiLabel.Content = SubsonicApi.ServerApiVersion;
             }
         }
 
         private void Ticktock()
         {
-            ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
-            MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
-            UpdateTitle();
+            if (MediaPlayer.Source != null)
+            {
+                ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
+                MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
+                UpdateTitle();
+            }
         }
 
         private void UpdateArtists()
@@ -338,10 +371,10 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                 {
-                    PreferencesLicenseDateLabel.Content = license.Date;
-                    PreferencesLicenseEmailLabel.Content = license.Email;
-                    PreferencesLicenseKeyLabel.Content = license.Key;
-                    PreferencesLicenseValidLabel.Content = license.Valid;
+                    //PreferencesLicenseDateLabel.Content = license.Date;
+                    //PreferencesLicenseEmailLabel.Content = license.Email;
+                    //PreferencesLicenseKeyLabel.Content = license.Key;
+                    //PreferencesLicenseValidLabel.Content = license.Valid;
                 });
         }
 
@@ -378,13 +411,12 @@ namespace UltraSonic
                 }
                 else
                 {
-                    Uri uri = new Uri(fileName);
-                    _streamItems.Enqueue(uri);
+                    _streamItems.Enqueue(fileNameUri);
                     UpdateAlbumArt(child);
-                    
+
                     if (_useDiskCache)
                     {
-                        DownloadStatusLabel.Content = "Caching...";
+                        DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
                         Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
                         streamTask.ContinueWith(t => QueueTrack(streamTask, trackItem));
                     }
@@ -394,6 +426,11 @@ namespace UltraSonic
                     }
                 }
             }
+        }
+
+        private IEnumerable<TrackItem> GetUncachedItems()
+        {
+            return (from TrackItem item in PlaylistTrackGrid.Items let fileName = GetMusicFilename(item.Track) where !IsTrackCached(fileName, item.Track) select item).ToList();
         }
 
         private void CancelTasks(string tokenType)
@@ -442,7 +479,7 @@ namespace UltraSonic
                                       if (File.Exists(localFileName))
                                       {
                                           _currentAlbumArt = Image.FromFile(localFileName);
-                                          Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) MusicCoverArt.Width, (int) MusicCoverArt.Height));
+                                          MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) MusicCoverArt.Width, (int) MusicCoverArt.Height);
                                       }
                                       else
                                       {
@@ -506,9 +543,10 @@ namespace UltraSonic
                                   {
                                       _albumItems.Clear();
 
-                                      SemaphoreSlim throttler = new SemaphoreSlim(initialCount: 50);
+                                      var enumerable = children as IList<Child> ?? children.ToList();
+                                      SemaphoreSlim throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
 
-                                      foreach (Child child in children)
+                                      foreach (Child child in enumerable)
                                       {
                                           AlbumItem albumItem = new AlbumItem {Artist = child.Artist, Name = child.Album, Album = child, Starred = (child.Starred != default(DateTime))};
                                           _albumItems.Add(albumItem);
@@ -540,12 +578,23 @@ namespace UltraSonic
                                               DownloadCoverArt(albumItem);
                                           }
                                       }
+
+                                      ScrollToTop(MusicDataGrid);
                                   });
         }
 
         private void DownloadCoverArt(AlbumItem albumItem)
         {
             SubsonicApi.GetCoverArtAsync(albumItem.Album.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
+        }
+
+        private void ScrollToTop(DataGrid dataGrid)
+        {
+            Decorator border = VisualTreeHelper.GetChild(dataGrid, 0) as Decorator;
+            if (border == null) return;
+      
+            ScrollViewer scrollViewer = border.Child as ScrollViewer;
+            if (scrollViewer != null) scrollViewer.ScrollToTop();
         }
 
         private void UpdateAlbumGridArt()

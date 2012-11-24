@@ -43,14 +43,17 @@ namespace UltraSonic
                 ProxyPassword = PreferencesProxyServerPasswordTextBox.Password;
                 bool? isChecked = PreferencesUseProxyCheckbox.IsChecked;
                 UseProxy = isChecked.HasValue && isChecked.Value;
+                _playbackFollowsCursor = PlaybackFollowsCursorCheckBox.IsChecked.HasValue && PlaybackFollowsCursorCheckBox.IsChecked.Value;
                 _maxSearchResults = (int) MaxSearchResultsComboBox.SelectedValue;
                 _maxBitrate = (int) MaxBitrateComboBox.SelectedValue;
+                _throttle = (int) ThrottleComboBox.SelectedValue;
                 _albumListMax = (int) AlbumListMaxComboBox.SelectedValue;
                 _nowPlayingInterval = (int) NowPlayingIntervalComboBox.SelectedValue;
                 _chatMessagesInterval = (int) ChatMessagesIntervalComboBox.SelectedValue;
+                _cacheDownloadLimit = (int) CacheDownloadLimitComboBox.SelectedValue;
                 _cacheDirectory = CacheDirectoryTextBox.Text;
                 _serverHash = CalculateSha256(ServerUrl, Encoding.Unicode);
-                if (UseDiskCacheCheckBox.IsChecked != null) _useDiskCache = UseDiskCacheCheckBox.IsChecked.Value;
+                _useDiskCache = UseDiskCacheCheckBox.IsChecked.HasValue && UseDiskCacheCheckBox.IsChecked.Value;
                 _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
                 _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
                 _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
@@ -79,6 +82,9 @@ namespace UltraSonic
                 Settings.Default.UseDiskCache = _useDiskCache;
                 Settings.Default.NowPlayingInterval = _nowPlayingInterval;
                 Settings.Default.ChatMessagesInterval = _chatMessagesInterval;
+                Settings.Default.CacheDownloadLimit = _cacheDownloadLimit;
+                Settings.Default.PlaybackFollowsCursor = _playbackFollowsCursor;
+                Settings.Default.Throttle = _throttle;
 
                 Settings.Default.Save();
 
@@ -105,17 +111,17 @@ namespace UltraSonic
 
         private void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any();
+            e.CanExecute = MediaPlayer != null && (MediaPlayer.Source != null || _playlistTrackItems.Any());
         }
 
         private void PreviousCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && PlaylistTrackGrid.SelectedIndex > 0;
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) > 0);
         }
 
         private void NextCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && PlaylistTrackGrid.SelectedIndex < PlaylistTrackGrid.Items.Count - 1;
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack == null || (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) < _playlistTrackItems.Count - 1));
         }
 
         private void ShuffleButtonClick(object sender, RoutedEventArgs routedEventArgs)
@@ -219,6 +225,10 @@ namespace UltraSonic
                 MusicArtistLabel.Text = null;
                 MusicAlbumLabel.Text = null;
                 MusicTitleLabel.Text = null;
+                ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
+                MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
+                UpdateTitle();
+
             }
 
             MusicPlayStatusLabel.Content = "Stopped";
@@ -239,60 +249,53 @@ namespace UltraSonic
 
         private void StopButtonClick(object sender, ExecutedRoutedEventArgs e)
         {
-            Dispatcher.Invoke(() =>
-                {
-                    if (MediaPlayer.Source != null)
-                        StopMusic();
-                });
+            Dispatcher.Invoke(StopMusic);
         }
 
         private void PlayNextTrack()
         {
             Dispatcher.Invoke(() =>
-                {
-                    MediaPlayer.Stop();
+                                  {
+                                      bool playNextTrack = false;
+                                      int playlistTrack = _nowPlayingTrack != null ? _playlistTrackItems.IndexOf(_nowPlayingTrack) : PlaylistTrackGrid.SelectedIndex;
 
-                    bool playNextTrack = false;
+                                      if (playlistTrack == _playlistTrackItems.Count - 1)
+                                      {
+                                          if (_repeatPlaylist)
+                                          {
+                                              if (_playbackFollowsCursor)
+                                                  PlaylistTrackGrid.SelectedIndex = 0;
 
-                    if (PlaylistTrackGrid.SelectedIndex == PlaylistTrackGrid.Items.Count - 1)
-                    {
-                        if (_repeatPlaylist)
-                        {
-                            PlaylistTrackGrid.SelectedIndex = 0;
-                            playNextTrack = true;
-                        }
-                    }
-                    else
-                    {
-                        PlaylistTrackGrid.SelectedIndex++;
-                        playNextTrack = true;
-                    }
+                                              playNextTrack = true;
+                                          }
+                                      }
+                                      else
+                                      {
+                                          if (_playbackFollowsCursor)
+                                              PlaylistTrackGrid.SelectedIndex = playlistTrack + 1;
 
-                    if (playNextTrack)
-                    {
-                        TrackItem trackItem = PlaylistTrackGrid.SelectedItem as TrackItem;
+                                          playNextTrack = true;
+                                      }
 
-                        if (trackItem != null)
-                            PlayTrack(trackItem);
-                    }
-                    else
-                    {
-                        StopMusic();
-                    }
-                });
+                                      StopMusic();
+
+                                      if (playNextTrack)
+                                          PlayTrack(_playlistTrackItems[playlistTrack + 1]);
+                                  });
         }
 
         private void PlayPreviousTrack()
         {
             Dispatcher.Invoke(() =>
                 {
-                    MediaPlayer.Stop();
-                    PlaylistTrackGrid.SelectedIndex--;
+                    int playlistTrack = _nowPlayingTrack != null ? _playlistTrackItems.IndexOf(_nowPlayingTrack) : PlaylistTrackGrid.SelectedIndex;
 
-                    TrackItem trackItem = PlaylistTrackGrid.SelectedItem as TrackItem;
+                    if (_playbackFollowsCursor)
+                        PlaylistTrackGrid.SelectedIndex--;
 
-                    if (trackItem != null)
-                        PlayTrack(trackItem);
+                    StopMusic();
+
+                    PlayTrack(_playlistTrackItems[playlistTrack - 1]);
                 });
         }
 
@@ -309,11 +312,13 @@ namespace UltraSonic
         private void MediaPlayerMediaOpened(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() =>
-                {
-                    _position = MediaPlayer.NaturalDuration.TimeSpan;
-                    ProgressSlider.Minimum = 0;
-                    ProgressSlider.Maximum = _position.TotalMilliseconds;
-                });
+                                  {
+                                      if (!MediaPlayer.NaturalDuration.HasTimeSpan) return;
+
+                                      _position = MediaPlayer.NaturalDuration.TimeSpan;
+                                      ProgressSlider.Minimum = 0;
+                                      ProgressSlider.Maximum = _position.TotalMilliseconds;
+                                  });
         }
 
         private void MusicTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -517,7 +522,7 @@ namespace UltraSonic
 
                 if (!string.IsNullOrWhiteSpace(searchQuery))
                 {
-                    MusicDataGrid.ItemsSource = null;
+                    _albumItems.Clear();
                     TrackDataGrid.ItemsSource = null;
                     SearchStatusLabel.Content = "Searching...";
                     SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
@@ -534,9 +539,7 @@ namespace UltraSonic
                 if (!string.IsNullOrWhiteSpace(chatMessage))
                 {
                     if (SubsonicApi != null)
-#pragma warning disable 4014
                         SubsonicApi.AddChatMessageAsync(chatMessage);
-#pragma warning restore 4014
 
                     ChatListInput.Text = string.Empty;
                 }
@@ -738,16 +741,15 @@ namespace UltraSonic
 
         private void PlaylistTrackGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
             Dispatcher.Invoke(() =>
-                {
-                    StopMusic();
+                                  {
+                                      var playlistEntryItem = PlaylistTrackGrid.SelectedItem as TrackItem;
 
-                    var playlistEntryItem = PlaylistTrackGrid.SelectedItem as TrackItem;
+                                      StopMusic();
 
-                    if (playlistEntryItem != null)
-                        QueueTrack(playlistEntryItem);
-                });
+                                      if (playlistEntryItem != null)
+                                          PlayTrack(playlistEntryItem);
+                                  });
         }
 
         private void ArtistRefreshClick(object sender, RoutedEventArgs e)
@@ -820,19 +822,19 @@ namespace UltraSonic
 
         }
 
-        private void PreviewKeyDownHandler(object sender, KeyEventArgs e)
-        {
-            var grid = (DataGrid) sender;
+        //private void PreviewKeyDownHandler(object sender, KeyEventArgs e)
+        //{
+        //    var grid = (DataGrid) sender;
 
-            Dispatcher.Invoke(() =>
-                                  {
-                                      if (Key.Delete != e.Key) return;
+        //    Dispatcher.Invoke(() =>
+        //                          {
+        //                              if (Key.Delete != e.Key) return;
 
-                                      TrackItem item = grid.SelectedItem as TrackItem;
-                                      if (item != null && _nowPlayingTrack != null && item.PlaylistGuid == _nowPlayingTrack.PlaylistGuid)
-                                        grid.SelectedItem = null;
-                                  });
-        }
+        //                              TrackItem item = grid.SelectedItem as TrackItem;
+        //                              if (item != null && _nowPlayingTrack != null && item.PlaylistGuid == _nowPlayingTrack.PlaylistGuid)
+        //                                grid.SelectedItem = null;
+        //                          });
+        //}
 
         private void NowPlayingDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

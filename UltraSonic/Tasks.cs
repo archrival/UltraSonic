@@ -247,9 +247,8 @@ namespace UltraSonic
                                           SearchStatusLabel.Content = string.Empty;
                                           SearchResult2 searchResult = task.Result;
 
-                                          UpdateAlbumGrid(searchResult.Album);
                                           UpdateTrackListingGrid(searchResult.Song);
-
+                                          UpdateAlbumGrid(searchResult.Album);
                                       });
             }
         }
@@ -351,24 +350,24 @@ namespace UltraSonic
                         SavePlaylistButton.IsEnabled = CurrentUser.PlaylistRole;
                         PlaylistsGridDeletePlaylist.Visibility = CurrentUser.PlaylistRole ? Visibility.Visible : Visibility.Collapsed;
 
-                        UserEmailLabel.Content = CurrentUser.Email;
-                        UserScrobblingLabel.Content = CurrentUser.ScrobblingEnabled;
-                        UserAdminLabel.Content = CurrentUser.AdminRole;
-                        UserSettingsLabel.Content = CurrentUser.SettingsRole;
-                        UserStreamLabel.Content = CurrentUser.StreamRole;
-                        UserJukeboxLabel.Content = CurrentUser.JukeboxRole;
-                        UserDownloadLabel.Content = CurrentUser.DownloadRole;
-                        UserUploadLabel.Content = CurrentUser.UploadRole;
-                        UserPlaylistLabel.Content = CurrentUser.PlaylistRole;
-                        UserCoverArtLabel.Content = CurrentUser.CoverArtRole;
-                        UserCommentLabel.Content = CurrentUser.CommentRole;
-                        UserPodcastLabel.Content = CurrentUser.PodcastRole;
-                        UserShareLabel.Content = CurrentUser.ShareRole;
+                        //UserEmailLabel.Content = CurrentUser.Email;
+                        //UserScrobblingLabel.Content = CurrentUser.ScrobblingEnabled;
+                        //UserAdminLabel.Content = CurrentUser.AdminRole;
+                        //UserSettingsLabel.Content = CurrentUser.SettingsRole;
+                        //UserStreamLabel.Content = CurrentUser.StreamRole;
+                        //UserJukeboxLabel.Content = CurrentUser.JukeboxRole;
+                        //UserDownloadLabel.Content = CurrentUser.DownloadRole;
+                        //UserUploadLabel.Content = CurrentUser.UploadRole;
+                        //UserPlaylistLabel.Content = CurrentUser.PlaylistRole;
+                        //UserCoverArtLabel.Content = CurrentUser.CoverArtRole;
+                        //UserCommentLabel.Content = CurrentUser.CommentRole;
+                        //UserPodcastLabel.Content = CurrentUser.PodcastRole;
+                        //UserShareLabel.Content = CurrentUser.ShareRole;
 
                         if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
                             SubsonicApi.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
-                        else
-                            UserAvatarImage.Visibility = Visibility.Collapsed;
+                        //else
+                        //    UserAvatarImage.Visibility = Visibility.Collapsed;
                     });
             }
         }
@@ -381,8 +380,8 @@ namespace UltraSonic
                 {
                     Image avatarImage = task.Result;
 
-                    if (avatarImage != null)
-                        UserAvatarImage.Source = task.Result.ToBitmapSource();
+                    //if (avatarImage != null)
+                    //    UserAvatarImage.Source = task.Result.ToBitmapSource();
                 });
             }
         }
