@@ -397,6 +397,8 @@
                     </Grid.ColumnDefinitions>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0" Grid.ColumnSpan="1">
                         <StackPanel>
+                            <TextBlock Text="Settings / Preferences" FontWeight="Bold" Margin="10,0,10,0"/>
+                            <Separator Margin="10,4,10,4"/>
                             <Expander Header="Server Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
@@ -517,6 +519,97 @@
                                     <ComboBox x:Name="ThrottleComboBox" HorizontalAlignment="Left" Width="75"/>
                                 </StackPanel>
                             </Expander>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" Grid.ColumnSpan="1">
+                        <StackPanel>
+                            <TextBlock Text="Server Information" FontWeight="Bold" Margin="10,0,10,0"/>
+                            <Separator Margin="10,4,10,4"/>
+                            <DockPanel>
+                                <TextBlock Text="REST API:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="ServerApiLabel" Text="N/A" Margin="0,2,10,2"/>
+                           </DockPanel>
+                            <TextBlock Text="License Information" FontWeight="Bold" Margin="10,10,10,0"/>
+                            <Separator Margin="10,4,10,4"/>
+                            <DockPanel>
+                                <TextBlock Text="Email:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="LicenseEmailLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Date:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="LicenseDateLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Key:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="LicenseKeyLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Valid:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="LicenseValidLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="2" Grid.ColumnSpan="1">
+                        <StackPanel>
+                            <TextBlock Text="User Information" FontWeight="Bold" Margin="10,0,10,0"/>
+                            <Separator Margin="10,4,10,4"/>
+                            <DockPanel>
+                                <TextBlock Text="Email:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserEmailLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Scrobble:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserScrobblingLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Admin:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserAdminLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Settings:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserSettingsLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Stream:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserStreamLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Jukebox:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserJukeboxLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Download:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserDownloadLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Upload:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserUploadLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Playlist:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserPlaylistLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Cover Art:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserCoverArtLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Comment:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserCommentLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock Text="Podcast:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserPodcastLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock x:Name="UserShareLabel2" Text="Share:" Margin="10,2,10,2"/>
+                                <TextBlock x:Name="UserShareLabel" Text="N/A" Margin="0,2,10,2"/>
+                            </DockPanel>
+                            <TextBlock x:Name="AvatarLabel" Text="User Avatar" Margin="10,10,10,0" FontWeight="Bold" />
+                            <Separator x:Name="AvatarSeparator" Margin="10,4,10,4" />
+                            <Border x:Name="AvatarBorder" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="48" Width="48" Margin="10,10,10,10">
+                                <Image x:Name="AvatarImage" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                     <DockPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="2">

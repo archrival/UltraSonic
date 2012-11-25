@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Globalization;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -185,8 +186,8 @@ namespace UltraSonic
                         PlaylistGridStarred.Visibility = Visibility.Collapsed;
                         TrackDataGridStarred.Visibility = Visibility.Collapsed;
                         AlbumDataGridStarred.Visibility = Visibility.Collapsed;
-                        //UserShareLabel.Visibility = Visibility.Hidden;
-                        //UserShareLabel2.Visibility = Visibility.Hidden;
+                        UserShareLabel.Visibility = Visibility.Hidden;
+                        UserShareLabel2.Visibility = Visibility.Hidden;
                     });
             }
             else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
@@ -198,7 +199,7 @@ namespace UltraSonic
             if (SubsonicApi != null)
             {
                 SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
-                //ServerApiLabel.Content = SubsonicApi.ServerApiVersion;
+                ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
             }
         }
 
@@ -234,10 +235,10 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                 {
-                    //PreferencesLicenseDateLabel.Content = license.Date;
-                    //PreferencesLicenseEmailLabel.Content = license.Email;
-                    //PreferencesLicenseKeyLabel.Content = license.Key;
-                    //PreferencesLicenseValidLabel.Content = license.Valid;
+                    LicenseDateLabel.Text = license.Date != new DateTime() ? license.Date.ToString(CultureInfo.InvariantCulture) : string.Empty;
+                    LicenseEmailLabel.Text = license.Email;
+                    LicenseKeyLabel.Text = license.Key;
+                    LicenseValidLabel.Text = license.Valid.ToString();
                 });
         }
 

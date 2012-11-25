@@ -1,9 +1,11 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows.Media;
+using Subsonic.Rest.Api;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using UltraSonic.Static;
 
 namespace UltraSonic
 {
@@ -28,24 +30,29 @@ namespace UltraSonic
                         SavePlaylistButton.IsEnabled = CurrentUser.PlaylistRole;
                         PlaylistsGridDeletePlaylist.Visibility = CurrentUser.PlaylistRole ? Visibility.Visible : Visibility.Collapsed;
 
-                        //UserEmailLabel.Content = CurrentUser.Email;
-                        //UserScrobblingLabel.Content = CurrentUser.ScrobblingEnabled;
-                        //UserAdminLabel.Content = CurrentUser.AdminRole;
-                        //UserSettingsLabel.Content = CurrentUser.SettingsRole;
-                        //UserStreamLabel.Content = CurrentUser.StreamRole;
-                        //UserJukeboxLabel.Content = CurrentUser.JukeboxRole;
-                        //UserDownloadLabel.Content = CurrentUser.DownloadRole;
-                        //UserUploadLabel.Content = CurrentUser.UploadRole;
-                        //UserPlaylistLabel.Content = CurrentUser.PlaylistRole;
-                        //UserCoverArtLabel.Content = CurrentUser.CoverArtRole;
-                        //UserCommentLabel.Content = CurrentUser.CommentRole;
-                        //UserPodcastLabel.Content = CurrentUser.PodcastRole;
-                        //UserShareLabel.Content = CurrentUser.ShareRole;
+                        UserEmailLabel.Text = CurrentUser.Email;
+                        UserScrobblingLabel.Text = CurrentUser.ScrobblingEnabled.ToString();
+                        UserAdminLabel.Text = CurrentUser.AdminRole.ToString();
+                        UserSettingsLabel.Text = CurrentUser.SettingsRole.ToString();
+                        UserStreamLabel.Text = CurrentUser.StreamRole.ToString(); ;
+                        UserJukeboxLabel.Text = CurrentUser.JukeboxRole.ToString();
+                        UserDownloadLabel.Text = CurrentUser.DownloadRole.ToString();
+                        UserUploadLabel.Text = CurrentUser.UploadRole.ToString();
+                        UserPlaylistLabel.Text = CurrentUser.PlaylistRole.ToString();
+                        UserCoverArtLabel.Text = CurrentUser.CoverArtRole.ToString();
+                        UserCommentLabel.Text = CurrentUser.CommentRole.ToString();
+                        UserPodcastLabel.Text = CurrentUser.PodcastRole.ToString();
+                        UserShareLabel.Text = CurrentUser.ShareRole.ToString();
 
                         if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
                             SubsonicApi.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
-                        //else
-                        //    UserAvatarImage.Visibility = Visibility.Collapsed;
+                        else
+                        {
+                            AvatarImage.Visibility = Visibility.Collapsed;
+                            AvatarLabel.Visibility = Visibility.Collapsed;
+                            AvatarSeparator.Visibility = Visibility.Collapsed;
+                            AvatarBorder.Visibility = Visibility.Collapsed;
+                        }
                     });
                     break;
             }
@@ -60,8 +67,23 @@ namespace UltraSonic
                     {
                         Image avatarImage = task.Result;
 
-                        //if (avatarImage != null)
-                        //    UserAvatarImage.Source = task.Result.ToBitmapSource();
+                        if (avatarImage != null)
+                        {
+                            AvatarImage.Visibility = Visibility.Visible;
+                            AvatarLabel.Visibility = Visibility.Visible;
+                            AvatarSeparator.Visibility = Visibility.Visible;
+                            AvatarBorder.Visibility = Visibility.Visible;
+                            AvatarBorder.Height = avatarImage.Height;
+                            AvatarBorder.Width = avatarImage.Width;
+                            AvatarImage.Source = task.Result.ToBitmapSource();
+                        }
+                        else
+                        {
+                            AvatarImage.Visibility = Visibility.Collapsed;
+                            AvatarLabel.Visibility = Visibility.Collapsed;
+                            AvatarSeparator.Visibility = Visibility.Collapsed;
+                            AvatarBorder.Visibility = Visibility.Collapsed;
+                        }
                     });
                     break;
             }
