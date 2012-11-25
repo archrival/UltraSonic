@@ -607,8 +607,12 @@
         <Button x:Name="SavePlaylistButton" Margin="0,0,303,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="SavePlaylistButtonClick" ToolTip="Save Playlist" HorizontalAlignment="Right" Grid.Column="2">
             <Image Source="Images/document-save.png"/>
         </Button>
-        <Image Source="Images\stock_search.png" Margin="0,5,215,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Grid.Column="2"/>
-        <TextBox x:Name="ArtistFilterTextBox" HorizontalAlignment="Right" Width="200" VerticalAlignment="Top" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Margin="0,5,240,0" Grid.Column="1" Grid.ColumnSpan="2" Height="18"/>
-        <TextBox x:Name="GlobalSearchTextBox" HorizontalAlignment="Right" Width="200" VerticalAlignment="Top" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Margin="0,5,10,0" Grid.Column="2" Height="18"/>
+        <DockPanel HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,10,0">
+            <Image Source="Images\filter.png" Width="24" Height="24"/>
+            <TextBox x:Name="ArtistFilterTextBox" Width="200" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Height="Auto"/>
+            <Separator Margin="4,0,4,0"/>
+            <Image Source="Images\stock_search.png" Width="24" Height="24"/>
+            <TextBox x:Name="GlobalSearchTextBox" Width="200" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Height="Auto"/>
+        </DockPanel>
     </Grid>
 </Window>
