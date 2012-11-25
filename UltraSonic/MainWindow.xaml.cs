@@ -55,7 +55,7 @@ namespace UltraSonic
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
         private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
         private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
-        private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
+        private ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
         private double _chatMessageSince;
 
         private SubsonicApi SubsonicApi { get; set; }

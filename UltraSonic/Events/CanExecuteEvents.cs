@@ -17,7 +17,7 @@ namespace UltraSonic
 
         private void NextCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack == null || (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) < _playlistTrackItems.Count - 1));
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) < _playlistTrackItems.Count - 1);
         }
     }
 }

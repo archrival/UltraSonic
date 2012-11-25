@@ -20,9 +20,9 @@ namespace UltraSonic
             if (childItem == null) return;
 
             if (toggleButton.IsChecked.HasValue && toggleButton.IsChecked.Value)
-                SubsonicApi.StarAsync(new List<string> {childItem.Child.Id});
+                SubsonicApi.StarAsync(new List<string> { childItem.Child.Id }).ContinueWith(t => RefreshStarredPlaylist(t, !childItem.Child.IsDir));
             else
-                SubsonicApi.UnStarAsync(new List<string> {childItem.Child.Id});
+                SubsonicApi.UnStarAsync(new List<string> { childItem.Child.Id }).ContinueWith(t => RefreshStarredPlaylist(t, !childItem.Child.IsDir));
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Subsonic.Rest.Api;
+using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Subsonic.Rest.Api;
 
 namespace UltraSonic
 {
@@ -63,7 +61,19 @@ namespace UltraSonic
                                           });
                     break;
             }
-        }        
+        }
+    
+        private void RefreshStarredPlaylist(Task<bool> task, bool isTrack)
+        {
+            switch (task.Status)
+            {
+                case TaskStatus.RanToCompletion:
+                    if (task.Result && isTrack)
+                        SubsonicApi.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
+
+                    break;
+            } 
+        }
         
         private void AddStarredToPlaylists(Task<Starred> task)
         {
@@ -75,7 +85,7 @@ namespace UltraSonic
                                               Starred starred = task.Result;
                                               int starDuration = starred.Song.Sum(child => child.Duration);
 
-                                              PlaylistItem starredItem = new PlaylistItem
+                                              PlaylistItem newStarredPlaylist = new PlaylistItem
                                                                              {
                                                                                  Duration = TimeSpan.FromSeconds(starDuration),
                                                                                  Name = "Starred",
@@ -83,7 +93,15 @@ namespace UltraSonic
                                                                                  Playlist = null
                                                                              };
 
-                                              _playlistItems.Add(starredItem);
+                                              PlaylistItem currentStarredPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null);
+
+                                              if (currentStarredPlaylist == null)
+                                                  _playlistItems.Add(newStarredPlaylist);
+                                              else
+                                              {
+                                                  _playlistItems.Remove(currentStarredPlaylist);
+                                                  _playlistItems.Add(newStarredPlaylist);
+                                              }
                                           });
                     break;
             }
