@@ -57,25 +57,50 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Album.cs" />
     <Compile Include="AlbumArt.xaml.cs">
       <DependentUpon>AlbumArt.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ArtistItem.cs" />
-    <Compile Include="ChatItem.cs" />
-    <Compile Include="Dwm.cs" />
-    <Compile Include="NowPlayingItem.cs" />
+    <Compile Include="Events\AlbumEvents.cs" />
+    <Compile Include="Static\StaticMethods.cs" />
+    <Compile Include="Tasks\AlbumTasks.cs" />
+    <Compile Include="Items\ArtistItem.cs" />
+    <Compile Include="Tasks\ArtistTasks.cs" />
+    <Compile Include="Cancellation.cs" />
+    <Compile Include="Items\ChatItem.cs" />
+    <Compile Include="Events\CanExecuteEvents.cs" />
+    <Compile Include="Items\ChildItem.cs" />
+    <Compile Include="Download.cs" />
+    <Compile Include="Static\Dwm.cs" />
+    <Compile Include="InterfaceUpdate.cs" />
+    <Compile Include="Events\MainWindowEvents.cs" />
+    <Compile Include="Events\ArtistEvents.cs" />
+    <Compile Include="Tasks\MainWindowTasks.cs" />
+    <Compile Include="Tasks\TrackTasks.cs" />
+    <Compile Include="Items\NowPlayingItem.cs" />
     <Compile Include="DataGridDragAndDrop.cs" />
-    <Compile Include="EventHandlers.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="PlaylistItem.cs" />
+    <Compile Include="Events\Events.cs" />
+    <Compile Include="Static\ExtensionMethods.cs" />
+    <Compile Include="Static\NativeMethods.cs" />
+    <Compile Include="Playback.cs" />
+    <Compile Include="Tasks\PlaybackTasks.cs" />
+    <Compile Include="Playlist.cs" />
+    <Compile Include="Events\PlaylistEvents.cs" />
+    <Compile Include="Items\PlaylistItem.cs" />
+    <Compile Include="Tasks\PlaylistTasks.cs" />
     <Compile Include="SavePlaylist.xaml.cs">
       <DependentUpon>SavePlaylist.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StaticMethods.cs" />
-    <Compile Include="Tasks.cs" />
-    <Compile Include="TrackItem.cs" />
-    <Compile Include="UIHelpers.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Events\SettingsEvents.cs" />
+    <Compile Include="Events\SocialEvents.cs" />
+    <Compile Include="Tasks\SocialTasks.cs" />
+    <Compile Include="Star.cs" />
+    <Compile Include="Track.cs" />
+    <Compile Include="Events\TrackEvents.cs" />
+    <Compile Include="Items\TrackItem.cs" />
+    <Compile Include="Static\UIHelpers.cs" />
+    <Compile Include="Tasks\UserTasks.cs" />
     <Page Include="AlbumArt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -88,8 +113,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AlbumItem.cs" />
-    <Compile Include="ImageConverter.cs" />
+    <Compile Include="Items\AlbumItem.cs" />
+    <Compile Include="Static\ImageConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

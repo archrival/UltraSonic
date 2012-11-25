@@ -5,9 +5,9 @@ using System.Security;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace UltraSonic
+namespace UltraSonic.Static
 {
-    class Dwm
+    public static class Dwm
     {
         [DllImport("dwmapi.dll", PreserveSig = true)]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);

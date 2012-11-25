@@ -79,12 +79,12 @@ namespace UltraSonic.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("600")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public double Height {
+        public double WindowHeight {
             get {
-                return ((double)(this["Height"]));
+                return ((double)(this["WindowHeight"]));
             }
             set {
-                this["Height"] = value;
+                this["WindowHeight"] = value;
             }
         }
         
@@ -92,12 +92,12 @@ namespace UltraSonic.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1077")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public double Width {
+        public double WindowWidth {
             get {
-                return ((double)(this["Width"]));
+                return ((double)(this["WindowWidth"]));
             }
             set {
-                this["Width"] = value;
+                this["WindowWidth"] = value;
             }
         }
         
@@ -261,12 +261,12 @@ namespace UltraSonic.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool Maximized {
+        public bool WindowMaximized {
             get {
-                return ((bool)(this["Maximized"]));
+                return ((bool)(this["WindowMaximized"]));
             }
             set {
-                this["Maximized"] = value;
+                this["WindowMaximized"] = value;
             }
         }
         
@@ -274,12 +274,12 @@ namespace UltraSonic.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public double WindowX {
+        public double WindowLeft {
             get {
-                return ((double)(this["WindowX"]));
+                return ((double)(this["WindowLeft"]));
             }
             set {
-                this["WindowX"] = value;
+                this["WindowLeft"] = value;
             }
         }
         
@@ -287,12 +287,12 @@ namespace UltraSonic.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public double WindowY {
+        public double WindowTop {
             get {
-                return ((double)(this["WindowY"]));
+                return ((double)(this["WindowTop"]));
             }
             set {
-                this["WindowY"] = value;
+                this["WindowTop"] = value;
             }
         }
         

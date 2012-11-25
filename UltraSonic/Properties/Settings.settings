@@ -14,10 +14,10 @@
     <Setting Name="Volume" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="Height" Roaming="true" Type="System.Double" Scope="User">
+    <Setting Name="WindowHeight" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">600</Value>
     </Setting>
-    <Setting Name="Width" Roaming="true" Type="System.Double" Scope="User">
+    <Setting Name="WindowWidth" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">1077</Value>
     </Setting>
     <Setting Name="ProxyServer" Roaming="true" Type="System.String" Scope="User">
@@ -56,13 +56,13 @@
     <Setting Name="ChatMessagesInterval" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
-    <Setting Name="Maximized" Roaming="true" Type="System.Boolean" Scope="User">
+    <Setting Name="WindowMaximized" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="WindowX" Roaming="true" Type="System.Double" Scope="User">
+    <Setting Name="WindowLeft" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="WindowY" Roaming="true" Type="System.Double" Scope="User">
+    <Setting Name="WindowTop" Roaming="true" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="VolumeMuted" Roaming="true" Type="System.Boolean" Scope="User">

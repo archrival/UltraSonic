@@ -1,16 +1,12 @@
-﻿using System.ComponentModel;
-using System.Windows.Media.Imaging;
-using Subsonic.Rest.Api;
+﻿using Subsonic.Rest.Api;
+using System.ComponentModel;
 
 namespace UltraSonic
 {
-    public sealed class AlbumItem : INotifyPropertyChanged
+    public class ChildItem : INotifyPropertyChanged
     {
         public bool Starred { get; set; }
-        public string Name { get; set; }
-        public string Artist { get; set; }
-        public Child Album { get; set; }
-        public BitmapSource Image { get; set; }
+        public Child Child { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName)

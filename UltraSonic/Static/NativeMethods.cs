@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace UltraSonic
+namespace UltraSonic.Static
 {
     /// <summary>
     /// FxCop requires all Marshalled functions to be in a class called NativeMethods.
