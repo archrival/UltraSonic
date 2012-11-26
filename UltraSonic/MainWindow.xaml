@@ -1,4 +1,4 @@
-﻿<Window x:Class="UltraSonic.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic" Icon="Images/ultrasonic-logo.ico" Title="UltraSonic" Height="700" Width="1030" MinWidth="1030" MinHeight="700" Closed="WindowClosed">
+﻿<Window x:Class="UltraSonic.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:Custom="http://schemas.microsoft.com/wpf/2008/toolkit" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic" Icon="Images/ultrasonic-logo.ico" Title="UltraSonic" Height="700" Width="1030" MinWidth="1030" MinHeight="700" Closed="WindowClosed">
     <Window.Resources>
         <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -117,7 +117,7 @@
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard Storyboard.TargetName="header" AutoReverse="True" RepeatBehavior="Forever" Storyboard.TargetProperty="Foreground.Color">
-                                            <ColorAnimation To="Transparent" AutoReverse="True" Duration="0:0:.75" />
+                                            <ColorAnimation To="Transparent" AutoReverse="True" Duration="0:0:.75"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
@@ -179,10 +179,12 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <StatusBar VerticalAlignment="Bottom" Height="29" Grid.ColumnSpan="3">
-            <StatusBarItem x:Name="MusicTimeRemainingLabel" Width="100" FontSize="10"/>
-            <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
-            <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
-            <StatusBarItem x:Name="DownloadStatusLabel" Width="200" FontSize="10"/>
+            <DockPanel>
+                <StatusBarItem x:Name="MusicTimeRemainingLabel" Width="100" FontSize="10"/>
+                <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
+                <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
+                <StatusBarItem x:Name="DownloadStatusLabel" Width="200" FontSize="10"/>
+            </DockPanel>
         </StatusBar>
         <TabControl Margin="10,5,10,108" Grid.ColumnSpan="3">
             <TabItem Header="Music" x:Name="MusicTab">
@@ -270,15 +272,6 @@
                             <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <!-- Drag and Drop Popup -->
-                    <Popup x:Name="PlaylistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">
-                        <Border BorderBrush="LightSteelBlue" BorderThickness="2" Background="White" Opacity="0.75">
-                            <StackPanel Orientation="Horizontal" Margin="4,3,8,3">
-                                <Image Source="/Images/view-sort.png" Width="24" Height="24"/>
-                                <TextBlock FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding ElementName=me, Path=DraggedItem.Name}" Margin="8,0,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </Popup>
                 </Grid>
             </TabItem>
             <TabItem Header="Playlists" x:Name="PlaylistTab">
@@ -326,6 +319,14 @@
                             <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <!-- Drag and Drop Popup -->
+                    <Popup x:Name="PlaylistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">
+                        <Border BorderBrush="Black" BorderThickness="1" Background="White" Opacity="0.75">
+                            <StackPanel>
+                                <Image Source="/Images/view-sort.png" Width="36" Height="36"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                 </Grid>
             </TabItem>
             <TabItem x:Name="SocialTab" Header="Social" GotFocus="SocialTabGotFocus">
@@ -369,7 +370,7 @@
                     <ListView x:Name="ChatListView" Grid.Column="1">
                         <ListView.Resources>
                             <Style TargetType="{x:Type GridViewColumnHeader}">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </Style>
                         </ListView.Resources>
                         <ListView.ContextMenu>
@@ -414,7 +415,7 @@
                                     </StackPanel.Resources>
                                     <TextBlock Text="Server Address" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="SettingsServerAddressTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap"/>
-                                    <TextBlock Text="Username" HorizontalAlignment="Left"  Width="Auto"/>
+                                    <TextBlock Text="Username" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="SettingsUsernameTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap"/>
                                     <TextBlock Text="Password" HorizontalAlignment="Left" Width="Auto"/>
                                     <PasswordBox x:Name="SettingsPasswordPasswordBox" HorizontalAlignment="Stretch"/>
@@ -489,7 +490,7 @@
                                     <ComboBox x:Name="CacheDownloadLimitComboBox" HorizontalAlignment="Left" Width="75"/>
                                 </StackPanel>
                             </Expander>
-                            <Expander  Header="Search Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander Header="Search Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBlock}">
@@ -528,7 +529,7 @@
                             <DockPanel>
                                 <TextBlock Text="REST API:" Margin="10,2,10,2"/>
                                 <TextBlock x:Name="ServerApiLabel" Text="N/A" Margin="0,2,10,2"/>
-                           </DockPanel>
+                            </DockPanel>
                             <TextBlock Text="License Information" FontWeight="Bold" Margin="10,10,10,0"/>
                             <Separator Margin="10,4,10,4"/>
                             <DockPanel>
@@ -605,8 +606,8 @@
                                 <TextBlock x:Name="UserShareLabel2" Text="Share:" Margin="10,2,10,2"/>
                                 <TextBlock x:Name="UserShareLabel" Text="N/A" Margin="0,2,10,2"/>
                             </DockPanel>
-                            <TextBlock x:Name="AvatarLabel" Text="User Avatar" Margin="10,10,10,0" FontWeight="Bold" />
-                            <Separator x:Name="AvatarSeparator" Margin="10,4,10,4" />
+                            <TextBlock x:Name="AvatarLabel" Text="User Avatar" Margin="10,10,10,0" FontWeight="Bold"/>
+                            <Separator x:Name="AvatarSeparator" Margin="10,4,10,4"/>
                             <Border x:Name="AvatarBorder" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="48" Width="48" Margin="10,10,10,10">
                                 <Image x:Name="AvatarImage" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
                             </Border>
@@ -626,9 +627,9 @@
         </TabControl>
         <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" MouseLeftButtonUp="MusicCoverArtMouseLeftButtonUp" RenderTransformOrigin="0.689,0.343"/>
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" Height="40" Margin="55,0,0,61" Width="175" MouseLeftButtonUp="TrackInfoStackPanelMouseLeftButtonUp">
-            <TextBlock x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="0,0,0,0" Height="13" />
-            <TextBlock x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="0,0,0,0" Height="13" />
-            <TextBlock x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="0,0,0,0" Height="13" />
+            <TextBlock x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="0,0,0,0" Height="13"/>
+            <TextBlock x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="0,0,0,0" Height="13"/>
+            <TextBlock x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="0,0,0,0" Height="13"/>
         </StackPanel>
         <Button x:Name="PreviousButton" HorizontalAlignment="Left" Margin="10,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.PreviousTrack" ToolTip="Previous Title">
             <Image Source="Images/media-skip-backward.png"/>

@@ -1,7 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using UltraSonic.Static;
 
@@ -19,7 +23,7 @@ namespace UltraSonic
 
         public static DataGridDragAndDrop<T> Create(ObservableCollection<T> collection, DataGrid dataGrid, Window window, Popup popup)
         {
-            var test = new DataGridDragAndDrop<T>
+            return new DataGridDragAndDrop<T>
                 {
                     Collection = collection, 
                     DataGrid = dataGrid,
@@ -27,8 +31,6 @@ namespace UltraSonic
                     Window = window,
                     DraggedItemProperty = DependencyProperty.Register("DraggedItem", typeof(T), window.GetType())
                 };
-
-            return test;
         }
 
         private T DraggedItem
@@ -62,17 +64,23 @@ namespace UltraSonic
         public void DataGridOnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (!IsDragging || IsEditing)
-            {
                 return;
-            }
 
             T targetItem = DataGrid.SelectedItem is T ? (T) DataGrid.SelectedItem : default(T);
 
             if (!ReferenceEquals(DraggedItem, targetItem))
             {
+                foreach (DataGridColumn column in DataGrid.Columns)
+                    column.SortDirection = null;
+
+                int targetIndex = Collection.IndexOf(targetItem);
                 Collection.Remove(DraggedItem);
-                var targetIndex = Collection.IndexOf(targetItem);
-                Collection.Insert(targetIndex, DraggedItem);
+
+                if (targetIndex == Collection.Count)
+                    Collection.Add(DraggedItem);
+                else
+                    Collection.Insert(targetIndex, DraggedItem);
+
                 DataGrid.SelectedItem = DraggedItem;
             }
 
