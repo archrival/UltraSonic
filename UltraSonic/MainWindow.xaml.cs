@@ -119,6 +119,8 @@ namespace UltraSonic
                 else
                 {
                     SettingsTab.IsSelected = true;
+                    ServerSettingsExpander.IsExpanded = true;
+                    SettingsServerAddressTextBox.Focus();
                 }
 
                 _timer.Interval = TimeSpan.FromMilliseconds(500);

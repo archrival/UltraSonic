@@ -401,7 +401,7 @@
                         <StackPanel>
                             <TextBlock Text="Settings / Preferences" FontWeight="Bold" Margin="10,0,10,0"/>
                             <Separator Margin="10,4,10,4"/>
-                            <Expander Header="Server Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander x:Name="ServerSettingsExpander" Header="Server Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBox}">
