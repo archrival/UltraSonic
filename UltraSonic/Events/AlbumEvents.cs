@@ -73,7 +73,19 @@ namespace UltraSonic
                     break;
             }
 
+            _albumListItem = new AlbumListItem {Type = albumListType, Current = 0};
+            AlbumDataGridNext.Header = string.Format("Albums {0} - {1}", _albumListMax + 1, _albumListMax + _albumListMax);
+            AlbumDataGridNext.Visibility = Visibility.Visible;
             SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(UpdateAlbumGrid);
+        }
+
+        private void AlbumDataGridNextClick(object sender, RoutedEventArgs e)
+        {
+            if (SubsonicApi == null || _albumListItem == null) return;
+
+            _albumListItem.Current += _albumListMax;
+            AlbumDataGridNext.Header = string.Format("Albums {0} - {1}", _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax);
+            SubsonicApi.GetAlbumListAsync(_albumListItem.Type, _albumListMax, _albumListItem.Current, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(UpdateAlbumGrid);
         }
 
         private void AlbumDataGridAddClick(object sender, RoutedEventArgs e)

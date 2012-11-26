@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Xml.Serialization;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 
@@ -31,6 +33,7 @@ namespace UltraSonic
             _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
             _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
             _playbackFollowsCursor = Settings.Default.PlaybackFollowsCursor;
+            _currentPlaylist = Settings.Default.CurrentPlaylist ?? string.Empty;
 
             if (!string.IsNullOrWhiteSpace(ServerUrl))
             {
@@ -64,6 +67,22 @@ namespace UltraSonic
 
             SetProxyEntryVisibility(UseProxy);
             SetUseDiskCacheVisibility(_useDiskCache);
+        }
+
+        private void PopulatePlaylist()
+        {
+            Dispatcher.Invoke(() =>
+                                  {
+                                      ObservableCollection<TrackItem> playlistTrackItems;
+                                      XmlSerializer xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
+
+                                      using (TextReader reader = new StringReader(_currentPlaylist))
+                                          playlistTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackItem>;
+
+                                      if (playlistTrackItems != null)
+                                          foreach (TrackItem trackItem in playlistTrackItems)
+                                              AddTrackItemToPlaylist(trackItem);
+                                  });
         }
 
         private void PopulateSearchResultItemComboBox()

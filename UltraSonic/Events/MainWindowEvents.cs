@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Xml;
+using System.Xml.Serialization;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 
@@ -168,6 +173,19 @@ namespace UltraSonic
             Settings.Default.WindowLeft = Left;
             Settings.Default.WindowTop = Top;
             Settings.Default.WindowMaximized = WindowState == WindowState.Maximized;
+
+            string playlistXml;
+
+            using (StringWriter textWriter = new StringWriter())
+            {
+                XmlSerializer xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
+                XmlWriter writer = XmlWriter.Create(textWriter);
+                xmlSerializer.Serialize(writer, _playlistTrackItems);
+                playlistXml = textWriter.ToString();
+            }
+
+            Settings.Default.CurrentPlaylist = playlistXml;
+
             Settings.Default.Save();
         }
 

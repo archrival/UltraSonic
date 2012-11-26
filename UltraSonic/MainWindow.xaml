@@ -225,6 +225,7 @@
                                 <MenuItem Header="Frequently Played" Click="AlbumDataGridAlbumListClick"/>
                                 <MenuItem Header="Recently Played" Click="AlbumDataGridAlbumListClick"/>
                                 <MenuItem x:Name="AlbumDataGridStarred" Header="Starred" Click="AlbumDataGridAlbumListClick"/>
+                                <MenuItem x:Name="AlbumDataGridNext" Visibility="Collapsed" Click="AlbumDataGridNextClick"/>
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>

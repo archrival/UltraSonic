@@ -1,9 +1,9 @@
-﻿using System.Globalization;
-using Subsonic.Rest.Api;
+﻿using Subsonic.Rest.Api;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -56,8 +56,10 @@ namespace UltraSonic
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
         private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
         private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
-        private ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
+        private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
         private double _chatMessageSince;
+        private AlbumListItem _albumListItem;
+        private string _currentPlaylist = string.Empty;
 
         private SubsonicApi SubsonicApi { get; set; }
         private string Username { get; set; }
@@ -80,6 +82,7 @@ namespace UltraSonic
                 Top = Settings.Default.WindowTop;
                 Height = Settings.Default.WindowHeight;
                 Width = Settings.Default.WindowWidth;
+                
                 if (Settings.Default.WindowMaximized)
                     WindowState = WindowState.Maximized;
 
@@ -107,6 +110,7 @@ namespace UltraSonic
                     else
                     {
                         UpdateArtists();
+                        PopulatePlaylist();
                         UpdatePlaylists();
                         UpdateChatMessages();
                         UpdateNowPlaying();
@@ -205,12 +209,11 @@ namespace UltraSonic
 
         private void Ticktock()
         {
-            if (MediaPlayer.Source != null)
-            {
-                ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
-                MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
-                UpdateTitle();
-            }
+            if (MediaPlayer.Source == null) return;
+
+            ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
+            MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
+            UpdateTitle();
         }
 
         private void UpdateArtists()

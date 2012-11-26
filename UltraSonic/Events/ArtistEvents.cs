@@ -25,6 +25,8 @@ namespace UltraSonic
             if (SubsonicApi == null) return;
 
             ArtistItem artistItem = e.NewValue as ArtistItem;
+            _albumListItem = null;
+            AlbumDataGridNext.Visibility = Visibility.Collapsed;
 
             if (artistItem != null && artistItem.Artist != null)
                 SubsonicApi.GetMusicDirectoryAsync(artistItem.Artist.Id, GetCancellationToken("ArtistTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid);

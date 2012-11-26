@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows;
+using Subsonic.Rest.Api;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -10,6 +11,9 @@ namespace UltraSonic
     {
         private void PopulateSearchResults(Task<SearchResult2> task)
         {
+            _albumListItem = null;
+            AlbumDataGridNext.Visibility = Visibility.Collapsed;
+
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:

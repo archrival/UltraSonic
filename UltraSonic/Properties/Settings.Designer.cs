@@ -347,5 +347,18 @@ namespace UltraSonic.Properties {
                 this["Throttle"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string CurrentPlaylist {
+            get {
+                return ((string)(this["CurrentPlaylist"]));
+            }
+            set {
+                this["CurrentPlaylist"] = value;
+            }
+        }
     }
 }

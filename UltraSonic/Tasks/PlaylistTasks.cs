@@ -7,6 +7,24 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
+        private void AddTrackToPlaylist(Task<Directory> task)
+        {
+            switch (task.Status)
+            {
+                case TaskStatus.RanToCompletion:
+                    Dispatcher.Invoke(() =>
+                                          {
+                                              Directory directory = task.Result;
+
+                                              TrackItem playlistTrackItem = new TrackItem();
+                                              playlistTrackItem.PlaylistGuid = Guid.NewGuid();
+
+                                              //_playlistTrackItems.Add(playlistTrackItem);
+                                          });
+                    break;
+            }
+        }
+
         private void UpdatePlaylists(Task<Playlists> task)
         {
             switch (task.Status)

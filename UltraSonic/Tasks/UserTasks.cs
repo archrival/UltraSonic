@@ -1,10 +1,8 @@
-﻿using System.Windows.Media;
-using Subsonic.Rest.Api;
+﻿using Subsonic.Rest.Api;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using UltraSonic.Static;
 
 namespace UltraSonic

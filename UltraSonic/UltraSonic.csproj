@@ -62,6 +62,7 @@
       <DependentUpon>AlbumArt.xaml</DependentUpon>
     </Compile>
     <Compile Include="Events\AlbumEvents.cs" />
+    <Compile Include="Items\AlbumListItem.cs" />
     <Compile Include="Static\StaticMethods.cs" />
     <Compile Include="Tasks\AlbumTasks.cs" />
     <Compile Include="Items\ArtistItem.cs" />
