@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -9,6 +10,16 @@ namespace UltraSonic.Static
     /// </summary>
     public static class UiHelpers
     {
+        public static T GetVisualParent<T>(object childObject) where T : Visual
+        {
+            DependencyObject child = childObject as DependencyObject;
+
+            while ((child != null) && !(child is T))
+                child = VisualTreeHelper.GetParent(child);
+
+            return child as T;
+        }   
+
         public static void ScrollToTop(DependencyObject dependencyObject)
         {
             Decorator border = VisualTreeHelper.GetChild(dependencyObject, 0) as Decorator;

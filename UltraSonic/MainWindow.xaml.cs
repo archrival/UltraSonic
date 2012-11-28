@@ -60,6 +60,8 @@ namespace UltraSonic
         private double _chatMessageSince;
         private AlbumListItem _albumListItem;
         private string _currentPlaylist = string.Empty;
+        private int _albumArtSize = 150;
+        private bool _saveWorkingPlaylist = true;
 
         private SubsonicApi SubsonicApi { get; set; }
         private string Username { get; set; }
@@ -188,24 +190,21 @@ namespace UltraSonic
             if (SubsonicApi.ServerApiVersion < Version.Parse("1.8.0"))
             {
                 Dispatcher.Invoke(() =>
-                    {
-                        PlaylistGridStarred.Visibility = Visibility.Collapsed;
-                        TrackDataGridStarred.Visibility = Visibility.Collapsed;
-                        AlbumDataGridStarred.Visibility = Visibility.Collapsed;
-                        UserShareLabel.Visibility = Visibility.Hidden;
-                        UserShareLabel2.Visibility = Visibility.Hidden;
-                    });
+                                      {
+                                          PlaylistGridStarred.Visibility = Visibility.Collapsed;
+                                          TrackDataGridStarred.Visibility = Visibility.Collapsed;
+                                          AlbumDataGridStarred.Visibility = Visibility.Collapsed;
+                                          UserShareLabel.Visibility = Visibility.Hidden;
+                                          UserShareLabel2.Visibility = Visibility.Hidden;
+                                          ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
+                                      });
+
+                SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
             }
             else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
             {
                 MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), "Inavlid server API version", MessageBoxButton.OK, MessageBoxImage.Error);
                 SubsonicApi = null;
-            }
-
-            if (SubsonicApi != null)
-            {
-                SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
-                ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
             }
         }
 
@@ -266,7 +265,11 @@ namespace UltraSonic
 
         private void UpdateTrackListingGrid(IEnumerable<Child> children)
         {
-            Dispatcher.Invoke(() => TrackDataGrid.ItemsSource = GetTrackItemCollection(children));
+            Dispatcher.Invoke(() =>
+                                  {
+                                      TrackDataGrid.ItemsSource = GetTrackItemCollection(children);
+                                      UiHelpers.ScrollToTop(TrackDataGrid);
+                                  });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows;
+using Subsonic.Rest.Api;
 using System;
 using System.Drawing;
 using System.IO;
@@ -21,11 +22,23 @@ namespace UltraSonic
             }
         }
 
-        private void UpdateAlbumGrid(Task<AlbumList> task)
+        private void UpdateAlbumGrid(Task<AlbumList> task, int albumListStart, int albumListEnd)
         {
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
+                    if (task.Result.Album.Any())
+                    {
+                        Dispatcher.Invoke(() =>
+                                              {
+                                                  AlbumDataGridNext.Header = string.Format("Albums {0} - {1}", albumListStart, albumListEnd);
+                                                  AlbumDataGridNext.Visibility = Visibility.Visible;
+                                              });
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke(() => { AlbumDataGridNext.Visibility = Visibility.Collapsed; });
+                    }
                     UpdateAlbumGrid(task.Result.Album);
                     break;
             }
@@ -40,18 +53,18 @@ namespace UltraSonic
                     {
                         Image coverArtImage = task.Result;
 
-                        if (coverArtImage != null)
-                        {
-                            string localFileName = GetCoverArtFilename(albumItem.Child);
-                            if (!File.Exists(localFileName))
-                                coverArtImage.Save(localFileName);
+                        if (coverArtImage == null) return;
 
-                            BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
-                            coverArtImage.Dispose();
-                            GC.Collect();
-                            albumItem.Image = bitmapFrame;
-                            AlbumDataGrid.Items.Refresh();
-                        }
+                        string localFileName = GetCoverArtFilename(albumItem.Child);
+
+                        if (!File.Exists(localFileName))
+                            coverArtImage.Save(localFileName);
+
+                        BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, _albumArtSize, _albumArtSize);
+                        coverArtImage.Dispose();
+                        GC.Collect();
+                        albumItem.Image = bitmapFrame;
+                        AlbumDataGrid.Items.Refresh();
                     });
                     break;
             }

@@ -1,8 +1,12 @@
-﻿using Subsonic.Rest.Api.Enums;
+﻿using System.Linq;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using Subsonic.Rest.Api.Enums;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UltraSonic.Static;
 
 namespace UltraSonic
 {
@@ -74,9 +78,7 @@ namespace UltraSonic
             }
 
             _albumListItem = new AlbumListItem {Type = albumListType, Current = 0};
-            AlbumDataGridNext.Header = string.Format("Albums {0} - {1}", _albumListMax + 1, _albumListMax + _albumListMax);
-            AlbumDataGridNext.Visibility = Visibility.Visible;
-            SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(UpdateAlbumGrid);
+            SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListMax + 1, _albumListMax + _albumListMax));
         }
 
         private void AlbumDataGridNextClick(object sender, RoutedEventArgs e)
@@ -84,8 +86,7 @@ namespace UltraSonic
             if (SubsonicApi == null || _albumListItem == null) return;
 
             _albumListItem.Current += _albumListMax;
-            AlbumDataGridNext.Header = string.Format("Albums {0} - {1}", _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax);
-            SubsonicApi.GetAlbumListAsync(_albumListItem.Type, _albumListMax, _albumListItem.Current, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(UpdateAlbumGrid);
+            SubsonicApi.GetAlbumListAsync(_albumListItem.Type, _albumListMax, _albumListItem.Current, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax));
         }
 
         private void AlbumDataGridAddClick(object sender, RoutedEventArgs e)
@@ -94,6 +95,23 @@ namespace UltraSonic
 
             foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
                 SubsonicApi.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(AddAlbumToPlaylist);
+        }
+
+        private void DgTargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            DataGrid dataGrid = UiHelpers.GetVisualParent<DataGrid>(sender);
+
+            if (dataGrid == null) return;
+
+            foreach (DataGridColumn column in dataGrid.Columns)
+            {
+                //if you want to size ur column as per the cell content
+                column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
+                //if you want to size ur column as per the column header
+                column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
+                //if you want to size ur column as per both header and cell content
+                column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+            }
         }
     }
 }

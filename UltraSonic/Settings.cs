@@ -34,6 +34,8 @@ namespace UltraSonic
             _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
             _playbackFollowsCursor = Settings.Default.PlaybackFollowsCursor;
             _currentPlaylist = Settings.Default.CurrentPlaylist ?? string.Empty;
+            _albumArtSize = Settings.Default.AlbumArtSize;
+            _saveWorkingPlaylist = Settings.Default.SaveWorkingPlaylist;
 
             if (!string.IsNullOrWhiteSpace(ServerUrl))
             {
@@ -64,6 +66,8 @@ namespace UltraSonic
             CacheDirectoryTextBox.Text = _cacheDirectory;
             UseDiskCacheCheckBox.IsChecked = _useDiskCache;
             PlaybackFollowsCursorCheckBox.IsChecked = _playbackFollowsCursor;
+            AlbumArtSizeTextBox.Text = _albumArtSize.ToString();
+            SaveWorkingPlaylistCheckBox.IsChecked = _saveWorkingPlaylist;
 
             SetProxyEntryVisibility(UseProxy);
             SetUseDiskCacheVisibility(_useDiskCache);
@@ -73,15 +77,18 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                                   {
-                                      ObservableCollection<TrackItem> playlistTrackItems;
-                                      XmlSerializer xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
+                                      if (!string.IsNullOrWhiteSpace(_currentPlaylist))
+                                      {
+                                          ObservableCollection<TrackItem> playlistTrackItems;
+                                          XmlSerializer xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
 
-                                      using (TextReader reader = new StringReader(_currentPlaylist))
-                                          playlistTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackItem>;
+                                          using (TextReader reader = new StringReader(_currentPlaylist))
+                                              playlistTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackItem>;
 
-                                      if (playlistTrackItems != null)
-                                          foreach (TrackItem trackItem in playlistTrackItems)
-                                              AddTrackItemToPlaylist(trackItem);
+                                          if (playlistTrackItems != null)
+                                              foreach (TrackItem trackItem in playlistTrackItems)
+                                                  AddTrackItemToPlaylist(trackItem);
+                                      }
                                   });
         }
 

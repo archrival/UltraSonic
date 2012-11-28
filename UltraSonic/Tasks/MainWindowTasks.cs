@@ -12,13 +12,14 @@ namespace UltraSonic
         private void PopulateSearchResults(Task<SearchResult2> task)
         {
             _albumListItem = null;
-            AlbumDataGridNext.Visibility = Visibility.Collapsed;
 
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
+                        AlbumDataGridNext.Visibility = Visibility.Collapsed;
+
                         SearchStatusLabel.Content = string.Empty;
 
                         UpdateTrackListingGrid(task.Result.Song);

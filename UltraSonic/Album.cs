@@ -39,7 +39,7 @@ namespace UltraSonic
                 var enumerable = children as IList<Child> ?? children.ToList();
                 SemaphoreSlim throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
 
-                foreach (AlbumItem albumItem in enumerable.Select(child => new AlbumItem { Artist = child.Artist, Name = child.Album, Child = child, Starred = (child.Starred != default(DateTime)) }))
+                foreach (AlbumItem albumItem in enumerable.Select(child => new AlbumItem { AlbumArtSize = _albumArtSize, Artist = child.Artist, Name = child.Album, Child = child, Starred = (child.Starred != default(DateTime)) }))
                 {
                     _albumItems.Add(albumItem);
 
@@ -55,7 +55,7 @@ namespace UltraSonic
                             {
                                 await Task.Delay(1);
                                 Image image = Image.FromFile(GetCoverArtFilename(item.Child));
-                                BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 200, 200);
+                                BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, _albumArtSize, _albumArtSize);
                                 image.Dispose();
                                 bitmapFrame.Freeze();
                                 GC.Collect();

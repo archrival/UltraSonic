@@ -43,6 +43,13 @@ namespace UltraSonic
                 _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
                 _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
                 _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
+                _saveWorkingPlaylist = SaveWorkingPlaylistCheckBox.IsChecked.HasValue && SaveWorkingPlaylistCheckBox.IsChecked.Value;
+                if (!int.TryParse(AlbumArtSizeTextBox.Text, out _albumArtSize))
+                {
+                    _albumArtSize = 150;
+                    AlbumArtSizeTextBox.Text = _albumArtSize.ToString();
+                }
+                
 
                 if (!string.IsNullOrWhiteSpace(ServerUrl))
                 {
@@ -71,6 +78,8 @@ namespace UltraSonic
                 Settings.Default.CacheDownloadLimit = _cacheDownloadLimit;
                 Settings.Default.PlaybackFollowsCursor = _playbackFollowsCursor;
                 Settings.Default.Throttle = _throttle;
+                Settings.Default.AlbumArtSize = _albumArtSize;
+                Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
 
                 Settings.Default.Save();
 

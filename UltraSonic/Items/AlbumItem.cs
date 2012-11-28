@@ -6,6 +6,7 @@ namespace UltraSonic
     {
         public string Name { get; set; }
         public string Artist { get; set; }
+        public int AlbumArtSize { get; set; }
         public BitmapSource Image { get; set; }
     }
 }

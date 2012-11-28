@@ -174,17 +174,24 @@ namespace UltraSonic
             Settings.Default.WindowTop = Top;
             Settings.Default.WindowMaximized = WindowState == WindowState.Maximized;
 
-            string playlistXml;
-
-            using (StringWriter textWriter = new StringWriter())
+            if (_saveWorkingPlaylist)
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
-                XmlWriter writer = XmlWriter.Create(textWriter);
-                xmlSerializer.Serialize(writer, _playlistTrackItems);
-                playlistXml = textWriter.ToString();
-            }
+                string playlistXml;
 
-            Settings.Default.CurrentPlaylist = playlistXml;
+                using (StringWriter textWriter = new StringWriter())
+                {
+                    XmlSerializer xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
+                    XmlWriter writer = XmlWriter.Create(textWriter);
+                    xmlSerializer.Serialize(writer, _playlistTrackItems);
+                    playlistXml = textWriter.ToString();
+                }
+
+                Settings.Default.CurrentPlaylist = playlistXml;
+            }
+            else
+            {
+                Settings.Default.CurrentPlaylist = string.Empty;
+            }
 
             Settings.Default.Save();
         }

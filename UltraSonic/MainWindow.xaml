@@ -198,81 +198,184 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <TreeView x:Name="ArtistTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="ArtistTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.RowSpan="3">
-                        <TreeView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh" Click="ArtistRefreshClick"/>
-                                <MenuItem Header="Expand All" Click="ExpandAllArtistsClick"/>
-                                <MenuItem Header="Collapse All" Click="CollapseAllArtistsClick"/>
-                            </ContextMenu>
-                        </TreeView.ContextMenu>
-                        <TreeView.Resources>
-                            <HierarchicalDataTemplate DataType="{x:Type local:ArtistItem}" ItemsSource="{Binding Path=Children}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Path=Name}"/>
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
-                        </TreeView.Resources>
-                    </TreeView>
-                    <DataGrid x:Name="AlbumDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="AlbumDataGridSelectionChanged" MouseDoubleClick="AlbumDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="1">
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add To Playlist" Click="AlbumDataGridAddClick"/>
-                                <MenuItem x:Name="AlbumDataGridDownload" Header="Download" Click="AlbumDataGridDownloadClick"/>
-                                <MenuItem Header="Random" Click="AlbumDataGridAlbumListClick"/>
-                                <MenuItem Header="Newest" Click="AlbumDataGridAlbumListClick"/>
-                                <MenuItem Header="Highest Rated" Click="AlbumDataGridAlbumListClick"/>
-                                <MenuItem Header="Frequently Played" Click="AlbumDataGridAlbumListClick"/>
-                                <MenuItem Header="Recently Played" Click="AlbumDataGridAlbumListClick"/>
-                                <MenuItem x:Name="AlbumDataGridStarred" Header="Starred" Click="AlbumDataGridAlbumListClick"/>
-                                <MenuItem x:Name="AlbumDataGridNext" Visibility="Collapsed" Click="AlbumDataGridNextClick"/>
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="AlbumDataGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding Image}" Height="150" Width="150"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True" Width="*"/>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Album" IsReadOnly="True" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <DataGrid x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="1">
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add To Playlist" Click="TrackDataGridAddClick"/>
-                                <MenuItem x:Name="TrackDataGridDownload" Header="Download" Click="TrackDataGridDownloadClick"/>
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn x:Name="TrackDataGridStarred">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Title" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <DockPanel Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="3">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                            <TextBlock Text="Artists" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TreeView DockPanel.Dock="Top" x:Name="ArtistTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="ArtistTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <TreeView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Refresh" Click="ArtistRefreshClick"/>
+                                    <MenuItem Header="Expand All" Click="ExpandAllArtistsClick"/>
+                                    <MenuItem Header="Collapse All" Click="CollapseAllArtistsClick"/>
+                                </ContextMenu>
+                            </TreeView.ContextMenu>
+                            <TreeView.Resources>
+                                <HierarchicalDataTemplate DataType="{x:Type local:ArtistItem}" ItemsSource="{Binding Path=Children}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=Name}"/>
+                                    </StackPanel>
+                                </HierarchicalDataTemplate>
+                            </TreeView.Resources>
+                        </TreeView>
+                    </DockPanel>
+                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                            <TextBlock Text="Albums" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        </Border>
+                        <DataGrid DockPanel.Dock="Top" TargetUpdated="DgTargetUpdated" x:Name="AlbumDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="AlbumDataGridSelectionChanged" MouseDoubleClick="AlbumDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Icon="" Header="Add To Playlist" Click="AlbumDataGridAddClick"/>
+                                    <MenuItem x:Name="AlbumDataGridDownload" Header="Download" Click="AlbumDataGridDownloadClick"/>
+                                    <MenuItem Header="Random" Click="AlbumDataGridAlbumListClick"/>
+                                    <MenuItem Header="Newest" Click="AlbumDataGridAlbumListClick"/>
+                                    <MenuItem Header="Highest Rated" Click="AlbumDataGridAlbumListClick"/>
+                                    <MenuItem Header="Frequently Played" Click="AlbumDataGridAlbumListClick"/>
+                                    <MenuItem Header="Recently Played" Click="AlbumDataGridAlbumListClick"/>
+                                    <MenuItem x:Name="AlbumDataGridStarred" Header="Starred" Click="AlbumDataGridAlbumListClick"/>
+                                    <MenuItem x:Name="AlbumDataGridNext" Visibility="Collapsed" Click="AlbumDataGridNextClick"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="AlbumDataGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding Image, NotifyOnTargetUpdated=True}" Height="{Binding AlbumArtSize}" Width="{Binding AlbumArtSize}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Artist}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Album" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                            <TextBlock Text="Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        </Border>
+                        <DataGrid DockPanel.Dock="Top" TargetUpdated="DgTargetUpdated" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Add To Playlist" Click="TrackDataGridAddClick"/>
+                                    <MenuItem x:Name="TrackDataGridDownload" Header="Download" Click="TrackDataGridDownloadClick"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn x:Name="TrackDataGridStarred">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Disc" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding DiscNumber}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Track" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding TrackNumber}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Artist}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Title" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Title, NotifyOnTargetUpdated=True}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Album" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Album}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Genre" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Genre}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Year" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Year}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Duration" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Duration}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="BitRate" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding BitRate}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="Playlists" x:Name="PlaylistTab">
@@ -282,44 +385,54 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <DataGrid x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="PlaylistsDataGridSelectionChanged" LoadingRow="DataGridLoadingRow" Grid.Column="0">
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick"/>
-                                <MenuItem Header="Refresh" Click="PlaylistsDataGridRefreshClick"/>
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Binding="{Binding Tracks}" Header="Titles" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="auto"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <DataGrid x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" Grid.ColumnSpan="2">
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick"/>
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn x:Name="PlaylistGridStarred">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Title" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <DockPanel Grid.Column="0" Grid.ColumnSpan="1">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                            <TextBlock Text="Playlists" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        </Border>
+                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="PlaylistsDataGridSelectionChanged" LoadingRow="DataGridLoadingRow">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick"/>
+                                    <MenuItem Header="Refresh" Click="PlaylistsDataGridRefreshClick"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="auto"/>
+                                <DataGridTextColumn Binding="{Binding Tracks}" Header="Titles" IsReadOnly="True" Width="auto"/>
+                                <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                            <TextBlock Text="Playlist Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        </Border>
+                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" Grid.ColumnSpan="2">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn x:Name="PlaylistGridStarred">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Title" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
                     <!-- Drag and Drop Popup -->
                     <Popup x:Name="PlaylistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">
                         <Border BorderBrush="Black" BorderThickness="1" Background="White" Opacity="0.75">
@@ -330,7 +443,7 @@
                     </Popup>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="SocialTab" Header="Social" GotFocus="SocialTabGotFocus">
+            <TabItem TargetUpdated="DgTargetUpdated" x:Name="SocialTab" Header="Social" GotFocus="SocialTabGotFocus">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="497*"/>
@@ -340,54 +453,104 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <DataGrid x:Name="NowPlayingDataGrid" Grid.Column="0" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Grid.RowSpan="2" MouseDoubleClick="NowPlayingDataGridMouseDoubleClick">
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh" Click="NowPlayingRefreshClick"/>
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="NowPlayingGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Image Source="{Binding Image}" Height="150" Width="150"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding User}" Header="User" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True" Width="auto"/>
-                            <DataGridTextColumn Binding="{Binding When}" Header="When" IsReadOnly="True" Width="auto"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <ListView x:Name="ChatListView" Grid.Column="1">
-                        <ListView.Resources>
-                            <Style TargetType="{x:Type GridViewColumnHeader}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </Style>
-                        </ListView.Resources>
-                        <ListView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh" Click="ChatListRefreshClick"/>
-                            </ContextMenu>
-                        </ListView.ContextMenu>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn CellTemplate="{StaticResource ChatMessageTimeStampCellTemplate}"/>
-                                <GridViewColumn CellTemplate="{StaticResource ChatMessageUserCellTemplate}"/>
-                                <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageCellTemplate}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    <TextBox x:Name="ChatListInput" Grid.Column="1" Grid.Row="1" KeyDown="ChatListTextBoxKeyDown"/>
+                    <DockPanel Grid.Column="0">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                            <TextBlock Text="Recently Played" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        </Border>
+                        <DataGrid DockPanel.Dock="Top" x:Name="NowPlayingDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" MouseDoubleClick="NowPlayingDataGridMouseDoubleClick">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Refresh" Click="NowPlayingRefreshClick"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="NowPlayingGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding Image, NotifyOnTargetUpdated=True}" Height="{Binding AlbumArtSize}" Width="{Binding AlbumArtSize}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="User" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding User}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Artist}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Title" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Title}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Album" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding Album}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="When" IsReadOnly="True" >
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,4,0">
+                                                <TextBlock Text="{Binding When}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                    <DockPanel Grid.Column="1">
+                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                            <TextBlock Text="Chat" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBox DockPanel.Dock="Top" x:Name="ChatListInput" KeyDown="ChatListTextBoxKeyDown"/>
+                        <ListView DockPanel.Dock="Top" x:Name="ChatListView">
+                            <ListView.Resources>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </Style>
+                            </ListView.Resources>
+                            <ListView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Refresh" Click="ChatListRefreshClick"/>
+                                </ContextMenu>
+                            </ListView.ContextMenu>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageTimeStampCellTemplate}"/>
+                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageUserCellTemplate}"/>
+                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageCellTemplate}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
                 </Grid>
             </TabItem>
             <TabItem x:Name="SettingsTab" Header="Settings">
@@ -442,7 +605,7 @@
                                     <TextBlock Text="Proxy Address" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="SettingsProxyServerAddressTextBox" TextWrapping="NoWrap" Width="Auto"/>
                                     <TextBlock Text="Proxy Port" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerPortTextBox" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="75"/>
+                                    <TextBox x:Name="SettingsProxyServerPortTextBox" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="50"/>
                                     <TextBlock Text="Proxy Username" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="SettingsProxyServerUsernameTextBox" TextWrapping="NoWrap" Width="Auto"/>
                                     <TextBlock Text="Proxy Password" HorizontalAlignment="Left" Width="Auto"/>
@@ -454,6 +617,9 @@
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type ComboBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Width" Value="50"/>
+                                            <Setter Property="Height" Value="25"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
                                         </Style>
                                         <Style TargetType="{x:Type TextBlock}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
@@ -476,12 +642,16 @@
                                         </Style>
                                         <Style TargetType="{x:Type ComboBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Width" Value="50"/>
+                                            <Setter Property="Height" Value="25"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
                                         </Style>
                                         <Style TargetType="{x:Type CheckBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
                                     </StackPanel.Resources>
                                     <CheckBox x:Name="PlaybackFollowsCursorCheckBox" Content="Playback Follows Cursor" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="SaveWorkingPlaylistCheckBox" Content="Save Working Playlist" HorizontalAlignment="Left"/>
                                     <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Checked="SettingsUseDiskCacheCheckboxChecked" Unchecked="SettingsUseDiskCacheCheckboxUnChecked"/>
                                     <TextBlock Text="Cache Directory" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="CacheDirectoryTextBox" Width="Auto"/>
@@ -499,6 +669,9 @@
                                         </Style>
                                         <Style TargetType="{x:Type ComboBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Width" Value="50"/>
+                                            <Setter Property="Height" Value="25"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
                                         </Style>
                                     </StackPanel.Resources>
                                     <TextBlock Text="Album List Max" HorizontalAlignment="Left" Width="Auto"/>
@@ -510,15 +683,23 @@
                             <Expander Header="Interface Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBox}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
                                         <Style TargetType="{x:Type TextBlock}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
                                         <Style TargetType="{x:Type ComboBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Width" Value="75"/>
+                                            <Setter Property="Height" Value="25"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>                                            
                                         </Style>
                                     </StackPanel.Resources>
-                                    <TextBlock Text="Throttle" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="ThrottleComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <TextBlock Text="Throttle"/>
+                                    <ComboBox x:Name="ThrottleComboBox"/>
+                                    <TextBlock Text="Album Art Size"/>
+                                    <TextBox x:Name="AlbumArtSizeTextBox" HorizontalAlignment="Left" Width="50"/>
                                 </StackPanel>
                             </Expander>
                         </StackPanel>
