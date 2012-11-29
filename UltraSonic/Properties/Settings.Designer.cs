@@ -386,5 +386,18 @@ namespace UltraSonic.Properties {
                 this["SaveWorkingPlaylist"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool ShowAlbumArt {
+            get {
+                return ((bool)(this["ShowAlbumArt"]));
+            }
+            set {
+                this["ShowAlbumArt"] = value;
+            }
+        }
     }
 }

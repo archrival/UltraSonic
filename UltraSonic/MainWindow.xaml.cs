@@ -62,6 +62,7 @@ namespace UltraSonic
         private string _currentPlaylist = string.Empty;
         private int _albumArtSize = 150;
         private bool _saveWorkingPlaylist = true;
+        private bool _showAlbumArt = true;
 
         private SubsonicApi SubsonicApi { get; set; }
         private string Username { get; set; }

@@ -43,6 +43,8 @@ namespace UltraSonic
                 {
                     _albumItems.Add(albumItem);
 
+                    if (!_showAlbumArt) continue;
+
                     throttler.WaitAsync();
 
                     try
@@ -50,22 +52,27 @@ namespace UltraSonic
                         AlbumItem item = albumItem;
 
                         Task.Run(async () =>
-                        {
-                            try
-                            {
-                                await Task.Delay(1);
-                                Image image = Image.FromFile(GetCoverArtFilename(item.Child));
-                                BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * 1.5), (int)(_albumArtSize * 1.5));
-                                image.Dispose();
-                                bitmapFrame.Freeze();
-                                GC.Collect();
-                                return bitmapFrame;
-                            }
-                            finally
-                            {
-                                throttler.Release();
-                            }
-                        }).ContinueWith(t => UpdateAlbumImageArt(t, item));
+                                           {
+                                               try
+                                               {
+                                                   await Task.Delay(1);
+                                                   Image image = Image.FromFile(GetCoverArtFilename(item.Child));
+                                                   BitmapFrame bitmapFrame =
+                                                       image.ToBitmapSource()
+                                                            .Resize(
+                                                                System.Windows.Media.BitmapScalingMode.HighQuality,
+                                                                true, (int) (_albumArtSize*1.5),
+                                                                (int) (_albumArtSize*1.5));
+                                                   image.Dispose();
+                                                   bitmapFrame.Freeze();
+                                                   GC.Collect();
+                                                   return bitmapFrame;
+                                               }
+                                               finally
+                                               {
+                                                   throttler.Release();
+                                               }
+                                           }).ContinueWith(t => UpdateAlbumImageArt(t, item));
                     }
                     catch
                     {

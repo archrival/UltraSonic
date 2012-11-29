@@ -36,6 +36,7 @@ namespace UltraSonic
             _currentPlaylist = Settings.Default.CurrentPlaylist ?? string.Empty;
             _albumArtSize = Settings.Default.AlbumArtSize;
             _saveWorkingPlaylist = Settings.Default.SaveWorkingPlaylist;
+            _showAlbumArt = Settings.Default.ShowAlbumArt;
 
             if (!string.IsNullOrWhiteSpace(ServerUrl))
             {
@@ -66,11 +67,15 @@ namespace UltraSonic
             CacheDirectoryTextBox.Text = _cacheDirectory;
             UseDiskCacheCheckBox.IsChecked = _useDiskCache;
             PlaybackFollowsCursorCheckBox.IsChecked = _playbackFollowsCursor;
-            AlbumArtSizeTextBox.Text = _albumArtSize.ToString();
+            AlbumArtSizeTextBox.Text = _albumArtSize.ToString(CultureInfo.InvariantCulture);
             SaveWorkingPlaylistCheckBox.IsChecked = _saveWorkingPlaylist;
+            ShowAlbumArtCheckBox.IsChecked = _showAlbumArt;
+            AlbumDataGridAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            SocalAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
 
             SetProxyEntryVisibility(UseProxy);
             SetUseDiskCacheVisibility(_useDiskCache);
+            SetAlbumArtSizeVisibility(_showAlbumArt);
         }
 
         private void PopulatePlaylist()
@@ -176,6 +181,14 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
             {
                 CacheDirectoryTextBox.IsEnabled = isChecked;
+            });
+        }
+
+        private void SetAlbumArtSizeVisibility(bool isChecked)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                AlbumArtSizeTextBox.IsEnabled = isChecked;
             });
         }
     }

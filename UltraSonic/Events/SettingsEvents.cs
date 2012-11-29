@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Globalization;
+using Subsonic.Rest.Api;
 using System;
 using System.IO;
 using System.Text;
@@ -44,12 +45,13 @@ namespace UltraSonic
                 _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
                 _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
                 _saveWorkingPlaylist = SaveWorkingPlaylistCheckBox.IsChecked.HasValue && SaveWorkingPlaylistCheckBox.IsChecked.Value;
+                _showAlbumArt = ShowAlbumArtCheckBox.IsChecked.HasValue && ShowAlbumArtCheckBox.IsChecked.Value;
+
                 if (!int.TryParse(AlbumArtSizeTextBox.Text, out _albumArtSize))
                 {
                     _albumArtSize = 150;
-                    AlbumArtSizeTextBox.Text = _albumArtSize.ToString();
+                    AlbumArtSizeTextBox.Text = _albumArtSize.ToString(CultureInfo.InvariantCulture);
                 }
-                
 
                 if (!string.IsNullOrWhiteSpace(ServerUrl))
                 {
@@ -59,6 +61,9 @@ namespace UltraSonic
                     if (!Directory.Exists(_coverArtCacheDirectoryName))
                         Directory.CreateDirectory(_coverArtCacheDirectoryName);
                 }
+
+                AlbumDataGridAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+                SocalAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -80,6 +85,7 @@ namespace UltraSonic
                 Settings.Default.Throttle = _throttle;
                 Settings.Default.AlbumArtSize = _albumArtSize;
                 Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
+                Settings.Default.ShowAlbumArt = _showAlbumArt;
 
                 Settings.Default.Save();
 
@@ -95,6 +101,8 @@ namespace UltraSonic
                 {
                     UpdateArtists();
                     UpdatePlaylists();
+                    UpdateNowPlaying();
+                    UpdateChatMessages();
                     MusicTab.Focus();
                 }
             }
@@ -112,6 +120,16 @@ namespace UltraSonic
         private void SettingsUseDiskCacheCheckboxUnChecked(object sender, RoutedEventArgs e)
         {
             SetUseDiskCacheVisibility(false);
+        }
+
+        private void ShowAlbumArtCheckboxChecked(object sender, RoutedEventArgs e)
+        {
+            SetAlbumArtSizeVisibility(true);
+        }
+
+        private void ShowAlbumArtCheckboxUnChecked(object sender, RoutedEventArgs e)
+        {
+            SetAlbumArtSizeVisibility(false);
         }
 
         private void SettingsUseDiskCacheCheckboxChecked(object sender, RoutedEventArgs e)
