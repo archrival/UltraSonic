@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void QueueTrack(Task<long> task, TrackItem trackItem)
+        private void QueueTrack(Task task, TrackItem trackItem)
         {
             switch (task.Status)
             {
@@ -19,6 +16,9 @@ namespace UltraSonic
 
                         Uri thisUri;
                         _streamItems.TryDequeue(out thisUri);
+                        trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
+                        TrackDataGrid.Items.Refresh();
+                        PlaylistTrackGrid.Items.Refresh();
 
                         QueueTrack(thisUri, trackItem);
                     });

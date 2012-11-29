@@ -926,7 +926,7 @@ namespace Subsonic.Rest.Api
         /// <param name="size">(Since 1.6.0) Only applicable to video streaming. Requested video size specified as WxH, for instance "640x480".</param>
         /// <param name="estimateContentLength">(Since 1.8.0). If set to "true", the Content-Length HTTP header will be set to an estimated value for transcoded or downsampled media.</param>
         /// <returns>long</returns>
-        public async Task<long> StreamAsync(string id, string path, int? maxBitRate = null, StreamFormat? format = null, int? timeOffset = null, string size = null, bool? estimateContentLength = null, CancellationToken? cancelToken = null)
+        public async Task<long> StreamAsync(string id, string path, int? maxBitRate = null, StreamFormat? format = null, int? timeOffset = null, string size = null, bool? estimateContentLength = null, CancellationToken? cancelToken = null, bool noResponse = false)
         {
             Version methodApiVersion = _version120;
             Hashtable parameters = new Hashtable { { "id", id } };
@@ -959,7 +959,10 @@ namespace Subsonic.Rest.Api
                 methodApiVersion = _version180;
             }
 
-            return await RequestAsync(path, true, Methods.stream, methodApiVersion, parameters, cancelToken);
+            if (noResponse)
+                return await RequestAsyncNoResponse(Methods.stream, methodApiVersion, parameters, cancelToken);
+            else
+                return await RequestAsync(path, true, Methods.stream, methodApiVersion, parameters, cancelToken);
         }
 
         /// <summary>

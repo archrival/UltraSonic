@@ -48,7 +48,6 @@ namespace UltraSonic
                         {
                             AvatarImage.Visibility = Visibility.Collapsed;
                             AvatarLabel.Visibility = Visibility.Collapsed;
-                            AvatarSeparator.Visibility = Visibility.Collapsed;
                             AvatarBorder.Visibility = Visibility.Collapsed;
                         }
                     });
@@ -69,7 +68,6 @@ namespace UltraSonic
                         {
                             AvatarImage.Visibility = Visibility.Visible;
                             AvatarLabel.Visibility = Visibility.Visible;
-                            AvatarSeparator.Visibility = Visibility.Visible;
                             AvatarBorder.Visibility = Visibility.Visible;
                             AvatarBorder.Height = avatarImage.Height;
                             AvatarBorder.Width = avatarImage.Width;
@@ -79,7 +77,6 @@ namespace UltraSonic
                         {
                             AvatarImage.Visibility = Visibility.Collapsed;
                             AvatarLabel.Visibility = Visibility.Collapsed;
-                            AvatarSeparator.Visibility = Visibility.Collapsed;
                             AvatarBorder.Visibility = Visibility.Collapsed;
                         }
                     });

@@ -277,7 +277,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" TargetUpdated="DgTargetUpdated" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="true" TargetUpdated="DgTargetUpdated" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Add To Playlist" Click="TrackDataGridAddClick"/>
@@ -289,6 +289,13 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image x:Name="PlayTrackImage" Source="Images\media-playback-start.png" Width="20" Height="20"  MouseLeftButtonDown="PlayTrackImageMouseLeftButtonDown"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -370,6 +377,13 @@
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
                                                 <TextBlock Text="{Binding BitRate}"/>
                                             </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Cached">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox x:Name="CachedCheckbox" IsThreeState="False" IsChecked="{Binding Path=Cached, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -562,8 +576,9 @@
                     </Grid.ColumnDefinitions>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0" Grid.ColumnSpan="1">
                         <StackPanel>
-                            <TextBlock Text="Settings / Preferences" FontWeight="Bold" Margin="10,0,10,0"/>
-                            <Separator Margin="10,4,10,4"/>
+                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                                <TextBlock Text="Settings / Preferences" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            </Border>
                             <Expander x:Name="ServerSettingsExpander" Header="Server Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
@@ -710,14 +725,16 @@
                     </ScrollViewer>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" Grid.ColumnSpan="1">
                         <StackPanel>
-                            <TextBlock Text="Server Information" FontWeight="Bold" Margin="10,0,10,0"/>
-                            <Separator Margin="10,4,10,4"/>
+                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                                <TextBlock Text="Server Information" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            </Border>
                             <DockPanel>
                                 <TextBlock Text="REST API:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="ServerApiLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock x:Name="ServerApiLabel" Margin="0,2,10,2"/>
                             </DockPanel>
-                            <TextBlock Text="License Information" FontWeight="Bold" Margin="10,10,10,0"/>
-                            <Separator Margin="10,4,10,4"/>
+                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                                <TextBlock Text="License Information" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            </Border>
                             <DockPanel>
                                 <TextBlock Text="Email:" Margin="10,2,10,2"/>
                                 <TextBlock x:Name="LicenseEmailLabel" Text="" Margin="0,2,10,2"/>
@@ -738,8 +755,9 @@
                     </ScrollViewer>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="2" Grid.ColumnSpan="1">
                         <StackPanel>
-                            <TextBlock Text="User Information" FontWeight="Bold" Margin="10,0,10,0"/>
-                            <Separator Margin="10,4,10,4"/>
+                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                                <TextBlock Text="User Information" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            </Border>
                             <DockPanel>
                                 <TextBlock Text="Email:" Margin="10,2,10,2"/>
                                 <TextBlock x:Name="UserEmailLabel" Text="" Margin="0,2,10,2"/>
@@ -792,8 +810,9 @@
                                 <TextBlock x:Name="UserShareLabel2" Text="Share:" Margin="10,2,10,2"/>
                                 <TextBlock x:Name="UserShareLabel" Text="" Margin="0,2,10,2"/>
                             </DockPanel>
-                            <TextBlock x:Name="AvatarLabel" Text="User Avatar" Margin="10,10,10,0" FontWeight="Bold"/>
-                            <Separator x:Name="AvatarSeparator" Margin="10,4,10,4"/>
+                            <Border x:Name="AvatarLabel" DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
+                                <TextBlock Text="User Avatar" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            </Border>
                             <Border x:Name="AvatarBorder" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="48" Width="48" Margin="10,10,10,10">
                                 <Image x:Name="AvatarImage" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
                             </Border>

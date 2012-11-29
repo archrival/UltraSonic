@@ -99,6 +99,7 @@ namespace UltraSonic
                 }
                 else
                 {
+                    UpdateLicenseInformation(license);
                     UpdateArtists();
                     UpdatePlaylists();
                     UpdateNowPlaying();

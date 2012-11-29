@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UltraSonic.Static;
 
 namespace UltraSonic
 {
@@ -26,6 +27,17 @@ namespace UltraSonic
 
             if (selectedTrack != null)
                 AddTrackItemToPlaylist(selectedTrack);
+        }
+
+        private void PlayTrackImageMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            DataGridRow test = UiHelpers.GetVisualParent<DataGridRow>(sender);
+            TrackItem trackItem = test.Item as TrackItem;
+
+            if (trackItem == null) return;
+
+            StopMusic();
+            PlayTrack(trackItem);
         }
     }
 }

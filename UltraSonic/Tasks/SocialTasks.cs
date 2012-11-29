@@ -40,6 +40,8 @@ namespace UltraSonic
                     {
                         foreach (NowPlayingEntry entry in task.Result.Entry)
                         {
+                            string fileName = GetMusicFilename(entry);
+
                             NowPlayingItem nowPlayingItem = new NowPlayingItem
                             {
                                 BitRate = entry.BitRate,
@@ -56,6 +58,8 @@ namespace UltraSonic
                                 Title = entry.Title,
                                 User = entry.Username,
                                 AlbumArtSize = _albumArtSize,
+                                Cached = IsTrackCached(fileName, entry),
+                                FileName = fileName,
                                 When = (DateTime.Now - TimeSpan.FromMinutes(entry.MinutesAgo)).ToShortTimeString()
                             };
 

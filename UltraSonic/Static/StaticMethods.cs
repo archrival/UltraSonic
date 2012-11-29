@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Subsonic.Rest.Api;
 
 namespace UltraSonic.Static
 {

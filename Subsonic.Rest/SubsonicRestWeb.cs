@@ -269,6 +269,41 @@ namespace Subsonic.Rest.Api
         }
 
         /// <summary>
+        /// Make an async web request without waiting for a response
+        /// </summary>
+        /// <param name="method">Subsonic API method to call.</param>
+        /// <param name="methodApiVersion">Subsonic API version of the method.</param>
+        /// <param name="parameters">Parameters used by the method.</param>
+        /// <param name="cancelToken"> </param>
+        /// <returns>long</returns>
+        private async Task<long> RequestAsyncNoResponse(Methods method, Version methodApiVersion, ICollection parameters = null, CancellationToken? cancelToken = null)
+        {
+            string requestUri = BuildRequestUri(method, methodApiVersion, parameters);
+
+            HttpWebRequest request = BuildRequest(requestUri);
+            bool download = true;
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
+
+            try
+            {
+                using (await request.GetResponseAsync())
+                {
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new SubsonicApiException(ex.Message, ex);
+            }
+
+            if (cancelToken.HasValue)
+                cancelToken.Value.ThrowIfCancellationRequested();
+
+            return 0;
+        }
+
+        /// <summary>
         /// Save response to disk.
         /// </summary>
         /// <param name="path">Directory to save the response to, the filename is provided by the server using the Content-Disposition header.</param>

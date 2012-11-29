@@ -1,4 +1,6 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows.Controls;
+using System.Windows.Data;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -57,6 +59,7 @@ namespace UltraSonic
         private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
         private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
         private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
+        private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
         private double _chatMessageSince;
         private AlbumListItem _albumListItem;
         private string _currentPlaylist = string.Empty;
@@ -146,6 +149,7 @@ namespace UltraSonic
                 ChatListView.ItemsSource = _chatMessages;
                 PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
                 PlaylistsDataGrid.ItemsSource = _playlistItems;
+                TrackDataGrid.ItemsSource = _trackItems;
             }
             catch (Exception ex)
             {
@@ -187,6 +191,8 @@ namespace UltraSonic
         {
             SubsonicApi = UseProxy ? new SubsonicApi(new Uri(ServerUrl), Username, Password, ProxyPassword, ProxyUsername, ProxyPort, ProxyServer) {UserAgent = AppName} : new SubsonicApi(new Uri(ServerUrl), Username, Password) {UserAgent = AppName};
             SubsonicApi.Ping();
+            ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
+            SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
 
             if (SubsonicApi.ServerApiVersion < Version.Parse("1.8.0"))
             {
@@ -197,10 +203,7 @@ namespace UltraSonic
                                           AlbumDataGridStarred.Visibility = Visibility.Collapsed;
                                           UserShareLabel.Visibility = Visibility.Hidden;
                                           UserShareLabel2.Visibility = Visibility.Hidden;
-                                          ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
                                       });
-
-                SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
             }
             else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
             {
@@ -249,7 +252,12 @@ namespace UltraSonic
 
         private string GetMusicFilename(Child child)
         {
-            string fileName = Path.Combine(_musicCacheDirectoryName, child.Id);
+            return GetMusicFilename(child, _musicCacheDirectoryName);
+        }
+
+        public static string GetMusicFilename(Child child, string cacheDir)
+        {
+            string fileName = Path.Combine(cacheDir, child.Id);
             return Path.ChangeExtension(fileName, child.Suffix);
         }
 
@@ -268,7 +276,9 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                                   {
-                                      TrackDataGrid.ItemsSource = GetTrackItemCollection(children);
+                                      _trackItems.Clear();
+
+                                      PopulateTrackItemCollection(children);
                                       UiHelpers.ScrollToTop(TrackDataGrid);
                                   });
         }

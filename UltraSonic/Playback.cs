@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows.Controls;
+using Subsonic.Rest.Api;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -98,12 +99,12 @@ namespace UltraSonic
         {
             if (_streamItems == null) return;
 
-            Child child = trackItem.Child;
-            string fileName = GetMusicFilename(child);
-            Uri fileNameUri = new Uri(fileName);
+            Child child = trackItem.Child;             
+            Uri fileNameUri = new Uri(trackItem.FileName);
 
-            if (_streamItems.All(s => s.OriginalString == fileName) && IsTrackCached(fileName, child))
+            if (_streamItems.All(s => s.OriginalString == trackItem.FileName) && trackItem.Cached)
             {
+                SubsonicApi.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"), true);
                 QueueTrack(fileNameUri, trackItem);
                 UpdateAlbumArt(child);
             }
@@ -115,7 +116,7 @@ namespace UltraSonic
                 if (_useDiskCache)
                 {
                     DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
-                    Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, fileName, _maxBitrate == 0 ? null : (int?)_maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
+                    Task<long> streamTask = SubsonicApi.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?)_maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
                     streamTask.ContinueWith(t => QueueTrack(streamTask, trackItem));
                 }
                 else
