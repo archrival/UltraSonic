@@ -24,7 +24,7 @@ namespace UltraSonic
                         string localFileName = GetCoverArtFilename(nowPlayingItem.Child);
                         coverArtImage.Save(localFileName);
 
-                        nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, _albumArtSize, _albumArtSize);
+                        nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * 1.5), (int)(_albumArtSize * 1.5));
                         NowPlayingDataGrid.Items.Refresh();
                     });
                     break;
@@ -67,7 +67,7 @@ namespace UltraSonic
                             if (File.Exists(localFileName))
                             {
                                 Image thisImage = Image.FromFile(localFileName);
-                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, _albumArtSize, _albumArtSize);
+                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * 1.5), (int)(_albumArtSize * 1.5));
                                 thisImage.Dispose();
                                 NowPlayingDataGrid.Items.Refresh();
                             }

@@ -60,7 +60,7 @@ namespace UltraSonic
                         if (!File.Exists(localFileName))
                             coverArtImage.Save(localFileName);
 
-                        BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, _albumArtSize, _albumArtSize);
+                        BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * 1.5), (int)(_albumArtSize * 1.5));
                         coverArtImage.Dispose();
                         GC.Collect();
                         albumItem.Image = bitmapFrame;
