@@ -282,5 +282,5 @@ namespace UltraSonic
                                       UiHelpers.ScrollToTop(TrackDataGrid);
                                   });
         }
-    }
+   }
 }

@@ -36,8 +36,13 @@ namespace UltraSonic
 
             if (trackItem == null) return;
 
-            StopMusic();
-            PlayTrack(trackItem);
+            Dispatcher.Invoke(() =>
+            {
+                _playlistTrackItems.Clear();
+                _playlistTrackItems.Add(trackItem);
+                PlaylistTrackGrid.SelectedIndex = 0;
+                PlayButtonClick(null, null);
+            });
         }
     }
 }

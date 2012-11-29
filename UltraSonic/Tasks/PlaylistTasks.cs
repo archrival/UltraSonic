@@ -7,24 +7,6 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void AddTrackToPlaylist(Task<Directory> task)
-        {
-            switch (task.Status)
-            {
-                case TaskStatus.RanToCompletion:
-                    Dispatcher.Invoke(() =>
-                                          {
-                                              Directory directory = task.Result;
-
-                                              TrackItem playlistTrackItem = new TrackItem();
-                                              playlistTrackItem.PlaylistGuid = Guid.NewGuid();
-
-                                              //_playlistTrackItems.Add(playlistTrackItem);
-                                          });
-                    break;
-            }
-        }
-
         private void UpdatePlaylists(Task<Playlists> task)
         {
             switch (task.Status)
@@ -35,7 +17,7 @@ namespace UltraSonic
             }
         }
 
-                private void AddAlbumToPlaylist(Task<Directory> task)
+        private void AddAlbumToPlaylist(Task<Directory> task, bool play = false)
         {
             switch (task.Status)
             {
@@ -44,6 +26,11 @@ namespace UltraSonic
                                           {
                                               foreach (TrackItem trackItem in GetTrackItemCollection(task.Result))
                                                   AddTrackItemToPlaylist(trackItem);
+
+                                              if (!play) return;
+
+                                              PlaylistTrackGrid.SelectedIndex = 0;
+                                              PlayButtonClick(null, null);
                                           });
                     break;
             }

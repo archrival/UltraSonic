@@ -32,7 +32,7 @@ namespace UltraSonic
             AlbumItem selectedAlbum = source.CurrentItem as AlbumItem;
 
             if (selectedAlbum != null)
-                SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(AddAlbumToPlaylist);
+                SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t));
         }
 
         private void AlbumDataGridDownloadClick(object sender, RoutedEventArgs e)
@@ -94,24 +94,23 @@ namespace UltraSonic
             if (SubsonicApi == null) return;
 
             foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
-                SubsonicApi.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(AddAlbumToPlaylist);
+                SubsonicApi.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
         }
 
-        private void DgTargetUpdated(object sender, DataTransferEventArgs e)
+        private void PlayAlbumImageMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            DataGrid dataGrid = UiHelpers.GetVisualParent<DataGrid>(sender);
+            DataGridRow test = UiHelpers.GetVisualParent<DataGridRow>(sender);
+            AlbumItem albumItem = test.Item as AlbumItem;
 
-            if (dataGrid == null) return;
+            if (albumItem == null) return;
 
-            foreach (DataGridColumn column in dataGrid.Columns)
+            StopMusic();
+
+            Dispatcher.Invoke(() =>
             {
-                //if you want to size ur column as per the cell content
-                column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
-                //if you want to size ur column as per the column header
-                column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
-                //if you want to size ur column as per both header and cell content
-                column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
-            }
+                _playlistTrackItems.Clear();
+                SubsonicApi.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true));
+            });
         }
     }
 }

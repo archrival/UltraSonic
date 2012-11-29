@@ -187,9 +187,10 @@ namespace UltraSonic
         private void SetAlbumArtSizeVisibility(bool isChecked)
         {
             Dispatcher.Invoke(() =>
-            {
-                AlbumArtSizeTextBox.IsEnabled = isChecked;
-            });
+                                  {
+                                      ThrottleComboBox.IsEnabled = isChecked;
+                                      AlbumArtSizeTextBox.IsEnabled = isChecked;
+                                  });
         }
     }
 }
