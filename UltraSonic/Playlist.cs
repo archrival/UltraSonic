@@ -42,6 +42,7 @@ namespace UltraSonic
         {
             TrackItem playlistTrackItem = new TrackItem();
             trackItem.CopyTo(playlistTrackItem);
+            playlistTrackItem.Source = trackItem;
             playlistTrackItem.Duration = TimeSpan.FromSeconds(playlistTrackItem.Child.Duration);
             playlistTrackItem.PlaylistGuid = Guid.NewGuid();
 

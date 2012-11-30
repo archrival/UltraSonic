@@ -65,7 +65,6 @@ namespace UltraSonic
                         coverArtImage.Dispose();
                         GC.Collect();
                         albumItem.Image = bitmapFrame;
-                        AlbumDataGrid.Items.Refresh();
                     });
                     break;
             }
@@ -83,7 +82,6 @@ namespace UltraSonic
                         if (coverArtImage == null) return;
 
                         albumItem.Image = coverArtImage;
-                        AlbumDataGrid.Items.Refresh();
                     });
                     break;
                 case TaskStatus.Faulted:

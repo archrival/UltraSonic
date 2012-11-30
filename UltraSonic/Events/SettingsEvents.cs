@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.Linq;
+using System.Windows.Input;
 using Subsonic.Rest.Api;
 using System;
 using System.IO;
@@ -12,6 +14,16 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
+        private void TextBoxPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Filter out non-digit text input
+            foreach (char c in e.Text.Where(c => !Char.IsDigit(c)))
+            {
+                e.Handled = true;
+                break;
+            }
+        }
+
         private void SettingsSaveButtonClick(object sender, RoutedEventArgs e)
         {
             try
@@ -20,23 +32,30 @@ namespace UltraSonic
                 Password = SettingsPasswordPasswordBox.Password;
                 ServerUrl = SettingsServerAddressTextBox.Text;
 
-                int proxyPort;
-
                 ProxyServer = SettingsProxyServerAddressTextBox.Text;
-                int.TryParse(SettingsProxyServerPortTextBox.Text, out proxyPort);
-
-                ProxyPort = proxyPort;
                 ProxyUsername = SettingsProxyServerUsernameTextBox.Text;
                 ProxyPassword = SettingsProxyServerPasswordTextBox.Password;
                 bool? isChecked = SettingsUseProxyCheckbox.IsChecked;
                 UseProxy = isChecked.HasValue && isChecked.Value;
                 _playbackFollowsCursor = PlaybackFollowsCursorCheckBox.IsChecked.HasValue && PlaybackFollowsCursorCheckBox.IsChecked.Value;
-                _maxSearchResults = (int)MaxSearchResultsComboBox.SelectedValue;
+
+                int? proxyPort = ValidateInt(1, 65535, SettingsProxyServerPortTextBox.Text);
+                ProxyPort = proxyPort.HasValue ? proxyPort.Value : 0;
+                int? maxSearchResults = ValidateInt(0, 0, MaxSearchResultsTextBox.Text);
+                _maxSearchResults = maxSearchResults.HasValue ? maxSearchResults.Value : 25;
+                int? throttle = ValidateInt(0, int.MaxValue, ThrottleTextBox.Text);
+                _throttle = throttle.HasValue ? throttle.Value : 6;
+                int? albumListMax = ValidateInt(1, int.MaxValue, AlbumListMaxTextBox.Text);
+                _albumListMax = albumListMax.HasValue ? albumListMax.Value : 25;
+                int? nowPlayingInterval = ValidateInt(0, int.MaxValue, NowPlayingIntervalTextBox.Text);
+                _nowPlayingInterval = nowPlayingInterval.HasValue ? nowPlayingInterval.Value : 30;
+                int? chatMessagesInterval = ValidateInt(0, int.MaxValue, ChatMessagesIntervalTextBox.Text);
+                _chatMessagesInterval = chatMessagesInterval.HasValue ? chatMessagesInterval.Value : 5;
+                int? albumArtSize = ValidateInt(1, int.MaxValue, AlbumArtSizeTextBox.Text);
+                _albumArtSize = albumArtSize.HasValue ? albumArtSize.Value : 50;
+
                 _maxBitrate = (int)MaxBitrateComboBox.SelectedValue;
-                _throttle = (int)ThrottleComboBox.SelectedValue;
-                _albumListMax = (int)AlbumListMaxComboBox.SelectedValue;
-                _nowPlayingInterval = (int)NowPlayingIntervalComboBox.SelectedValue;
-                _chatMessagesInterval = (int)ChatMessagesIntervalComboBox.SelectedValue;
+
                 _cacheDirectory = CacheDirectoryTextBox.Text;
                 _serverHash = StaticMethods.CalculateSha256(ServerUrl, Encoding.Unicode);
                 _useDiskCache = UseDiskCacheCheckBox.IsChecked.HasValue && UseDiskCacheCheckBox.IsChecked.Value;
@@ -46,12 +65,7 @@ namespace UltraSonic
                 _saveWorkingPlaylist = SaveWorkingPlaylistCheckBox.IsChecked.HasValue && SaveWorkingPlaylistCheckBox.IsChecked.Value;
                 _showAlbumArt = ShowAlbumArtCheckBox.IsChecked.HasValue && ShowAlbumArtCheckBox.IsChecked.Value;
                 _doubleClickBehavior = (DoubleClickBehavior) DoubleClickComboBox.SelectedValue;
-
-                if (!int.TryParse(AlbumArtSizeTextBox.Text, out _albumArtSize))
-                {
-                    _albumArtSize = 50;
-                    AlbumArtSizeTextBox.Text = _albumArtSize.ToString(CultureInfo.InvariantCulture);
-                }
+                _cachePlaylistTracks = CachePlaylistTracksCheckBox.IsChecked.HasValue && CachePlaylistTracksCheckBox.IsChecked.Value;
 
                 if (!string.IsNullOrWhiteSpace(ServerUrl))
                 {
@@ -66,6 +80,9 @@ namespace UltraSonic
                 SocalAlbumArtColumn.Visibility = !_showAlbumArt ? Visibility.Collapsed : Visibility.Visible;
                 AlbumDataGridEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
                 SocialEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
+
+                _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
+                _chatMessagesTimer.Interval = TimeSpan.FromSeconds(_chatMessagesInterval);
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -88,6 +105,7 @@ namespace UltraSonic
                 Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
                 Settings.Default.ShowAlbumArt = _showAlbumArt;
                 Settings.Default.DoubleClickBehavior = Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
+                Settings.Default.CachePlaylistTracks = _cachePlaylistTracks;
 
                 Settings.Default.Save();
 
@@ -113,6 +131,15 @@ namespace UltraSonic
             {
                 MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.StackTrace), string.Format("Exception in {0}", AppName), MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private static int? ValidateInt(int min, int max, string value)
+        {
+            int intValue;
+            if (!int.TryParse(value, out intValue)) return null;
+            if (min == 0 && max == 0) return intValue;
+            if (min <= intValue && intValue <= max) return intValue;
+            return null;
         }
 
         private void SettingsUseProxyCheckboxChecked(object sender, RoutedEventArgs e)
@@ -176,24 +203,14 @@ namespace UltraSonic
                                       }
 
                                       if (_showAlbumArt && albumDataGridArtAvailable)
-                                      {
                                           AlbumDataGridAlbumArtColumn.Visibility = Visibility.Visible;
-                                          AlbumDataGrid.Items.Refresh();
-                                      }
                                       else
-                                      {
                                           AlbumDataGridAlbumArtColumn.Visibility = Visibility.Collapsed;
-                                      }
 
                                       if (_showAlbumArt && nowPlayingDataGridArtAvailable)
-                                      {
                                           SocalAlbumArtColumn.Visibility = Visibility.Visible;
-                                          NowPlayingDataGrid.Items.Refresh();
-                                      }
                                       else
-                                      {
                                           SocalAlbumArtColumn.Visibility = Visibility.Collapsed;
-                                      }
 
                                       ShowAlbumArtCheckBox.IsChecked = _showAlbumArt;
 

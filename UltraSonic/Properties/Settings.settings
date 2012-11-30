@@ -72,7 +72,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Throttle" Roaming="true" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">50</Value>
+      <Value Profile="(Default)">6</Value>
     </Setting>
     <Setting Name="CurrentPlaylist" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -88,6 +88,9 @@
     </Setting>
     <Setting Name="DoubleClickBehavior" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">Add</Value>
+    </Setting>
+    <Setting Name="CachePlaylistTracks" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

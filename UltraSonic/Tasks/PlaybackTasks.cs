@@ -17,8 +17,10 @@ namespace UltraSonic
                         Uri thisUri;
                         _streamItems.TryDequeue(out thisUri);
                         trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
-                        TrackDataGrid.Items.Refresh();
-                        PlaylistTrackGrid.Items.Refresh();
+                        _caching = false;
+
+                        if (trackItem.Source != null)
+                            trackItem.Source.Cached = trackItem.Cached;
 
                         QueueTrack(thisUri, trackItem);
                     });

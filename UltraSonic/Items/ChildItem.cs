@@ -1,5 +1,7 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Runtime.CompilerServices;
+using Subsonic.Rest.Api;
 using System.ComponentModel;
+using UltraSonic.Annotations;
 
 namespace UltraSonic
 {
@@ -9,7 +11,8 @@ namespace UltraSonic
         public Child Child { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName)
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));

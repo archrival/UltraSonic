@@ -15,7 +15,7 @@ namespace UltraSonic
             return fi.Exists && fi.Length == child.Size;
         }
 
-        private ObservableCollection<TrackItem> GetTrackItemCollection(IEnumerable<Child> children)
+        private IEnumerable<TrackItem> GetTrackItemCollection(IEnumerable<Child> children)
         {
             ObservableCollection<TrackItem> trackItems = new ObservableCollection<TrackItem>();
 

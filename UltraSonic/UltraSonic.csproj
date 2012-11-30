@@ -64,6 +64,7 @@
     <Compile Include="Enum\DoubleClickBehavior.cs" />
     <Compile Include="Events\AlbumEvents.cs" />
     <Compile Include="Items\AlbumListItem.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Static\StaticMethods.cs" />
     <Compile Include="Tasks\AlbumTasks.cs" />
     <Compile Include="Items\ArtistItem.cs" />

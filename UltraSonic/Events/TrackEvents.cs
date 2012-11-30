@@ -46,7 +46,7 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
             {
                 _playlistTrackItems.Clear();
-                _playlistTrackItems.Add(trackItem);
+                AddTrackItemToPlaylist(trackItem);
                 PlaylistTrackGrid.SelectedIndex = 0;
                 PlayButtonClick(null, null);
             });

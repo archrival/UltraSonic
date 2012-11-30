@@ -17,7 +17,10 @@ namespace UltraSonic
             StopMusic();
 
             if (playlistEntryItem != null)
+            {
+                _shouldCachePlaylist = true;
                 PlayTrack(playlistEntryItem);
+            }
         }
 
         private void PlaylistsDataGridSelectionChanged(object sender, MouseButtonEventArgs e)

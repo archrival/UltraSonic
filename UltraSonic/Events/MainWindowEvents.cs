@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -44,6 +46,12 @@ namespace UltraSonic
                                       {
                                           if (PlaylistTrackGrid.Items.Count > 0)
                                           {
+                                              foreach (TrackItem trackItem in PlaylistTrackGrid.Items.Cast<TrackItem>().Where(trackItem => !trackItem.Cached))
+                                              {
+                                                  _shouldCachePlaylist = true;
+                                                  break;
+                                              }
+
                                               if (PlaylistTrackGrid.SelectedIndex == -1)
                                                   PlaylistTrackGrid.SelectedIndex = 0;
 
@@ -54,6 +62,52 @@ namespace UltraSonic
                                           }
                                       }
                                   });
+        }
+
+        private async void CachePlaylistTracks()
+        {
+            if (_caching) return;
+
+            foreach (TrackItem trackItem in PlaylistTrackGrid.Items)
+            {
+                if (IsTrackCached(trackItem.FileName, trackItem.Child)) continue;
+
+                await _cachingThrottle.WaitAsync();
+
+                try
+                {
+                    Uri uri = new Uri(trackItem.FileName);
+                    if (_streamItems.Any(s => s == uri)) continue;
+
+                    CancellationToken token = GetCancellationToken("CachePlaylistTracks");
+
+                    _caching = true;
+
+                    DownloadStatusLabel.Content = string.Format("Caching: {0}", trackItem.Child.Title);
+                    await SubsonicApi.StreamAsync(trackItem.Child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, token).ContinueWith(t => FinalizeCache(t, trackItem));
+                }
+                finally
+                {
+                    _cachingThrottle.Release();
+                }
+            }
+        }
+
+        private void FinalizeCache(Task<long> task, TrackItem trackItem)
+        {
+           Dispatcher.Invoke(() => DownloadStatusLabel.Content = string.Empty);
+
+           switch (task.Status)
+           {
+               case TaskStatus.RanToCompletion:
+                   Dispatcher.Invoke(() =>
+                                         {
+                                             trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
+                                             if (trackItem.Source != null) trackItem.Source.Cached = trackItem.Cached;
+                                             _caching = false;
+                                         });
+                   break;
+           }
         }
 
         private void PauseButtonClick(object sender, ExecutedRoutedEventArgs e)
@@ -71,6 +125,7 @@ namespace UltraSonic
 
         private void StopButtonClick(object sender, ExecutedRoutedEventArgs e)
         {
+            _shouldCachePlaylist = false;
             Dispatcher.Invoke(StopMusic);
         }
 
@@ -173,6 +228,7 @@ namespace UltraSonic
             Settings.Default.WindowLeft = Left;
             Settings.Default.WindowTop = Top;
             Settings.Default.WindowMaximized = WindowState == WindowState.Maximized;
+            Settings.Default.ShowAlbumArt = _showAlbumArt;
 
             if (_saveWorkingPlaylist)
             {
@@ -198,18 +254,24 @@ namespace UltraSonic
 
         private void GlobalSearchTextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
-            {
-                string searchQuery = GlobalSearchTextBox.Text;
+            if (e.Key != Key.Return) return;
 
-                if (!string.IsNullOrWhiteSpace(searchQuery))
-                {
-                    _albumItems.Clear();
-                    _trackItems.Clear();
-                    SearchStatusLabel.Content = "Searching...";
-                    SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
-                }
+            string searchQuery = GlobalSearchTextBox.Text;
+
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                _albumItems.Clear();
+                _trackItems.Clear();
+                SearchStatusLabel.Content = "Searching...";
+                SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
             }
+        }
+
+        private void ArtistFilterTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Return) return;
+
+            Dispatcher.Invoke(() => UiHelpers.ExpandAll(ArtistTreeView, true));
         }
 
         private void TrackInfoStackPanelMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

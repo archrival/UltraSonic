@@ -38,6 +38,7 @@ namespace UltraSonic
             _albumArtSize = Settings.Default.AlbumArtSize;
             _saveWorkingPlaylist = Settings.Default.SaveWorkingPlaylist;
             _showAlbumArt = Settings.Default.ShowAlbumArt;
+            _cachePlaylistTracks = Settings.Default.CachePlaylistTracks;
 
             if (!Enum.TryParse(Settings.Default.DoubleClickBehavior, out _doubleClickBehavior)) _doubleClickBehavior = DoubleClickBehavior.Add;
 
@@ -49,12 +50,6 @@ namespace UltraSonic
                 if (!Directory.Exists(_coverArtCacheDirectoryName))
                     Directory.CreateDirectory(_coverArtCacheDirectoryName);
             }
-
-            PopuluateComboxBox(MaxSearchResultsComboBox, 1, 2500, _maxSearchResults);
-            PopuluateComboxBox(AlbumListMaxComboBox, 1, 500, _albumListMax);
-            PopuluateComboxBox(NowPlayingIntervalComboBox, 0, 300, _nowPlayingInterval);
-            PopuluateComboxBox(ChatMessagesIntervalComboBox, 0, 300, _chatMessagesInterval);
-            PopuluateComboxBox(ThrottleComboBox, 0, 1000, _throttle);
 
             PopulateMaxBitrateComboBox();
             PopulateDoubleClickComboBox();
@@ -68,6 +63,12 @@ namespace UltraSonic
             SettingsProxyServerPortTextBox.Text = ProxyPort.ToString(CultureInfo.InvariantCulture);
             SettingsProxyServerUsernameTextBox.Text = ProxyUsername;
             SettingsProxyServerPasswordTextBox.Password = ProxyPassword;
+            AlbumListMaxTextBox.Text = _albumListMax.ToString(CultureInfo.InvariantCulture);
+            AlbumArtSizeTextBox.Text = _albumArtSize.ToString(CultureInfo.InvariantCulture);
+            ThrottleTextBox.Text = _throttle.ToString(CultureInfo.InvariantCulture);
+            MaxSearchResultsTextBox.Text = _maxSearchResults.ToString(CultureInfo.InvariantCulture);
+            NowPlayingIntervalTextBox.Text = _nowPlayingInterval.ToString(CultureInfo.InvariantCulture);
+            ChatMessagesIntervalTextBox.Text = _chatMessagesInterval.ToString(CultureInfo.InvariantCulture);
             CacheDirectoryTextBox.Text = _cacheDirectory;
             UseDiskCacheCheckBox.IsChecked = _useDiskCache;
             PlaybackFollowsCursorCheckBox.IsChecked = _playbackFollowsCursor;
@@ -79,6 +80,7 @@ namespace UltraSonic
             AlbumDataGridEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
             SocialEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
             DoubleClickComboBox.SelectedItem = _doubleClickBehavior;
+            CachePlaylistTracksCheckBox.IsChecked = _cachePlaylistTracks;
 
             SetProxyEntryVisibility(UseProxy);
             SetUseDiskCacheVisibility(_useDiskCache);
@@ -153,7 +155,7 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                                   {
-                                      ThrottleComboBox.IsEnabled = isChecked;
+                                      ThrottleTextBox.IsEnabled = isChecked;
                                       AlbumArtSizeTextBox.IsEnabled = isChecked;
                                   });
         }

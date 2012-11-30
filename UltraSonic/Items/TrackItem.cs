@@ -5,6 +5,8 @@ namespace UltraSonic
 {
     public class TrackItem : ChildItem
     {
+        public bool _cached;
+
         public bool Selected { get; set; }
         public int DiscNumber { get; set; }
         public int TrackNumber { get; set; }
@@ -16,9 +18,18 @@ namespace UltraSonic
         public int Year { get; set; }
         public int BitRate { get; set; }
         public int Rating { get; set; }
-        public bool Cached {get;set;}
         public string FileName { get; set; }
         public Guid PlaylistGuid { get; set; }
+        public TrackItem Source { get; set; }
+        public bool Cached
+        {
+            get { return _cached; }
+            set
+            {
+                _cached = value;
+                OnPropertyChanged("Cached");
+            }
+        }
 
         public static TrackItem Create(Child child, string cacheDir)
         {

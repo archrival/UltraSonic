@@ -223,7 +223,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Albums" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" LoadingRow="DataGridLoadingRow" TargetUpdated="DgTargetUpdated" x:Name="AlbumDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="AlbumDataGridSelectionChanged" MouseDoubleClick="AlbumDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <DataGrid DockPanel.Dock="Top" LoadingRow="DataGridLoadingRow" ItemsSource="{Binding}" DataContext="{Binding}" TargetUpdated="DgTargetUpdated" x:Name="AlbumDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="AlbumDataGridSelectionChanged" MouseDoubleClick="AlbumDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Icon="" Header="Add To Playlist" Click="AlbumDataGridAddClick"/>
@@ -240,7 +240,7 @@
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn>
+                                <DataGridTemplateColumn SortMemberPath="Starred">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="AlbumDataGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
@@ -261,7 +261,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>                                
-                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True" SortMemberPath="Artist">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -270,7 +270,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Album" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Album" IsReadOnly="True" SortMemberPath="Name">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -286,7 +286,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" TargetUpdated="DgTargetUpdated" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <DataGrid DockPanel.Dock="Top" TargetUpdated="DgTargetUpdated" ItemsSource="{Binding NotifyOnSourceUpdated=True}" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Add To Playlist" Click="TrackDataGridAddClick"/>
@@ -308,7 +308,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Disc" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Disc" IsReadOnly="True" SortMemberPath="DiscNumber">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -317,7 +317,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Track" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Track" IsReadOnly="True" SortMemberPath="Track">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -326,7 +326,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True" SortMemberPath="Artist">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -335,7 +335,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Title" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Title" IsReadOnly="True" SortMemberPath="Title">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -344,7 +344,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Album" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Album" IsReadOnly="True" SortMemberPath="Album">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -353,7 +353,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Genre" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Genre" IsReadOnly="True" SortMemberPath="Genre">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -362,7 +362,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Year" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Year" IsReadOnly="True" SortMemberPath="Year">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -371,7 +371,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Duration" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="Duration" IsReadOnly="True" SortMemberPath="Duration">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -380,7 +380,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="BitRate" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="BitRate" IsReadOnly="True" SortMemberPath="BitRate">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
@@ -389,10 +389,10 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Cached">
+                                <DataGridTemplateColumn Header="Cached" SortMemberPath="Cached">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox x:Name="CachedCheckbox" IsThreeState="False" IsChecked="{Binding Path=Cached, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <CheckBox VerticalAlignment="Center" x:Name="CachedCheckbox" IsThreeState="False" IsChecked="{Binding Path=Cached, Mode=TwoWay}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -430,7 +430,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Playlist Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistTrackGrid" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick" ItemsSource="{Binding}" Grid.Column="1" Grid.ColumnSpan="2">
+                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistTrackGrid" ItemsSource="{Binding NotifyOnSourceUpdated=True}" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick"/>
@@ -453,6 +453,13 @@
                                 <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
                                 <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
                                 <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
+                                <DataGridTemplateColumn Header="Cached" SortMemberPath="Cached">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox x:Name="CachedCheckbox" VerticalAlignment="Center" IsThreeState="False" IsChecked="{Binding Path=Cached, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
@@ -630,7 +637,7 @@
                                     <TextBlock Text="Proxy Address" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="SettingsProxyServerAddressTextBox" TextWrapping="NoWrap" Width="Auto" ToolTip="Proxy IP or FQDN"/>
                                     <TextBlock Text="Proxy Port" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerPortTextBox" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="50" ToolTip="Proxy Port"/>
+                                    <TextBox x:Name="SettingsProxyServerPortTextBox" PreviewTextInput="TextBoxPreviewTextInput" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="50" ToolTip="Proxy Port"/>
                                     <TextBlock Text="Proxy Username" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="SettingsProxyServerUsernameTextBox" TextWrapping="NoWrap" Width="Auto" ToolTip="Proxy Username"/>
                                     <TextBlock Text="Proxy Password" HorizontalAlignment="Left" Width="Auto"/>
@@ -640,20 +647,17 @@
                             <Expander Header="Social Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
-                                        <Style TargetType="{x:Type ComboBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
-                                            <Setter Property="Width" Value="50"/>
-                                            <Setter Property="Height" Value="25"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                                        </Style>
                                         <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                        </Style>
+                                        <Style TargetType="{x:Type TextBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
                                     </StackPanel.Resources>
                                     <TextBlock Text="Now Playing Interval" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="NowPlayingIntervalComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Polling cycle for Now Playing entries, set to 0 to disable"/>
+                                    <TextBox x:Name="NowPlayingIntervalTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50"  ToolTip="Polling cycle for Now Playing entries, set to 0 to disable"/>
                                     <TextBlock Text="Chat Messages Interval" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="ChatMessagesIntervalComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Polling cycle for Chat entries, set to 0 to disable"/>
+                                    <TextBox x:Name="ChatMessagesIntervalTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Polling cycle for Chat entries, set to 0 to disable"/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Playback Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -677,6 +681,7 @@
                                     </StackPanel.Resources>
                                     <CheckBox x:Name="PlaybackFollowsCursorCheckBox" Content="Playback Follows Cursor" HorizontalAlignment="Left" ToolTip="If enabled, the currently playing track will be selected in the Playlist"/>
                                     <CheckBox x:Name="SaveWorkingPlaylistCheckBox" Content="Save Working Playlist" HorizontalAlignment="Left" ToolTip="If enabled, the current playlist will be restored after the application is closed and re-opened"/>
+                                    <CheckBox x:Name="CachePlaylistTracksCheckBox" Content="Cache Playlist Tracks" HorizontalAlignment="Left" ToolTip="If enabled, any uncached tracks in the playlist will be cached if the application is in a playing state"/>
                                     <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Checked="SettingsUseDiskCacheCheckboxChecked" Unchecked="SettingsUseDiskCacheCheckboxUnChecked" ToolTip="If enabled, save cover art and music to disk for offline playback"/>
                                     <TextBlock Text="Cache Directory" HorizontalAlignment="Left" Width="Auto"/>
                                     <TextBox x:Name="CacheDirectoryTextBox" Width="Auto" ToolTip="Store cover art and music to this location. A subdirectory will be created per server URL"/>
@@ -692,17 +697,14 @@
                                         <Style TargetType="{x:Type TextBlock}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
-                                        <Style TargetType="{x:Type ComboBox}">
+                                        <Style TargetType="{x:Type TextBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
-                                            <Setter Property="Width" Value="50"/>
-                                            <Setter Property="Height" Value="25"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
                                         </Style>
                                     </StackPanel.Resources>
                                     <TextBlock Text="Album List Max" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="AlbumListMaxComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Maximum number of albums to be returned when viewing album lists"/>
+                                    <TextBox x:Name="AlbumListMaxTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Maximum number of albums to be returned when viewing album lists"/>
                                     <TextBlock Text="Max Search Results" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Maximum number of albums/tracks to be returned when searching"/>
+                                    <TextBox x:Name="MaxSearchResultsTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Maximum number of albums/tracks to be returned when searching"/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Interface Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -714,21 +716,15 @@
                                         <Style TargetType="{x:Type TextBlock}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
-                                        <Style TargetType="{x:Type ComboBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
-                                            <Setter Property="Width" Value="75"/>
-                                            <Setter Property="Height" Value="25"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>                                            
-                                        </Style>
                                         <Style TargetType="{x:Type CheckBox}">
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
                                     </StackPanel.Resources>
                                     <CheckBox x:Name="ShowAlbumArtCheckBox" Content="Show Album Art" HorizontalAlignment="Left" Checked="ShowAlbumArtCheckboxChecked" Unchecked="ShowAlbumArtCheckboxUnChecked" ToolTip="If enabled, show cover art in Album and Now Playing views"/>
                                     <TextBlock Text="Throttle Image Loading"/>
-                                    <ComboBox x:Name="ThrottleComboBox" ToolTip="Limit simultaneous loading of cover art to this value, set to 0 to disable throttling"/>
+                                    <TextBox x:Name="ThrottleTextBox" Width="50" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" ToolTip="Limit simultaneous loading of cover art to this value, set to 0 to disable throttling"/>
                                     <TextBlock Text="Album Art Size"/>
-                                    <TextBox x:Name="AlbumArtSizeTextBox" HorizontalAlignment="Left" Width="50" ToolTip="Width of cover art in Album and Now Playing views"/>
+                                    <TextBox x:Name="AlbumArtSizeTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Width of cover art in Album and Now Playing views"/>
                                 </StackPanel>
                             </Expander>
                         </StackPanel>
@@ -918,10 +914,10 @@
         </Button>
         <DockPanel HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,4,10,0">
             <Image Source="Images\filter.png" Width="20" Height="20" Margin="4,0,4,0"/>
-            <TextBox x:Name="ArtistFilterTextBox" Width="200" TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Height="Auto"/>
+            <TextBox x:Name="ArtistFilterTextBox" Width="200" PreviewKeyDown="ArtistFilterTextBoxKeyDown"  TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Height="Auto"/>
             <Separator Margin="4,0,4,0"/>
             <Image Source="Images\stock_search.png" Width="20" Height="20" Margin="4,0,4,0"/>
-            <TextBox x:Name="GlobalSearchTextBox" Width="200" KeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Height="Auto"/>
+            <TextBox x:Name="GlobalSearchTextBox" Width="200" PreviewKeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Height="Auto"/>
         </DockPanel>
     </Grid>
 </Window>

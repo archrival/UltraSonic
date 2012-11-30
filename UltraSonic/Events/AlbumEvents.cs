@@ -11,6 +11,8 @@ namespace UltraSonic
     {
         private void AlbumDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
         {
+            Image image = e.OriginalSource as Image;
+            if (image != null && image.Name == "PlayTrackImage") return;
             if (SubsonicApi == null) return;
 
             AlbumItem albumItem = AlbumDataGrid.SelectedItem as AlbumItem;
