@@ -65,6 +65,7 @@ namespace UltraSonic
                 _saveWorkingPlaylist = SaveWorkingPlaylistCheckBox.IsChecked.HasValue && SaveWorkingPlaylistCheckBox.IsChecked.Value;
                 _showAlbumArt = ShowAlbumArtCheckBox.IsChecked.HasValue && ShowAlbumArtCheckBox.IsChecked.Value;
                 _doubleClickBehavior = (DoubleClickBehavior) DoubleClickComboBox.SelectedValue;
+                _albumPlayButtonBehavior = (AlbumPlayButtonBehavior) AlbumPlayButtonBehaviorComboBox.SelectedValue;
                 _cachePlaylistTracks = CachePlaylistTracksCheckBox.IsChecked.HasValue && CachePlaylistTracksCheckBox.IsChecked.Value;
 
                 if (!string.IsNullOrWhiteSpace(ServerUrl))
@@ -105,6 +106,7 @@ namespace UltraSonic
                 Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
                 Settings.Default.ShowAlbumArt = _showAlbumArt;
                 Settings.Default.DoubleClickBehavior = Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
+                Settings.Default.AlbumPlayButtonBehavior = Enum.GetName(typeof (AlbumPlayButtonBehavior), _albumPlayButtonBehavior);
                 Settings.Default.CachePlaylistTracks = _cachePlaylistTracks;
 
                 Settings.Default.Save();
@@ -129,7 +131,7 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.StackTrace), string.Format("Exception in {0}", AppName), MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -184,6 +184,7 @@
                 <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
                 <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
                 <StatusBarItem x:Name="DownloadStatusLabel" Width="200" FontSize="10"/>
+                <StatusBarItem x:Name="NowPlayingStatusLabel" Width="400" FontSize="10"/>
             </DockPanel>
         </StatusBar>
         <TabControl Margin="10,5,10,108" Grid.ColumnSpan="3">
@@ -223,7 +224,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Albums" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" LoadingRow="DataGridLoadingRow" ItemsSource="{Binding}" DataContext="{Binding}" TargetUpdated="DgTargetUpdated" x:Name="AlbumDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="AlbumDataGridSelectionChanged" MouseDoubleClick="AlbumDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <DataGrid DockPanel.Dock="Top" LoadingRow="DataGridLoadingRow" ItemsSource="{Binding}" DataContext="{Binding}" x:Name="AlbumDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="AlbumDataGridSelectionChanged" MouseDoubleClick="AlbumDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Icon="" Header="Add To Playlist" Click="AlbumDataGridAddClick"/>
@@ -286,7 +287,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" TargetUpdated="DgTargetUpdated" ItemsSource="{Binding NotifyOnSourceUpdated=True}" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
+                        <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding NotifyOnSourceUpdated=True}" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Add To Playlist" Click="TrackDataGridAddClick"/>
@@ -689,6 +690,8 @@
                                     <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Any songs higher than this bitrate will be transcoded to this bitrate at stream time, set to 0 to disable"/>
                                     <TextBlock Text="Double Click Behavior" HorizontalAlignment="Left" Width="Auto"/>
                                     <ComboBox x:Name="DoubleClickComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Behavior when doubling clicking on a track in the Track view. Play will add the track to the end of the playlist and begin playing. Add will add the track to the end of the playlist."/>
+                                    <TextBlock Text="Album Play Button Behavior" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="AlbumPlayButtonBehaviorComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Behavior when clicking play on an album in the Album view. Play will clear the playlist and begin playing the album. Ask will ask to save any current playlist before clearing the playlist."/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Search Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -903,8 +906,8 @@
                 </Image.Style>
             </Image>
         </Button>
-        <Slider x:Name="VolumeSlider" Margin="0,0,10,61" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="32" VerticalContentAlignment="Center" UseLayoutRounding="True" MinHeight="32" MaxHeight="32" Grid.Column="2"/>
-        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" VerticalAlignment="Bottom" PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22" Grid.ColumnSpan="3"/>
+        <Slider x:Name="VolumeSlider" Margin="0,0,10,61" IsMoveToPointEnabled="True" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="32" VerticalContentAlignment="Center" UseLayoutRounding="True" MinHeight="32" MaxHeight="32" Grid.Column="2"/>
+        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" IsMoveToPointEnabled="True" VerticalAlignment="Bottom" PreviewMouseLeftButtonDown="ProgressSliderMouseLeftButtonDown" PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22" Grid.ColumnSpan="3"/>
         <MediaElement x:Name="MediaPlayer" HorizontalAlignment="Left" Height="1" VerticalAlignment="Top" Width="1" Margin="0,0,0,0" Visibility="Hidden" MediaOpened="MediaPlayerMediaOpened" UnloadedBehavior="Manual" LoadedBehavior="Manual"/>
         <Button Margin="0,0,340,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="NewPlaylistButtonClick" ToolTip="New Playlist" HorizontalAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2">
             <Image Source="Images/document-new.png"/>

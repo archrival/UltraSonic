@@ -41,6 +41,7 @@ namespace UltraSonic
             _cachePlaylistTracks = Settings.Default.CachePlaylistTracks;
 
             if (!Enum.TryParse(Settings.Default.DoubleClickBehavior, out _doubleClickBehavior)) _doubleClickBehavior = DoubleClickBehavior.Add;
+            if (!Enum.TryParse(Settings.Default.AlbumPlayButtonBehavior, out _albumPlayButtonBehavior)) _albumPlayButtonBehavior = AlbumPlayButtonBehavior.Ask;
 
             if (!string.IsNullOrWhiteSpace(ServerUrl))
             {
@@ -53,6 +54,7 @@ namespace UltraSonic
 
             PopulateMaxBitrateComboBox();
             PopulateDoubleClickComboBox();
+            PopulateAlbumPlayBehaviorComboBox();
 
             SettingsUseProxyCheckbox.IsChecked = UseProxy;
             SettingsUsernameTextBox.Text = Username;
@@ -81,6 +83,7 @@ namespace UltraSonic
             SocialEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
             DoubleClickComboBox.SelectedItem = _doubleClickBehavior;
             CachePlaylistTracksCheckBox.IsChecked = _cachePlaylistTracks;
+            AlbumPlayButtonBehaviorComboBox.SelectedItem = _albumPlayButtonBehavior;
 
             SetProxyEntryVisibility(UseProxy);
             SetUseDiskCacheVisibility(_useDiskCache);
@@ -106,16 +109,6 @@ namespace UltraSonic
                                   });
         }
 
-        private void PopuluateComboxBox(ComboBox comboBox, int start, int stop, int selectedItem)
-        {
-            List<int> listData = new List<int>();
-            for (int i = start; i <= stop; i++)
-                listData.Add(i);
-
-            comboBox.ItemsSource = listData;
-            comboBox.SelectedItem = selectedItem;
-        }
-
         private void PopulateMaxBitrateComboBox()
         {
             List<int> listData = new List<int> { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
@@ -130,6 +123,14 @@ namespace UltraSonic
 
             DoubleClickComboBox.ItemsSource = listData;
             DoubleClickComboBox.SelectedItem = DoubleClickBehavior.Add;
+        }
+
+        private void PopulateAlbumPlayBehaviorComboBox()
+        {
+            List<AlbumPlayButtonBehavior> listData = new List<AlbumPlayButtonBehavior> { AlbumPlayButtonBehavior.Ask, AlbumPlayButtonBehavior.Play };
+
+            AlbumPlayButtonBehaviorComboBox.ItemsSource = listData;
+            AlbumPlayButtonBehaviorComboBox.SelectedItem = AlbumPlayButtonBehavior.Ask;
         }
 
         private void SetProxyEntryVisibility(bool isChecked)

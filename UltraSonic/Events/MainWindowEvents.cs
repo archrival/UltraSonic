@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -68,9 +69,13 @@ namespace UltraSonic
         {
             if (_caching) return;
 
-            foreach (TrackItem trackItem in PlaylistTrackGrid.Items)
+            List<TrackItem> playlistTracks = CollectionViewSource.GetDefaultView(_playlistTrackItems).Cast<TrackItem>().ToList();
+
+            foreach (TrackItem trackItem in playlistTracks)
             {
                 if (IsTrackCached(trackItem.FileName, trackItem.Child)) continue;
+                if (_playlistTrackItems.All(t => t != trackItem)) continue;
+                if (!_shouldCachePlaylist) break;
 
                 await _cachingThrottle.WaitAsync();
 
@@ -148,11 +153,17 @@ namespace UltraSonic
             });
         }
 
+        private void ProgressSliderMouseLeftButtonDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            _movingSlider = true;
+        }
+
         private void ProgressSliderMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             int sliderValue = (int)ProgressSlider.Value;
             TimeSpan ts = new TimeSpan(0, 0, 0, 0, sliderValue);
             MediaPlayer.Position = ts;
+            _movingSlider = false;
         }
 
         private void SavePlaylistButtonClick(object sender, RoutedEventArgs e)
@@ -163,7 +174,7 @@ namespace UltraSonic
 
             if (CurrentPlaylist != null)
             {
-                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to update the previously loaded playlist? '{0}'", CurrentPlaylist.Name), "Save playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to update the previously loaded playlist? '{0}'", CurrentPlaylist.Name), AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                 updatePlaylist = (result == MessageBoxResult.Yes);
             }
 
@@ -198,13 +209,19 @@ namespace UltraSonic
 
         private void NewPlaylistButtonClick(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Would you like to clear the current playlist?", "New playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            MessageBoxResult result = MessageBox.Show("Would you like to clear the current playlist?", AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
             if (result == MessageBoxResult.Yes)
                 Dispatcher.Invoke(() =>
                 {
                     CurrentPlaylist = null;
                     _playlistTrackItems.Clear();
+
+                    foreach (DataGridColumn column in PlaylistTrackGrid.Columns)
+                    {
+                        column.Width = column.MinWidth;
+                        column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                    }
                 });
         }
 
@@ -262,6 +279,19 @@ namespace UltraSonic
             {
                 _albumItems.Clear();
                 _trackItems.Clear();
+
+                foreach (DataGridColumn column in AlbumDataGrid.Columns)
+                {
+                    column.Width = column.MinWidth;
+                    column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                }
+
+                foreach (DataGridColumn column in TrackDataGrid.Columns)
+                {
+                    column.Width = column.MinWidth;
+                    column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                }
+
                 SearchStatusLabel.Content = "Searching...";
                 SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
             }

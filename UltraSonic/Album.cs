@@ -1,13 +1,14 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows.Controls;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using UltraSonic.Static;
+using Image = System.Drawing.Image;
 
 namespace UltraSonic
 {
@@ -35,6 +36,12 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
             {
                 _albumItems.Clear();
+
+                foreach (DataGridColumn column in AlbumDataGrid.Columns)
+                {
+                    column.Width = column.MinWidth;
+                    column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                }
 
                 var enumerable = children as IList<Child> ?? children.ToList();
 

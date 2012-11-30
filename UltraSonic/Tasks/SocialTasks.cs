@@ -64,13 +64,17 @@ namespace UltraSonic
 
                             if (_nowPlayingItems.Any(a => a.Album == nowPlayingItem.Album && a.Artist == nowPlayingItem.Artist && a.Starred == nowPlayingItem.Starred && a.Title == nowPlayingItem.Title)) continue;
 
+                            //NowPlayingStatusLabel.Content = string.Format("{0} is playing {1} by {2}", nowPlayingItem.User, nowPlayingItem.Title, nowPlayingItem.Artist);
                             _nowPlayingItems.Add(nowPlayingItem);
+
+                            if (!_showAlbumArt) continue;
+
                             string localFileName = GetCoverArtFilename(entry);
 
                             if (File.Exists(localFileName))
                             {
                                 Image thisImage = Image.FromFile(localFileName);
-                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * 1.5), (int)(_albumArtSize * 1.5));
+                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) (_albumArtSize*1.5), (int) (_albumArtSize*1.5));
                                 thisImage.Dispose();
                             }
                             else

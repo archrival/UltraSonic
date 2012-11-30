@@ -1,4 +1,9 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Windows.Controls;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -45,6 +50,7 @@ namespace UltraSonic
         private string _musicCacheDirectoryName = string.Empty;
         private string _coverArtCacheDirectoryName = string.Empty;
         private DoubleClickBehavior _doubleClickBehavior = DoubleClickBehavior.Add;
+        private AlbumPlayButtonBehavior _albumPlayButtonBehavior = AlbumPlayButtonBehavior.Ask;
 
         private double _chatMessageSince;
         private AlbumListItem _albumListItem;
@@ -59,6 +65,7 @@ namespace UltraSonic
         private bool _shouldCachePlaylist;
         private bool _caching;
         private bool _cachePlaylistTracks = true;
+        private bool _movingSlider = false;
 
         private readonly SemaphoreSlim _cachingThrottle = new SemaphoreSlim(1);
 
@@ -112,18 +119,21 @@ namespace UltraSonic
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
                 {
                     InitSubsonicApi();
-                    License license = SubsonicApi.GetLicense();
-                    UpdateLicenseInformation(license);
+                    if (SubsonicApi != null)
+                    {
+                        License license = SubsonicApi.GetLicense();
+                        UpdateLicenseInformation(license);
 
-                    if (!license.Valid)
-                    {
-                        MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
-                    }
-                    else
-                    {
-                        UpdateArtists();
-                        PopulatePlaylist();
-                        UpdatePlaylists();
+                        if (!license.Valid)
+                        {
+                            MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
+                        }
+                        else
+                        {
+                            UpdateArtists();
+                            PopulatePlaylist();
+                            UpdatePlaylists();
+                        }
                     }
                 }
                 else
@@ -165,7 +175,7 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.StackTrace), string.Format("Exception in {0}", AppName), MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -198,28 +208,100 @@ namespace UltraSonic
             }
         }
 
+        private static X509Certificate2 GetSslCertificate(Uri url)
+        {
+            ServicePoint sp = ServicePointManager.FindServicePoint(url);
+            X509Certificate2 cert = null;
+
+            var sslFailureCallback = new RemoteCertificateValidationCallback(delegate { return true; });
+
+            try
+            {
+                ServicePointManager.ServerCertificateValidationCallback += sslFailureCallback;
+                string groupName = Guid.NewGuid().ToString();
+                HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
+                if (req != null)
+                {
+                    req.ConnectionGroupName = groupName;
+                    using (WebResponse resp = req.GetResponse()) { }
+                }
+
+                sp.CloseConnectionGroup(groupName);
+
+                if (sp.Certificate != null)
+                    cert = new X509Certificate2(sp.Certificate);
+            }
+            catch
+            {
+                
+            }
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback -= sslFailureCallback;
+            }
+
+            return cert;
+        }
+
+        private bool ValidateCertificate(Uri serverUri)
+        {
+            if (serverUri.Scheme == "https")
+            {
+                X509Certificate2 cert = GetSslCertificate(serverUri);
+
+                if (cert == null) return false;
+
+                if (!cert.Verify())
+                {
+                    MessageBoxResult result = MessageBox.Show(string.Format("Server certificate is not trusted, would you like to add it to trusted root certificate authorities (CAs)?\n\n\tName: {0}\n\tIssuer: {1}\n\tSerial: {2}\n\tThumbprint: {3}\n\tExpiration: {4}", cert.Subject, cert.Issuer, cert.GetSerialNumberString(), cert.Thumbprint, cert.GetExpirationDateString()), AppName, MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        X509Store store = new X509Store(StoreName.Root);
+                        store.Open(OpenFlags.ReadWrite);
+                        store.Add(cert);
+                        store.Close();
+                    }
+                }
+
+                return cert.Verify();
+            }
+
+            return true;
+        }
+
         private void InitSubsonicApi()
         {
-            SubsonicApi = UseProxy ? new SubsonicApi(new Uri(ServerUrl), Username, Password, ProxyPassword, ProxyUsername, ProxyPort, ProxyServer) {UserAgent = AppName} : new SubsonicApi(new Uri(ServerUrl), Username, Password) {UserAgent = AppName};
-            SubsonicApi.Ping();
-            ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
-            SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
+            Uri serverUri = new Uri(ServerUrl);
 
-            if (SubsonicApi.ServerApiVersion < Version.Parse("1.8.0"))
+            if (!ValidateCertificate(serverUri))
             {
-                Dispatcher.Invoke(() =>
-                                      {
-                                          PlaylistGridStarred.Visibility = Visibility.Collapsed;
-                                          TrackDataGridStarred.Visibility = Visibility.Collapsed;
-                                          AlbumDataGridStarred.Visibility = Visibility.Collapsed;
-                                          UserShareLabel.Visibility = Visibility.Hidden;
-                                          UserShareLabel2.Visibility = Visibility.Hidden;
-                                      });
-            }
-            else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
-            {
-                MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), "Inavlid server API version", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to validate server certificate, this issue must be corrected before continuing.", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 SubsonicApi = null;
+            }
+            else
+            {
+                SubsonicApi = UseProxy ? new SubsonicApi(serverUri, Username, Password, ProxyPassword, ProxyUsername, ProxyPort, ProxyServer) {UserAgent = AppName} : new SubsonicApi(serverUri, Username, Password) {UserAgent = AppName};
+                SubsonicApi.Ping();
+                ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
+                SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
+
+                if (SubsonicApi.ServerApiVersion < Version.Parse("1.8.0"))
+                {
+                    Dispatcher.Invoke(() =>
+                                          {
+                                              PlaylistGridStarred.Visibility = Visibility.Collapsed;
+                                              TrackDataGridStarred.Visibility = Visibility.Collapsed;
+                                              AlbumDataGridStarred.Visibility = Visibility.Collapsed;
+                                              UserShareLabel.Visibility = Visibility.Hidden;
+                                              UserShareLabel2.Visibility = Visibility.Hidden;
+                                          });
+                }
+                else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
+                {
+                    MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                    SubsonicApi = null;
+                }
             }
         }
 
@@ -227,7 +309,9 @@ namespace UltraSonic
         {
             if (MediaPlayer.Source == null) return;
 
-            ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
+            if (!_movingSlider)
+                ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
+        
             MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
             UpdateTitle();
 
@@ -291,6 +375,11 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
                                   {
                                       _trackItems.Clear();
+                                      foreach (DataGridColumn column in TrackDataGrid.Columns)
+                                      {
+                                          column.Width = column.MinWidth;
+                                          column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                                      }
 
                                       PopulateTrackItemCollection(children);
                                       UiHelpers.ScrollToTop(TrackDataGrid);

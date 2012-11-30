@@ -56,6 +56,7 @@ namespace UltraSonic
                                   {
                                       _chatMessageSince = 0;
                                       _chatMessages.Clear();
+                                      
                                       UpdateChatMessages();
                                   });
         }

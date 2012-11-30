@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows.Controls;
+using Subsonic.Rest.Api;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,6 +46,12 @@ namespace UltraSonic
                                           {
                                               _playlistTrackItems.Clear();
 
+                                              foreach (DataGridColumn column in PlaylistTrackGrid.Columns)
+                                              {
+                                                  column.Width = column.MinWidth;
+                                                  column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                                              }
+
                                               foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Entry))
                                                   AddTrackItemToPlaylist(trackItem);
                                           });
@@ -60,6 +67,12 @@ namespace UltraSonic
                     Dispatcher.Invoke(() =>
                                           {
                                               _playlistTrackItems.Clear();
+
+                                              foreach (DataGridColumn column in PlaylistTrackGrid.Columns)
+                                              {
+                                                  column.Width = column.MinWidth;
+                                                  column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                                              }
 
                                               foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Song))
                                                   AddTrackItemToPlaylist(trackItem);

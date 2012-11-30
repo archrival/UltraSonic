@@ -281,16 +281,13 @@ namespace Subsonic.Rest.Api
             string requestUri = BuildRequestUri(method, methodApiVersion, parameters);
 
             HttpWebRequest request = BuildRequest(requestUri);
-            bool download = true;
 
             if (cancelToken.HasValue)
                 cancelToken.Value.ThrowIfCancellationRequested();
 
             try
             {
-                using (await request.GetResponseAsync())
-                {
-                }
+                using (await request.GetResponseAsync()) { }
             }
             catch (Exception ex)
             {

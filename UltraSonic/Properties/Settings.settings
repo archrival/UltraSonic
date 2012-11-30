@@ -92,5 +92,8 @@
     <Setting Name="CachePlaylistTracks" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="AlbumPlayButtonBehavior" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ask</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

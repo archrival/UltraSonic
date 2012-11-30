@@ -32,6 +32,7 @@ namespace UltraSonic
             if (_doubleClickBehavior == DoubleClickBehavior.Play && playlistTrackItem != null)
             {
                 PlaylistTrackGrid.SelectedItem = playlistTrackItem;
+                StopMusic();
                 PlayButtonClick(null, null);
             }
         }
@@ -43,13 +44,16 @@ namespace UltraSonic
 
             if (trackItem == null) return;
 
-            Dispatcher.Invoke(() =>
-            {
-                _playlistTrackItems.Clear();
-                AddTrackItemToPlaylist(trackItem);
-                PlaylistTrackGrid.SelectedIndex = 0;
-                PlayButtonClick(null, null);
-            });
+            Dispatcher.Invoke(() => AddTrackToPlaylistAndPlay(trackItem));
+        }
+
+        private void AddTrackToPlaylistAndPlay(TrackItem trackItem)
+        {
+            TrackItem playlistTrackItem = null;
+            playlistTrackItem = AddTrackItemToPlaylist(trackItem);
+            PlaylistTrackGrid.SelectedItem = playlistTrackItem;
+            StopMusic();
+            PlayButtonClick(null, null);
         }
     }
 }

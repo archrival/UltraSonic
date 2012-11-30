@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api.Enums;
+﻿using System.Linq;
+using Subsonic.Rest.Api.Enums;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -96,7 +97,7 @@ namespace UltraSonic
                 SubsonicApi.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
         }
 
-        private void PlayAlbumImageMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void PlayAlbumImageMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DataGridRow test = UiHelpers.GetVisualParent<DataGridRow>(sender);
             AlbumItem albumItem = test.Item as AlbumItem;
@@ -106,10 +107,25 @@ namespace UltraSonic
             StopMusic();
 
             Dispatcher.Invoke(() =>
-            {
-                _playlistTrackItems.Clear();
-                SubsonicApi.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true));
-            });
+                                  {
+                                      if (_albumPlayButtonBehavior == AlbumPlayButtonBehavior.Ask && _playlistTrackItems.Any())
+                                      {
+                                          MessageBoxResult result = MessageBox.Show("Would you like to save the current playlist?", AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+
+                                          if (result == MessageBoxResult.Yes)
+                                              SavePlaylistButtonClick(null, null);
+                                      }
+
+                                      _playlistTrackItems.Clear();
+
+                                      foreach (DataGridColumn column in PlaylistTrackGrid.Columns)
+                                      {
+                                          column.Width = column.MinWidth;
+                                          column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                                      }
+
+                                      SubsonicApi.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true));
+                                  });
         }
     }
 }

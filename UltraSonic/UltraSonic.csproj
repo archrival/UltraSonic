@@ -61,6 +61,7 @@
     <Compile Include="AlbumArt.xaml.cs">
       <DependentUpon>AlbumArt.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Enum\AlbumPlayButtonBehavior.cs" />
     <Compile Include="Enum\DoubleClickBehavior.cs" />
     <Compile Include="Events\AlbumEvents.cs" />
     <Compile Include="Items\AlbumListItem.cs" />

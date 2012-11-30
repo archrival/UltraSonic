@@ -63,11 +63,11 @@ namespace UltraSonic
             {
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
-                    MessageBox.Show("Playlist 'Starred' is a dynamic playlist and cannot be deleted.", "Delete playlist", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    MessageBox.Show("Playlist 'Starred' is a dynamic playlist and cannot be deleted.", AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", playlistItem.Name), "Delete playlist", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", playlistItem.Name), AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
                     if (result == MessageBoxResult.Yes && playlistItem.Playlist != null)
                     {

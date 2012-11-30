@@ -1,4 +1,5 @@
-﻿using Subsonic.Rest.Api;
+﻿using System.Windows.Controls;
+using Subsonic.Rest.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,12 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
             {
                 _playlistItems.Clear();
+                
+                foreach (DataGridColumn column in PlaylistsDataGrid.Columns)
+                {
+                    column.Width = column.MinWidth;
+                    column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                }
 
                 foreach (PlaylistItem playlistItem in playlists.Select(playlist => new PlaylistItem
                 {
