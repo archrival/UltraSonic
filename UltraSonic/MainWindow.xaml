@@ -286,7 +286,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="true" TargetUpdated="DgTargetUpdated" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <DataGrid DockPanel.Dock="Top" TargetUpdated="DgTargetUpdated" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Add To Playlist" Click="TrackDataGridAddClick"/>

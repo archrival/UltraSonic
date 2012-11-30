@@ -205,7 +205,7 @@ namespace UltraSonic
                 if (!string.IsNullOrWhiteSpace(searchQuery))
                 {
                     _albumItems.Clear();
-                    TrackDataGrid.ItemsSource = null;
+                    _trackItems.Clear();
                     SearchStatusLabel.Content = "Searching...";
                     SubsonicApi.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
                 }

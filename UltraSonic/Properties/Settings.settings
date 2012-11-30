@@ -81,10 +81,10 @@
       <Value Profile="(Default)">50</Value>
     </Setting>
     <Setting Name="SaveWorkingPlaylist" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ShowAlbumArt" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="DoubleClickBehavior" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">Add</Value>
