@@ -28,7 +28,7 @@ namespace UltraSonic
         private string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private readonly ConcurrentQueue<Uri> _streamItems = new ConcurrentQueue<Uri>();
-        private readonly DispatcherTimer _timer = new DispatcherTimer();
+        private readonly DispatcherTimer _mainTimer = new DispatcherTimer();
         private readonly DispatcherTimer _nowPlayingTimer = new DispatcherTimer();
         private readonly DispatcherTimer _chatMessagesTimer = new DispatcherTimer();
         private string _artistFilter = string.Empty;
@@ -36,22 +36,29 @@ namespace UltraSonic
         private Image _currentAlbumArt;
         public AlbumArt AlbumArtWindow;
         private TimeSpan _position;
-        private bool _repeatPlaylist;
         private int _maxSearchResults = 25;
         private int _maxBitrate;
         private int _albumListMax = 10;
         private int _nowPlayingInterval = 30;
         private int _chatMessagesInterval = 5;
-        private int _cacheDownloadLimit;
         private int _throttle = 50;
+        private int _albumArtSize = 50;
         private string _serverHash;
-        private bool _newChatNotify;
-        private bool _playbackFollowsCursor;
-        private User CurrentUser { get; set; }
-        private bool _useDiskCache = true;
         private string _musicCacheDirectoryName = string.Empty;
         private string _coverArtCacheDirectoryName = string.Empty;
-        private Playlist CurrentPlaylist { get; set; }
+        private DoubleClickBehavior _doubleClickBehavior = DoubleClickBehavior.Add;
+
+        private double _chatMessageSince;
+        private AlbumListItem _albumListItem;
+        private string _currentPlaylist = string.Empty;
+
+        private bool _repeatPlaylist;
+        private bool _useDiskCache = true;
+        private bool _saveWorkingPlaylist;
+        private bool _showAlbumArt;
+        private bool _newChatNotify;
+        private bool _playbackFollowsCursor;
+
         private readonly ObservableCollection<NowPlayingItem> _nowPlayingItems = new ObservableCollection<NowPlayingItem>();
         private readonly ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
         private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
@@ -60,12 +67,6 @@ namespace UltraSonic
         private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
         private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
         private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
-        private double _chatMessageSince;
-        private AlbumListItem _albumListItem;
-        private string _currentPlaylist = string.Empty;
-        private int _albumArtSize = 150;
-        private bool _saveWorkingPlaylist = true;
-        private bool _showAlbumArt = true;
 
         private SubsonicApi SubsonicApi { get; set; }
         private string Username { get; set; }
@@ -76,6 +77,8 @@ namespace UltraSonic
         private string ProxyUsername { get; set; }
         private string ProxyPassword { get; set; }
         private bool UseProxy { get; set; }
+        private Playlist CurrentPlaylist { get; set; }
+        private User CurrentUser { get; set; }
 
         public MainWindow()
         {
@@ -118,8 +121,6 @@ namespace UltraSonic
                         UpdateArtists();
                         PopulatePlaylist();
                         UpdatePlaylists();
-                        UpdateChatMessages();
-                        UpdateNowPlaying();
                     }
                 }
                 else
@@ -129,15 +130,27 @@ namespace UltraSonic
                     SettingsServerAddressTextBox.Focus();
                 }
 
-                _timer.Interval = TimeSpan.FromMilliseconds(500);
-                _timer.Tick += (o, s) => Ticktock();
-                _timer.Start();
-                _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
-                _nowPlayingTimer.Tick += (o, s) => UpdateNowPlaying();
-                _nowPlayingTimer.Start();
-                _chatMessagesTimer.Interval = TimeSpan.FromSeconds(_chatMessagesInterval);
-                _chatMessagesTimer.Tick += (o, s) => UpdateChatMessages();
-                _chatMessagesTimer.Start();
+                _mainTimer.Interval = TimeSpan.FromMilliseconds(500);
+                _mainTimer.Tick += (o, s) => Ticktock();
+                _mainTimer.Start();
+
+                if (_nowPlayingInterval > 0)
+                {
+                    UpdateNowPlaying();
+
+                    _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
+                    _nowPlayingTimer.Tick += (o, s) => UpdateNowPlaying();
+                    _nowPlayingTimer.Start();
+                }
+
+                if (_chatMessagesInterval > 0)
+                {
+                    UpdateChatMessages();
+
+                    _chatMessagesTimer.Interval = TimeSpan.FromSeconds(_chatMessagesInterval);
+                    _chatMessagesTimer.Tick += (o, s) => UpdateChatMessages();
+                    _chatMessagesTimer.Start();
+                }
 
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
                 MediaPlayer.Volume = Settings.Default.Volume;

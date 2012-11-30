@@ -38,17 +38,16 @@ namespace UltraSonic
             });
         }
 
-        private void AddTrackItemToPlaylist(TrackItem trackItem)
+        private TrackItem AddTrackItemToPlaylist(TrackItem trackItem)
         {
-            Dispatcher.Invoke(() =>
-            {
-                TrackItem playlistTrackItem = new TrackItem();
-                trackItem.CopyTo(playlistTrackItem);
-                playlistTrackItem.Duration = TimeSpan.FromSeconds(playlistTrackItem.Child.Duration);
-                playlistTrackItem.PlaylistGuid = Guid.NewGuid();
+            TrackItem playlistTrackItem = new TrackItem();
+            trackItem.CopyTo(playlistTrackItem);
+            playlistTrackItem.Duration = TimeSpan.FromSeconds(playlistTrackItem.Child.Duration);
+            playlistTrackItem.PlaylistGuid = Guid.NewGuid();
 
-                _playlistTrackItems.Add(playlistTrackItem);
-            });
+            Dispatcher.Invoke(() => _playlistTrackItems.Add(playlistTrackItem));
+
+            return playlistTrackItem;
         }
     }
 }

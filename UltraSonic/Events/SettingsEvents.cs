@@ -37,7 +37,6 @@ namespace UltraSonic
                 _albumListMax = (int)AlbumListMaxComboBox.SelectedValue;
                 _nowPlayingInterval = (int)NowPlayingIntervalComboBox.SelectedValue;
                 _chatMessagesInterval = (int)ChatMessagesIntervalComboBox.SelectedValue;
-                _cacheDownloadLimit = (int)CacheDownloadLimitComboBox.SelectedValue;
                 _cacheDirectory = CacheDirectoryTextBox.Text;
                 _serverHash = StaticMethods.CalculateSha256(ServerUrl, Encoding.Unicode);
                 _useDiskCache = UseDiskCacheCheckBox.IsChecked.HasValue && UseDiskCacheCheckBox.IsChecked.Value;
@@ -46,10 +45,11 @@ namespace UltraSonic
                 _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
                 _saveWorkingPlaylist = SaveWorkingPlaylistCheckBox.IsChecked.HasValue && SaveWorkingPlaylistCheckBox.IsChecked.Value;
                 _showAlbumArt = ShowAlbumArtCheckBox.IsChecked.HasValue && ShowAlbumArtCheckBox.IsChecked.Value;
+                _doubleClickBehavior = (DoubleClickBehavior) DoubleClickComboBox.SelectedValue;
 
                 if (!int.TryParse(AlbumArtSizeTextBox.Text, out _albumArtSize))
                 {
-                    _albumArtSize = 150;
+                    _albumArtSize = 50;
                     AlbumArtSizeTextBox.Text = _albumArtSize.ToString(CultureInfo.InvariantCulture);
                 }
 
@@ -62,8 +62,10 @@ namespace UltraSonic
                         Directory.CreateDirectory(_coverArtCacheDirectoryName);
                 }
 
-                AlbumDataGridAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
-                SocalAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+                AlbumDataGridAlbumArtColumn.Visibility = !_showAlbumArt ? Visibility.Collapsed : Visibility.Visible;
+                SocalAlbumArtColumn.Visibility = !_showAlbumArt ? Visibility.Collapsed : Visibility.Visible;
+                AlbumDataGridEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
+                SocialEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
 
                 Settings.Default.Username = Username;
                 Settings.Default.Password = Password;
@@ -80,12 +82,12 @@ namespace UltraSonic
                 Settings.Default.UseDiskCache = _useDiskCache;
                 Settings.Default.NowPlayingInterval = _nowPlayingInterval;
                 Settings.Default.ChatMessagesInterval = _chatMessagesInterval;
-                Settings.Default.CacheDownloadLimit = _cacheDownloadLimit;
                 Settings.Default.PlaybackFollowsCursor = _playbackFollowsCursor;
                 Settings.Default.Throttle = _throttle;
                 Settings.Default.AlbumArtSize = _albumArtSize;
                 Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
                 Settings.Default.ShowAlbumArt = _showAlbumArt;
+                Settings.Default.DoubleClickBehavior = Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
 
                 Settings.Default.Save();
 
@@ -150,6 +152,54 @@ namespace UltraSonic
         private void SettingsUseProxyCheckboxUnChecked(object sender, RoutedEventArgs e)
         {
             SetProxyEntryVisibility(false);
+        }
+
+        private void AlbumDataGridEnableCoverArtClick(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+                                  {
+                                      _showAlbumArt = !_showAlbumArt;
+
+                                      bool albumDataGridArtAvailable = false;
+                                      bool nowPlayingDataGridArtAvailable = false;
+
+                                      foreach (AlbumItem albumItem in AlbumDataGrid.Items)
+                                      {
+                                          if (albumItem.Image != null) albumDataGridArtAvailable = true;
+                                          break;
+                                      }
+
+                                      foreach (NowPlayingItem nowPlayingItem in NowPlayingDataGrid.Items)
+                                      {
+                                          if (nowPlayingItem.Image != null) nowPlayingDataGridArtAvailable = true;
+                                          break;
+                                      }
+
+                                      if (_showAlbumArt && albumDataGridArtAvailable)
+                                      {
+                                          AlbumDataGridAlbumArtColumn.Visibility = Visibility.Visible;
+                                          AlbumDataGrid.Items.Refresh();
+                                      }
+                                      else
+                                      {
+                                          AlbumDataGridAlbumArtColumn.Visibility = Visibility.Collapsed;
+                                      }
+
+                                      if (_showAlbumArt && nowPlayingDataGridArtAvailable)
+                                      {
+                                          SocalAlbumArtColumn.Visibility = Visibility.Visible;
+                                          NowPlayingDataGrid.Items.Refresh();
+                                      }
+                                      else
+                                      {
+                                          SocalAlbumArtColumn.Visibility = Visibility.Collapsed;
+                                      }
+
+                                      ShowAlbumArtCheckBox.IsChecked = _showAlbumArt;
+
+                                      AlbumDataGridEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
+                                      SocialEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
+                                  });
         }
     }
 }

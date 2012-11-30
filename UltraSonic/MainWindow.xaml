@@ -228,6 +228,8 @@
                                 <ContextMenu>
                                     <MenuItem Icon="" Header="Add To Playlist" Click="AlbumDataGridAddClick"/>
                                     <MenuItem x:Name="AlbumDataGridDownload" Header="Download" Click="AlbumDataGridDownloadClick"/>
+                                    <MenuItem x:Name="AlbumDataGridEnableCoverArt" Click="AlbumDataGridEnableCoverArtClick"/>
+                                    <Separator/>
                                     <MenuItem Header="Random" Click="AlbumDataGridAlbumListClick"/>
                                     <MenuItem Header="Newest" Click="AlbumDataGridAlbumListClick"/>
                                     <MenuItem Header="Highest Rated" Click="AlbumDataGridAlbumListClick"/>
@@ -482,6 +484,7 @@
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Refresh" Click="NowPlayingRefreshClick"/>
+                                    <MenuItem x:Name="SocialEnableCoverArt" Click="AlbumDataGridEnableCoverArtClick"/>
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
@@ -600,11 +603,11 @@
                                         </Style>
                                     </StackPanel.Resources>
                                     <TextBlock Text="Server Address" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsServerAddressTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap"/>
+                                    <TextBox x:Name="SettingsServerAddressTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap" ToolTip="Enter Subsonic server address URL"/>
                                     <TextBlock Text="Username" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsUsernameTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap"/>
+                                    <TextBox x:Name="SettingsUsernameTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap" ToolTip="Subsonic Username, this is case sensitive"/>
                                     <TextBlock Text="Password" HorizontalAlignment="Left" Width="Auto"/>
-                                    <PasswordBox x:Name="SettingsPasswordPasswordBox" HorizontalAlignment="Stretch"/>
+                                    <PasswordBox x:Name="SettingsPasswordPasswordBox" HorizontalAlignment="Stretch" ToolTip="Subsonic Password"/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Proxy Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -623,15 +626,15 @@
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
                                     </StackPanel.Resources>
-                                    <CheckBox x:Name="SettingsUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Width="Auto" UseLayoutRounding="True" ClickMode="Press" Checked="SettingsUseProxyCheckboxChecked" Unchecked="SettingsUseProxyCheckboxUnChecked"/>
+                                    <CheckBox x:Name="SettingsUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Width="Auto" UseLayoutRounding="True" ClickMode="Press" Checked="SettingsUseProxyCheckboxChecked" Unchecked="SettingsUseProxyCheckboxUnChecked" ToolTip="If enabled, use proxy configuration entered for communication with Subsonic"/>
                                     <TextBlock Text="Proxy Address" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerAddressTextBox" TextWrapping="NoWrap" Width="Auto"/>
+                                    <TextBox x:Name="SettingsProxyServerAddressTextBox" TextWrapping="NoWrap" Width="Auto" ToolTip="Proxy IP or FQDN"/>
                                     <TextBlock Text="Proxy Port" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerPortTextBox" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="50"/>
+                                    <TextBox x:Name="SettingsProxyServerPortTextBox" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="50" ToolTip="Proxy Port"/>
                                     <TextBlock Text="Proxy Username" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerUsernameTextBox" TextWrapping="NoWrap" Width="Auto"/>
+                                    <TextBox x:Name="SettingsProxyServerUsernameTextBox" TextWrapping="NoWrap" Width="Auto" ToolTip="Proxy Username"/>
                                     <TextBlock Text="Proxy Password" HorizontalAlignment="Left" Width="Auto"/>
-                                    <PasswordBox x:Name="SettingsProxyServerPasswordTextBox" Width="Auto"/>
+                                    <PasswordBox x:Name="SettingsProxyServerPasswordTextBox" Width="Auto" ToolTip="Proxy Password"/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Social Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -648,9 +651,9 @@
                                         </Style>
                                     </StackPanel.Resources>
                                     <TextBlock Text="Now Playing Interval" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="NowPlayingIntervalComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <ComboBox x:Name="NowPlayingIntervalComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Polling cycle for Now Playing entries, set to 0 to disable"/>
                                     <TextBlock Text="Chat Messages Interval" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="ChatMessagesIntervalComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <ComboBox x:Name="ChatMessagesIntervalComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Polling cycle for Chat entries, set to 0 to disable"/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Playback Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -672,15 +675,15 @@
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
                                     </StackPanel.Resources>
-                                    <CheckBox x:Name="PlaybackFollowsCursorCheckBox" Content="Playback Follows Cursor" HorizontalAlignment="Left"/>
-                                    <CheckBox x:Name="SaveWorkingPlaylistCheckBox" Content="Save Working Playlist" HorizontalAlignment="Left"/>
-                                    <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Checked="SettingsUseDiskCacheCheckboxChecked" Unchecked="SettingsUseDiskCacheCheckboxUnChecked"/>
+                                    <CheckBox x:Name="PlaybackFollowsCursorCheckBox" Content="Playback Follows Cursor" HorizontalAlignment="Left" ToolTip="If enabled, the currently playing track will be selected in the Playlist"/>
+                                    <CheckBox x:Name="SaveWorkingPlaylistCheckBox" Content="Save Working Playlist" HorizontalAlignment="Left" ToolTip="If enabled, the current playlist will be restored after the application is closed and re-opened"/>
+                                    <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Checked="SettingsUseDiskCacheCheckboxChecked" Unchecked="SettingsUseDiskCacheCheckboxUnChecked" ToolTip="If enabled, save cover art and music to disk for offline playback"/>
                                     <TextBlock Text="Cache Directory" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="CacheDirectoryTextBox" Width="Auto"/>
+                                    <TextBox x:Name="CacheDirectoryTextBox" Width="Auto" ToolTip="Store cover art and music to this location. A subdirectory will be created per server URL"/>
                                     <TextBlock Text="Max Bitrate" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Width="75"/>
-                                    <TextBlock Text="Cache Download Limit" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="CacheDownloadLimitComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Any songs higher than this bitrate will be transcoded to this bitrate at stream time, set to 0 to disable"/>
+                                    <TextBlock Text="Double Click Behavior" HorizontalAlignment="Left" Width="Auto"/>
+                                    <ComboBox x:Name="DoubleClickComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Behavior when doubling clicking on a track in the Track view. Play will add the track to the end of the playlist and begin playing. Add will add the track to the end of the playlist."/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Search Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -697,9 +700,9 @@
                                         </Style>
                                     </StackPanel.Resources>
                                     <TextBlock Text="Album List Max" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="AlbumListMaxComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <ComboBox x:Name="AlbumListMaxComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Maximum number of albums to be returned when viewing album lists"/>
                                     <TextBlock Text="Max Search Results" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Width="75"/>
+                                    <ComboBox x:Name="MaxSearchResultsComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Maximum number of albums/tracks to be returned when searching"/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="Interface Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -721,11 +724,11 @@
                                             <Setter Property="Margin" Value="10,2,0,2"/>
                                         </Style>
                                     </StackPanel.Resources>
-                                    <CheckBox x:Name="ShowAlbumArtCheckBox" Content="Show Album Art" HorizontalAlignment="Left" Checked="ShowAlbumArtCheckboxChecked" Unchecked="ShowAlbumArtCheckboxUnChecked"/>
+                                    <CheckBox x:Name="ShowAlbumArtCheckBox" Content="Show Album Art" HorizontalAlignment="Left" Checked="ShowAlbumArtCheckboxChecked" Unchecked="ShowAlbumArtCheckboxUnChecked" ToolTip="If enabled, show cover art in Album and Now Playing views"/>
                                     <TextBlock Text="Throttle Image Loading"/>
-                                    <ComboBox x:Name="ThrottleComboBox"/>
+                                    <ComboBox x:Name="ThrottleComboBox" ToolTip="Limit simultaneous loading of cover art to this value, set to 0 to disable throttling"/>
                                     <TextBlock Text="Album Art Size"/>
-                                    <TextBox x:Name="AlbumArtSizeTextBox" HorizontalAlignment="Left" Width="50"/>
+                                    <TextBox x:Name="AlbumArtSizeTextBox" HorizontalAlignment="Left" Width="50" ToolTip="Width of cover art in Album and Now Playing views"/>
                                 </StackPanel>
                             </Expander>
                         </StackPanel>

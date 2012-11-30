@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Windows.Controls;
 using System.Xml.Serialization;
 using UltraSonic.Properties;
 using UltraSonic.Static;
@@ -24,7 +26,6 @@ namespace UltraSonic
             _maxSearchResults = Settings.Default.MaxSearchResults;
             _albumListMax = Settings.Default.AlbumListMax;
             _throttle = Settings.Default.Throttle;
-            _cacheDownloadLimit = Settings.Default.CacheDownloadLimit;
             _cacheDirectory = string.IsNullOrWhiteSpace(Settings.Default.CacheDirectory) ? Path.Combine(Path.Combine(_roamingPath, AppName), "Cache") : Settings.Default.CacheDirectory;
             _useDiskCache = Settings.Default.UseDiskCache;
             _nowPlayingInterval = Settings.Default.NowPlayingInterval;
@@ -38,6 +39,8 @@ namespace UltraSonic
             _saveWorkingPlaylist = Settings.Default.SaveWorkingPlaylist;
             _showAlbumArt = Settings.Default.ShowAlbumArt;
 
+            if (!Enum.TryParse(Settings.Default.DoubleClickBehavior, out _doubleClickBehavior)) _doubleClickBehavior = DoubleClickBehavior.Add;
+
             if (!string.IsNullOrWhiteSpace(ServerUrl))
             {
                 if (!Directory.Exists(_musicCacheDirectoryName))
@@ -47,13 +50,14 @@ namespace UltraSonic
                     Directory.CreateDirectory(_coverArtCacheDirectoryName);
             }
 
-            PopulateSearchResultItemComboBox();
+            PopuluateComboxBox(MaxSearchResultsComboBox, 1, 2500, _maxSearchResults);
+            PopuluateComboxBox(AlbumListMaxComboBox, 1, 500, _albumListMax);
+            PopuluateComboxBox(NowPlayingIntervalComboBox, 0, 300, _nowPlayingInterval);
+            PopuluateComboxBox(ChatMessagesIntervalComboBox, 0, 300, _chatMessagesInterval);
+            PopuluateComboxBox(ThrottleComboBox, 0, 1000, _throttle);
+
             PopulateMaxBitrateComboBox();
-            PopulateAlbumListMaxComboBox();
-            PopulateNowPlayingIntervalComboBox();
-            PopulateChatMessagesIntervalComboBox();
-            PopulateCacheDownloadLimitComboBox();
-            PopulateThrottleComboBox();
+            PopulateDoubleClickComboBox();
 
             SettingsUseProxyCheckbox.IsChecked = UseProxy;
             SettingsUsernameTextBox.Text = Username;
@@ -72,6 +76,9 @@ namespace UltraSonic
             ShowAlbumArtCheckBox.IsChecked = _showAlbumArt;
             AlbumDataGridAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
             SocalAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            AlbumDataGridEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
+            SocialEnableCoverArt.Header = _showAlbumArt ? "Disable Cover Art" : "Enable Cover Art";
+            DoubleClickComboBox.SelectedItem = _doubleClickBehavior;
 
             SetProxyEntryVisibility(UseProxy);
             SetUseDiskCacheVisibility(_useDiskCache);
@@ -97,44 +104,14 @@ namespace UltraSonic
                                   });
         }
 
-        private void PopulateSearchResultItemComboBox()
+        private void PopuluateComboxBox(ComboBox comboBox, int start, int stop, int selectedItem)
         {
             List<int> listData = new List<int>();
-            for (int i = 1; i <= 2500; i++)
+            for (int i = start; i <= stop; i++)
                 listData.Add(i);
 
-            MaxSearchResultsComboBox.ItemsSource = listData;
-            MaxSearchResultsComboBox.SelectedItem = _maxSearchResults;
-        }
-
-        private void PopulateAlbumListMaxComboBox()
-        {
-            List<int> listData = new List<int>();
-            for (int i = 1; i <= 500; i++)
-                listData.Add(i);
-
-            AlbumListMaxComboBox.ItemsSource = listData;
-            AlbumListMaxComboBox.SelectedItem = _albumListMax;
-        }
-
-        private void PopulateNowPlayingIntervalComboBox()
-        {
-            List<int> listData = new List<int>();
-            for (int i = 1; i <= 300; i++)
-                listData.Add(i);
-
-            NowPlayingIntervalComboBox.ItemsSource = listData;
-            NowPlayingIntervalComboBox.SelectedItem = _nowPlayingInterval;
-        }
-
-        private void PopulateChatMessagesIntervalComboBox()
-        {
-            List<int> listData = new List<int>();
-            for (int i = 1; i <= 300; i++)
-                listData.Add(i);
-
-            ChatMessagesIntervalComboBox.ItemsSource = listData;
-            ChatMessagesIntervalComboBox.SelectedItem = _chatMessagesInterval;
+            comboBox.ItemsSource = listData;
+            comboBox.SelectedItem = selectedItem;
         }
 
         private void PopulateMaxBitrateComboBox()
@@ -145,24 +122,12 @@ namespace UltraSonic
             MaxBitrateComboBox.SelectedItem = _maxBitrate;
         }
 
-        private void PopulateCacheDownloadLimitComboBox()
+        private void PopulateDoubleClickComboBox()
         {
-            List<int> listData = new List<int>();
-            for (int i = 0; i <= 300; i++)
-                listData.Add(i);
+            List<DoubleClickBehavior> listData = new List<DoubleClickBehavior> { DoubleClickBehavior.Add, DoubleClickBehavior.Play };
 
-            CacheDownloadLimitComboBox.ItemsSource = listData;
-            CacheDownloadLimitComboBox.SelectedItem = _cacheDownloadLimit;
-        }
-
-        private void PopulateThrottleComboBox()
-        {
-            List<int> listData = new List<int>();
-            for (int i = 1; i <= 1000; i++)
-                listData.Add(i);
-
-            ThrottleComboBox.ItemsSource = listData;
-            ThrottleComboBox.SelectedItem = _throttle;
+            DoubleClickComboBox.ItemsSource = listData;
+            DoubleClickComboBox.SelectedItem = DoubleClickBehavior.Add;
         }
 
         private void SetProxyEntryVisibility(bool isChecked)

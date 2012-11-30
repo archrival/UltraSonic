@@ -68,9 +68,6 @@
     <Setting Name="VolumeMuted" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="CacheDownloadLimit" Roaming="true" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
     <Setting Name="PlaybackFollowsCursor" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -81,13 +78,16 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AlbumArtSize" Roaming="true" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">150</Value>
+      <Value Profile="(Default)">50</Value>
     </Setting>
     <Setting Name="SaveWorkingPlaylist" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ShowAlbumArt" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DoubleClickBehavior" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Add</Value>
     </Setting>
   </Settings>
 </SettingsFile>

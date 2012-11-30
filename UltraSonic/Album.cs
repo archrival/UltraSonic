@@ -37,15 +37,25 @@ namespace UltraSonic
                 _albumItems.Clear();
 
                 var enumerable = children as IList<Child> ?? children.ToList();
-                SemaphoreSlim throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
+
+                SemaphoreSlim throttler = null;
+
+                if (_throttle > 0)
+                     throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
 
                 foreach (AlbumItem albumItem in enumerable.Select(child => new AlbumItem { AlbumArtSize = _albumArtSize, Artist = child.Artist, Name = child.Album, Child = child, Starred = (child.Starred != default(DateTime)) }))
                 {
                     _albumItems.Add(albumItem);
 
-                    if (!_showAlbumArt) continue;
+                    if (_showAlbumArt)
+                        AlbumDataGridAlbumArtColumn.Visibility = System.Windows.Visibility.Visible;
+                    else
+                    {
+                        AlbumDataGridAlbumArtColumn.Visibility = System.Windows.Visibility.Collapsed;
+                        continue;
+                    }
 
-                    throttler.WaitAsync();
+                    if (throttler != null) throttler.WaitAsync();
 
                     try
                     {
@@ -57,12 +67,7 @@ namespace UltraSonic
                                                {
                                                    await Task.Delay(1);
                                                    Image image = Image.FromFile(GetCoverArtFilename(item.Child));
-                                                   BitmapFrame bitmapFrame =
-                                                       image.ToBitmapSource()
-                                                            .Resize(
-                                                                System.Windows.Media.BitmapScalingMode.HighQuality,
-                                                                true, (int) (_albumArtSize*1.5),
-                                                                (int) (_albumArtSize*1.5));
+                                                   BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) (_albumArtSize*1.5), (int) (_albumArtSize*1.5));
                                                    image.Dispose();
                                                    bitmapFrame.Freeze();
                                                    GC.Collect();
@@ -70,7 +75,7 @@ namespace UltraSonic
                                                }
                                                finally
                                                {
-                                                   throttler.Release();
+                                                   if (throttler != null) throttler.Release();
                                                }
                                            }).ContinueWith(t => UpdateAlbumImageArt(t, item));
                     }

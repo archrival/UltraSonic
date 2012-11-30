@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using Subsonic.Rest.Api.Enums;
+﻿using Subsonic.Rest.Api.Enums;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,7 +29,7 @@ namespace UltraSonic
             AlbumItem selectedAlbum = source.CurrentItem as AlbumItem;
 
             if (selectedAlbum != null)
-                SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t));
+                SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play));
         }
 
         private void AlbumDataGridDownloadClick(object sender, RoutedEventArgs e)

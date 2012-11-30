@@ -24,9 +24,16 @@ namespace UltraSonic
             if (source == null) return;
 
             TrackItem selectedTrack = source.CurrentItem as TrackItem;
-
+            TrackItem playlistTrackItem = null;
+            
             if (selectedTrack != null)
-                AddTrackItemToPlaylist(selectedTrack);
+                playlistTrackItem = AddTrackItemToPlaylist(selectedTrack);
+
+            if (_doubleClickBehavior == DoubleClickBehavior.Play && playlistTrackItem != null)
+            {
+                PlaylistTrackGrid.SelectedItem = playlistTrackItem;
+                PlayButtonClick(null, null);
+            }
         }
 
         private void PlayTrackImageMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

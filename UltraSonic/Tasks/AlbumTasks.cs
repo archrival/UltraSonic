@@ -39,6 +39,7 @@ namespace UltraSonic
                     {
                         Dispatcher.Invoke(() => { AlbumDataGridNext.Visibility = Visibility.Collapsed; });
                     }
+
                     UpdateAlbumGrid(task.Result.Album);
                     break;
             }
