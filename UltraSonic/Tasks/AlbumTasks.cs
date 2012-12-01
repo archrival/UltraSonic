@@ -18,6 +18,7 @@ namespace UltraSonic
             {
                 case TaskStatus.RanToCompletion:
                     UpdateAlbumGrid(task.Result.Child.Where(child => child.IsDir));
+                    UpdateTrackListingGrid(task.Result.Child.Where(child => !child.IsDir));
                     break;
             }
         }
