@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using UltraSonic.Static;
@@ -22,6 +23,9 @@ namespace UltraSonic
         {
             DataGrid source = e.Source as DataGrid;
             if (source == null) return;
+            if (_working) return;
+
+            _working = true;
 
             TrackItem selectedTrack = source.CurrentItem as TrackItem;
             TrackItem playlistTrackItem = null;
@@ -31,10 +35,14 @@ namespace UltraSonic
 
             if (_doubleClickBehavior == DoubleClickBehavior.Play && playlistTrackItem != null)
             {
-                PlaylistTrackGrid.SelectedItem = playlistTrackItem;
+                if (PlaylistTrackGrid != null && _playlistTrackItems.Any())
+                    PlaylistTrackGrid.SelectedItem = playlistTrackItem;
+
                 StopMusic();
                 PlayButtonClick(null, null);
             }
+
+            _working = false;
         }
 
         private void PlayTrackImageMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

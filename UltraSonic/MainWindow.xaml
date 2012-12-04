@@ -474,7 +474,7 @@
                     </Popup>
                 </Grid>
             </TabItem>
-            <TabItem TargetUpdated="DgTargetUpdated" x:Name="SocialTab" Header="Social" GotFocus="SocialTabGotFocus">
+            <TabItem x:Name="SocialTab" Header="Social" GotFocus="SocialTabGotFocus">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="497*"/>

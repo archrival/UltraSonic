@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -348,23 +346,6 @@ namespace UltraSonic
                 if (textBox != null) _artistFilter = textBox.Text;
                 ArtistTreeView.ItemsSource = ArtistItems;
             });
-        }
-
-        private void DgTargetUpdated(object sender, DataTransferEventArgs e)
-        {
-            DataGrid dataGrid = UiHelpers.GetVisualParent<DataGrid>(sender);
-
-            if (dataGrid == null) return;
-
-            foreach (DataGridColumn column in dataGrid.Columns)
-            {
-                //if you want to size ur column as per the cell content
-                column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells);
-                //if you want to size ur column as per the column header
-                column.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
-                //if you want to size ur column as per both header and cell content
-                column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
-            }
         }
     }
 }

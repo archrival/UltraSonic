@@ -22,9 +22,12 @@ namespace UltraSonic
                 SubsonicApi.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("AlbumDataGridSelectionChanged")).ContinueWith(UpdateTrackListingGrid);
         }
 
-        private void AlbumDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void AlbumDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (SubsonicApi == null) return;
+            if (_working) return;
+
+            _working = true;
 
             DataGrid source = e.Source as DataGrid;
             if (source == null) return;
@@ -32,7 +35,9 @@ namespace UltraSonic
             AlbumItem selectedAlbum = source.CurrentItem as AlbumItem;
 
             if (selectedAlbum != null)
-                SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play));
+                await SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play));
+
+            _working = false;
         }
 
         private void AlbumDataGridDownloadClick(object sender, RoutedEventArgs e)

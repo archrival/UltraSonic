@@ -8,6 +8,10 @@ namespace UltraSonic
     {
         private void PlaylistTrackGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (_working) return;
+
+            _working = true;
+
             DataGrid dataGrid = sender as DataGrid;
             if (dataGrid == null) return;
 
@@ -21,30 +25,31 @@ namespace UltraSonic
                 _shouldCachePlaylist = true;
                 PlayTrack(playlistEntryItem);
             }
+
+            _working = false;
         }
 
-        private void PlaylistsDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
+        private async void PlaylistsDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
         {
+            if (_working) return;
+            _working = true;
+
             PlaylistItem playlistItem = PlaylistsDataGrid.SelectedItem as PlaylistItem;
 
             if (playlistItem != null)
             {
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        SubsonicApi.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
-                    });
+                    await SubsonicApi.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
                 else
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        CurrentPlaylist = playlistItem.Playlist;
-                        SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
-                    });
+                    CurrentPlaylist = playlistItem.Playlist;
+                    if (playlistItem.Playlist != null) await SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
             }
+
+            _working = false;
         }
 
         private void PlaylistTrackGridDownloadClick(object sender, RoutedEventArgs e)

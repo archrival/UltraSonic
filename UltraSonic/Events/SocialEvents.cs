@@ -35,6 +35,10 @@ namespace UltraSonic
 
         private void NowPlayingDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (_working) return;
+
+            _working = true;
+
             DataGrid source = e.Source as DataGrid;
 
             if (source == null) return;
@@ -42,7 +46,9 @@ namespace UltraSonic
             NowPlayingItem selectedTrack = source.CurrentItem as NowPlayingItem;
 
             if (selectedTrack != null)
-                Dispatcher.Invoke(() => AddTrackItemToPlaylist(selectedTrack));
+                AddTrackItemToPlaylist(selectedTrack);
+
+            _working = false;
         }
 
         private void NowPlayingRefreshClick(object sender, RoutedEventArgs e)

@@ -65,7 +65,8 @@ namespace UltraSonic
         private bool _shouldCachePlaylist;
         private bool _caching;
         private bool _cachePlaylistTracks = true;
-        private bool _movingSlider = false;
+        private bool _movingSlider;
+        private bool _working;
 
         private readonly SemaphoreSlim _cachingThrottle = new SemaphoreSlim(1);
 
@@ -325,16 +326,24 @@ namespace UltraSonic
             SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
         }
 
-        private void UpdateNowPlaying()
+        private async void UpdateNowPlaying()
         {
             if (SubsonicApi == null) return;
-            SubsonicApi.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
+            if (_working) return;
+
+            _working = true;
+            await SubsonicApi.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
+            _working = false;
         }
 
-        private void UpdateChatMessages()
+        private async void UpdateChatMessages()
         {
             if (SubsonicApi == null) return;
-            SubsonicApi.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
+            if (_working) return;
+
+            _working = true;
+            await SubsonicApi.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
+            _working = false;
         }
 
         private void UpdateLicenseInformation(License license)
