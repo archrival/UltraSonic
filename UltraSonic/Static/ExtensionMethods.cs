@@ -88,10 +88,13 @@ namespace UltraSonic.Static
         {
             RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
             int n = list.Count;
+            int arraySize = (int)Math.Ceiling((double)n/byte.MaxValue);
+
             while (n > 1)
             {
-                byte[] box = new byte[1];
-                do provider.GetBytes(box); while (!(box[0] < n*(Byte.MaxValue/n)));
+                byte[] box = new byte[arraySize];
+                do provider.GetBytes(box); 
+                while (!(box[0] < n*((Byte.MaxValue*arraySize)/n)));
                 int k = (box[0]%n);
                 n--;
                 T value = list[k];
