@@ -34,67 +34,99 @@ namespace UltraSonic
         private void UpdateAlbumGrid(IEnumerable<Child> children)
         {
             Dispatcher.Invoke(() =>
-            {
-                _albumItems.Clear();
+                                  {
+                                      ProgressIndicator.Visibility = System.Windows.Visibility.Visible;
 
-                foreach (DataGridColumn column in AlbumDataGrid.Columns)
-                {
-                    column.Width = column.MinWidth;
-                    column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
-                }
+                                      _albumItems.Clear();
 
-                var enumerable = children as IList<Child> ?? children.ToList();
+                                      foreach (DataGridColumn column in AlbumDataGrid.Columns)
+                                      {
+                                          column.Width = column.MinWidth;
+                                          column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                                      }
 
-                SemaphoreSlim throttler = null;
+                                      var enumerable = children as IList<Child> ?? children.ToList();
 
-                if (_throttle > 0)
-                     throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
+                                      SemaphoreSlim throttler = null;
 
-                foreach (AlbumItem albumItem in enumerable.Select(child => new AlbumItem { AlbumArtSize = _albumArtSize, Artist = child.Artist, Name = child.Album, Child = child, Starred = (child.Starred != default(DateTime)) }))
-                {
-                    _albumItems.Add(albumItem);
+                                      if (_throttle > 0)
+                                          throttler =
+                                              new SemaphoreSlim(enumerable.Count < _throttle
+                                                                    ? enumerable.Count
+                                                                    : _throttle);
 
-                    if (_showAlbumArt)
-                        AlbumDataGridAlbumArtColumn.Visibility = System.Windows.Visibility.Visible;
-                    else
-                    {
-                        AlbumDataGridAlbumArtColumn.Visibility = System.Windows.Visibility.Collapsed;
-                        continue;
-                    }
+                                      foreach (
+                                          AlbumItem albumItem in
+                                              enumerable.Select(
+                                                  child =>
+                                                  new AlbumItem
+                                                      {
+                                                          AlbumArtSize = _albumArtSize,
+                                                          Artist = child.Artist,
+                                                          Name = child.Album,
+                                                          Child = child,
+                                                          Starred = (child.Starred != default(DateTime))
+                                                      }))
+                                      {
+                                          _albumItems.Add(albumItem);
 
-                    if (throttler != null) throttler.WaitAsync();
+                                          if (_showAlbumArt)
+                                              AlbumDataGridAlbumArtColumn.Visibility = System.Windows.Visibility.Visible;
+                                          else
+                                          {
+                                              AlbumDataGridAlbumArtColumn.Visibility =
+                                                  System.Windows.Visibility.Collapsed;
+                                              continue;
+                                          }
 
-                    try
-                    {
-                        AlbumItem item = albumItem;
+                                          if (throttler != null) throttler.WaitAsync();
 
-                        Task.Run(async () =>
-                                           {
-                                               try
-                                               {
-                                                   await Task.Delay(1);
-                                                   Image image = Image.FromFile(GetCoverArtFilename(item.Child));
-                                                   BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) (_albumArtSize*1.5), (int) (_albumArtSize*1.5));
-                                                   image.Dispose();
-                                                   bitmapFrame.Freeze();
-                                                   GC.Collect();
-                                                   return bitmapFrame;
-                                               }
-                                               finally
-                                               {
-                                                   if (throttler != null) throttler.Release();
-                                               }
-                                           }).ContinueWith(t => UpdateAlbumImageArt(t, item));
-                    }
-                    catch
-                    {
-                        DownloadCoverArt(albumItem);
-                    }
-                }
+                                          try
+                                          {
+                                              AlbumItem item = albumItem;
 
-                UiHelpers.ScrollToTop(AlbumDataGrid);
-            });
+                                              Task.Run(async () =>
+                                                                 {
+                                                                     try
+                                                                     {
+                                                                         await Task.Delay(1);
+                                                                         Image image =
+                                                                             Image.FromFile(
+                                                                                 GetCoverArtFilename(item.Child));
+                                                                         BitmapFrame bitmapFrame = image.ToBitmapSource()
+                                                                                                        .Resize(
+                                                                                                            System
+                                                                                                                .Windows
+                                                                                                                .Media
+                                                                                                                .BitmapScalingMode
+                                                                                                                .HighQuality,
+                                                                                                            true,
+                                                                                                            (int)
+                                                                                                            (_albumArtSize*
+                                                                                                             1.5),
+                                                                                                            (int)
+                                                                                                            (_albumArtSize*
+                                                                                                             1.5));
+                                                                         image.Dispose();
+                                                                         bitmapFrame.Freeze();
+                                                                         GC.Collect();
+                                                                         return bitmapFrame;
+                                                                     }
+                                                                     finally
+                                                                     {
+                                                                         if (throttler != null) throttler.Release();
+                                                                     }
+                                                                 }).ContinueWith(t => UpdateAlbumImageArt(t, item));
+                                          }
+                                          catch
+                                          {
+                                              DownloadCoverArt(albumItem);
+                                          }
+                                      }
+
+                                      UiHelpers.ScrollToTop(AlbumDataGrid);
+                                      ProgressIndicator.Visibility = System.Windows.Visibility.Hidden;
+                                  });
         }
-
     }
 }

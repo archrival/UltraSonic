@@ -38,6 +38,7 @@ namespace UltraSonic
 
             if (playlistItem != null)
             {
+                ProgressIndicator.Visibility = System.Windows.Visibility.Visible;
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
                     await SubsonicApi.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
@@ -47,6 +48,7 @@ namespace UltraSonic
                     CurrentPlaylist = playlistItem.Playlist;
                     if (playlistItem.Playlist != null) await SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
+                ProgressIndicator.Visibility = System.Windows.Visibility.Hidden;
             }
 
             _working = false;

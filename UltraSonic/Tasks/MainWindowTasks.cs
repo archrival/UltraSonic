@@ -21,8 +21,10 @@ namespace UltraSonic
 
                         SearchStatusLabel.Content = string.Empty;
 
+                        ProgressIndicator.Visibility = Visibility.Visible;
                         UpdateTrackListingGrid(task.Result.Song);
                         UpdateAlbumGrid(task.Result.Album);
+                        ProgressIndicator.Visibility = Visibility.Hidden;
                     });
                     break;
             }

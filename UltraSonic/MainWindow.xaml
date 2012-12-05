@@ -1,4 +1,4 @@
-﻿<Window x:Class="UltraSonic.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic" Icon="Images/ultrasonic-logo.ico" Title="UltraSonic" Height="700" Width="1030" MinWidth="1030" MinHeight="700" Closed="WindowClosed">
+﻿<Window x:Class="UltraSonic.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic" xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended" Icon="Images/ultrasonic-logo.ico" Title="UltraSonic" Height="700" Width="1030" MinWidth="1030" MinHeight="700" Closed="WindowClosed">
     <Window.Resources>
         <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -178,15 +178,13 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <StatusBar VerticalAlignment="Bottom" Height="29" Grid.ColumnSpan="3">
-            <DockPanel>
-                <StatusBarItem x:Name="MusicTimeRemainingLabel" Width="100" FontSize="10"/>
-                <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
-                <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
-                <StatusBarItem x:Name="DownloadStatusLabel" Width="200" FontSize="10"/>
-                <StatusBarItem x:Name="NowPlayingStatusLabel" Width="400" FontSize="10"/>
-            </DockPanel>
-        </StatusBar>
+        <DockPanel Grid.ColumnSpan="3" Height="29" VerticalAlignment="Bottom" LastChildFill="True" HorizontalAlignment="Stretch" Background="Linen" >
+            <StatusBarItem x:Name="MusicTimeRemainingLabel" Width="100" FontSize="10"/>
+            <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
+            <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
+            <StatusBarItem x:Name="DownloadStatusLabel" Width="200" FontSize="10"/>
+            <local:CircularProgressBar x:Name="ProgressIndicator" Margin="10,0,10,0" Width="14" Height="14" DockPanel.Dock="Right" HorizontalAlignment="Right" HorizontalContentAlignment="Right"/>
+        </DockPanel>
         <TabControl Margin="10,5,10,108" Grid.ColumnSpan="3">
             <TabItem Header="Music" x:Name="MusicTab">
                 <Grid>
@@ -413,7 +411,7 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
                             <TextBlock Text="Playlists" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="PlaylistsDataGridSelectionChanged" LoadingRow="DataGridLoadingRow">
+                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseLeftButtonUp="PlaylistsDataGridSelectionChanged" LoadingRow="DataGridLoadingRow">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick"/>

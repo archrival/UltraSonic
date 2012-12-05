@@ -7,12 +7,16 @@ namespace UltraSonic
     {
         private void ExpandAllArtistsClick(object sender, RoutedEventArgs e)
         {
+            ProgressIndicator.Visibility = Visibility.Visible;
             UiHelpers.ExpandAll(ArtistTreeView, true);
+            ProgressIndicator.Visibility = Visibility.Hidden;
         }
 
         private void CollapseAllArtistsClick(object sender, RoutedEventArgs e)
         {
+            ProgressIndicator.Visibility = Visibility.Visible;
             UiHelpers.ExpandAll(ArtistTreeView, false);
+            ProgressIndicator.Visibility = Visibility.Hidden;
         }
 
         private void ArtistRefreshClick(object sender, RoutedEventArgs e)
@@ -20,7 +24,7 @@ namespace UltraSonic
             UpdateArtists();
         }
 
-        private void ArtistTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private async void ArtistTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (SubsonicApi == null) return;
 
@@ -28,8 +32,11 @@ namespace UltraSonic
             _albumListItem = null;
             AlbumDataGridNext.Visibility = Visibility.Collapsed;
 
-            if (artistItem != null && artistItem.Artist != null)
-                SubsonicApi.GetMusicDirectoryAsync(artistItem.Artist.Id, GetCancellationToken("ArtistTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid);
+            if (artistItem == null || artistItem.Artist == null) return;
+
+            ProgressIndicator.Visibility = Visibility.Visible;
+            await SubsonicApi.GetMusicDirectoryAsync(artistItem.Artist.Id, GetCancellationToken("ArtistTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid);
+            ProgressIndicator.Visibility = Visibility.Hidden;
         }
     }
 }

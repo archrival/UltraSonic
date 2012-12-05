@@ -320,10 +320,12 @@ namespace UltraSonic
                 CachePlaylistTracks();
         }
 
-        private void UpdateArtists()
+        private async void UpdateArtists()
         {
             if (SubsonicApi == null) return;
-            SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
+            ProgressIndicator.Visibility = Visibility.Visible;
+            await SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
+            ProgressIndicator.Visibility = Visibility.Hidden;
         }
 
         private async void UpdateNowPlaying()
@@ -332,7 +334,9 @@ namespace UltraSonic
             if (_working) return;
 
             _working = true;
+            ProgressIndicator.Visibility = Visibility.Visible;
             await SubsonicApi.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
+            ProgressIndicator.Visibility = Visibility.Hidden;
             _working = false;
         }
 
@@ -342,7 +346,9 @@ namespace UltraSonic
             if (_working) return;
 
             _working = true;
+            ProgressIndicator.Visibility = Visibility.Visible;
             await SubsonicApi.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
+            ProgressIndicator.Visibility = Visibility.Hidden;
             _working = false;
         }
 
@@ -383,6 +389,7 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
                                   {
+                                      ProgressIndicator.Visibility = Visibility.Visible;
                                       _trackItems.Clear();
                                       foreach (DataGridColumn column in TrackDataGrid.Columns)
                                       {
@@ -392,6 +399,7 @@ namespace UltraSonic
 
                                       PopulateTrackItemCollection(children);
                                       UiHelpers.ScrollToTop(TrackDataGrid);
+                                      ProgressIndicator.Visibility = Visibility.Hidden;
                                   });
         }
    }

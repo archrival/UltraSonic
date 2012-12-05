@@ -79,9 +79,7 @@ namespace UltraSonic
                     Dispatcher.Invoke(() =>
                     {
                         BitmapFrame coverArtImage = task.Result;
-
                         if (coverArtImage == null) return;
-
                         albumItem.Image = coverArtImage;
                     });
                     break;
