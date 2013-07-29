@@ -1,8 +1,9 @@
-﻿using Subsonic.Rest.Api;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
+using Subsonic.Client.Windows;
+using Subsonic.Common;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -42,8 +43,8 @@ namespace UltraSonic
                         UserPodcastLabel.Text = CurrentUser.PodcastRole.ToString();
                         UserShareLabel.Text = CurrentUser.ShareRole.ToString();
 
-                        if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0"))
-                            SubsonicApi.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
+                        if (SubsonicClient.SubsonicClient.ServerApiVersion >= Version.Parse("1.8.0"))
+                            SubsonicClient.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
                         else
                         {
                             AvatarImage.Visibility = Visibility.Collapsed;
@@ -55,14 +56,14 @@ namespace UltraSonic
             }
         }
         
-        private void UpdateUserAvatar(Task<Image> task)
+        private void UpdateUserAvatar(Task<IImageFormat<Image>> task)
         {
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        Image avatarImage = task.Result;
+                        Image avatarImage = task.Result.GetImage();
 
                         if (avatarImage != null)
                         {
@@ -71,7 +72,7 @@ namespace UltraSonic
                             AvatarBorder.Visibility = Visibility.Visible;
                             AvatarBorder.Height = avatarImage.Height;
                             AvatarBorder.Width = avatarImage.Width;
-                            AvatarImage.Source = task.Result.ToBitmapSource();
+                            AvatarImage.Source = avatarImage.ToBitmapSource();
                         }
                         else
                         {

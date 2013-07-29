@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Subsonic.Rest.Api;
+using Subsonic.Common;
 
-namespace UltraSonic
+namespace UltraSonic.Items
 {
     public sealed class ArtistItem : INotifyPropertyChanged
     {

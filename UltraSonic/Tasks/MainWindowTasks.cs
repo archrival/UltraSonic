@@ -1,7 +1,8 @@
-﻿using Subsonic.Rest.Api;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
+using Subsonic.Client.Windows;
+using Subsonic.Common;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -30,12 +31,12 @@ namespace UltraSonic
             }
         }
 
-        private void UpdateCoverArt(Task<Image> task, Child child)
+        private void UpdateCoverArt(Task<IImageFormat<Image>> task, Child child)
         {
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
-                    _currentAlbumArt = task.Result;
+                    _currentAlbumArt = task.Result.GetImage();
 
                     if (_currentAlbumArt != null)
                     {

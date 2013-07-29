@@ -26,7 +26,7 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(Close);
 
-            MainWindow owner = Owner as MainWindow;
+            var owner = Owner as MainWindow;
 
             if (owner != null)
                 owner.AlbumArtWindow = null;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using UltraSonic.Items;
 
 namespace UltraSonic
 {
@@ -16,7 +17,7 @@ namespace UltraSonic
 
                         Uri thisUri;
                         _streamItems.TryDequeue(out thisUri);
-                        trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
+                        trackItem.Cached = UltraSonic.MainWindow.IsTrackCached(trackItem.FileName, trackItem.Child);
                         _caching = false;
 
                         if (trackItem.Source != null)

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Subsonic.Common;
 using System.Threading.Tasks;
-using Subsonic.Rest.Api;
+using UltraSonic.Items;
 
 namespace UltraSonic
 {
@@ -20,7 +17,7 @@ namespace UltraSonic
 
                         foreach (Index index in task.Result.Index)
                         {
-                            ArtistItem artistItem = new ArtistItem { Name = index.Name };
+                            var artistItem = new ArtistItem { Name = index.Name };
 
                             foreach (Artist artist in index.Artist)
                                 artistItem.Children.Add(new ArtistItem { Name = artist.Name, Artist = artist });

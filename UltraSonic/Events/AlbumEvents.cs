@@ -1,9 +1,10 @@
-﻿using System.Linq;
-using Subsonic.Rest.Api.Enums;
+﻿using Subsonic.Common;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -12,47 +13,47 @@ namespace UltraSonic
     {
         private void AlbumDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
         {
-            Image image = e.OriginalSource as Image;
+            var image = e.OriginalSource as Image;
             if (image != null && image.Name == "PlayTrackImage") return;
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
 
-            AlbumItem albumItem = AlbumDataGrid.SelectedItem as AlbumItem;
+            var albumItem = AlbumDataGrid.SelectedItem as AlbumItem;
 
             if (albumItem != null)
-                SubsonicApi.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("AlbumDataGridSelectionChanged")).ContinueWith(UpdateTrackListingGrid);
+                SubsonicClient.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("AlbumDataGridSelectionChanged")).ContinueWith(UpdateTrackListingGrid);
         }
 
         private async void AlbumDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
             if (_working) return;
 
             _working = true;
 
-            DataGrid source = e.Source as DataGrid;
+            var source = e.Source as DataGrid;
             if (source == null) return;
 
-            AlbumItem selectedAlbum = source.CurrentItem as AlbumItem;
+            var selectedAlbum = source.CurrentItem as AlbumItem;
 
             if (selectedAlbum != null)
-                await SubsonicApi.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play));
+                await SubsonicClient.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play));
 
             _working = false;
         }
 
         private void AlbumDataGridDownloadClick(object sender, RoutedEventArgs e)
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
 
-            foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
-                Process.Start(SubsonicApi.BuildDownloadUrl(item.Child.Id));
+            //foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
+            //    Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id));
         }
 
         private void AlbumDataGridAlbumListClick(object sender, RoutedEventArgs e)
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
 
-            MenuItem source = e.Source as MenuItem;
+            var source = e.Source as MenuItem;
             if (source == null) return;
 
             AlbumListType albumListType;
@@ -60,52 +61,52 @@ namespace UltraSonic
             switch (source.Header.ToString())
             {
                 case "Newest":
-                    albumListType = AlbumListType.newest;
+                    albumListType = AlbumListType.Newest;
                     break;
                 case "Random":
-                    albumListType = AlbumListType.random;
+                    albumListType = AlbumListType.Random;
                     break;
                 case "Highest Rated":
-                    albumListType = AlbumListType.highest;
+                    albumListType = AlbumListType.Highest;
                     break;
                 case "Frequently Played":
-                    albumListType = AlbumListType.frequent;
+                    albumListType = AlbumListType.Frequent;
                     break;
                 case "Recently Played":
-                    albumListType = AlbumListType.recent;
+                    albumListType = AlbumListType.Recent;
                     break;
                 case "Starred":
-                    albumListType = AlbumListType.starred;
+                    albumListType = AlbumListType.Starred;
                     break;
                 default:
-                    albumListType = AlbumListType.newest;
+                    albumListType = AlbumListType.Newest;
                     break;
             }
 
             _albumListItem = new AlbumListItem {Type = albumListType, Current = 0};
-            SubsonicApi.GetAlbumListAsync(albumListType, _albumListMax, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListMax + 1, _albumListMax + _albumListMax));
+            SubsonicClient.GetAlbumListAsync(albumListType, _albumListMax, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListMax + 1, _albumListMax + _albumListMax));
         }
 
         private void AlbumDataGridNextClick(object sender, RoutedEventArgs e)
         {
-            if (SubsonicApi == null || _albumListItem == null) return;
+            if (SubsonicClient == null || _albumListItem == null) return;
 
             _albumListItem.Current += _albumListMax;
-            SubsonicApi.GetAlbumListAsync(_albumListItem.Type, _albumListMax, _albumListItem.Current, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax));
+            SubsonicClient.GetAlbumListAsync(_albumListItem.Type, _albumListMax, _albumListItem.Current, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax));
         }
 
         private void AlbumDataGridAddClick(object sender, RoutedEventArgs e)
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
 
             foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
-                SubsonicApi.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
+                SubsonicClient.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
         }
 
         private void PlayAlbumImageMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DataGridRow test = UiHelpers.GetVisualParent<DataGridRow>(sender);
-            AlbumItem albumItem = test.Item as AlbumItem;
+            var test = UiHelpers.GetVisualParent<DataGridRow>(sender);
+            var albumItem = test.Item as AlbumItem;
 
             if (albumItem == null) return;
 
@@ -129,7 +130,7 @@ namespace UltraSonic
                                           column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                       }
 
-                                      SubsonicApi.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true));
+                                      SubsonicClient.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true));
                                   });
         }
     }

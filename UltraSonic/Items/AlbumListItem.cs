@@ -1,7 +1,7 @@
-﻿using Subsonic.Rest.Api.Enums;
+﻿using Subsonic.Common;
 using System.ComponentModel;
 
-namespace UltraSonic
+namespace UltraSonic.Items
 {
     public sealed class AlbumListItem : INotifyPropertyChanged
     {

@@ -1,8 +1,9 @@
 ﻿using System.Windows.Controls;
-using Subsonic.Rest.Api;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Subsonic.Common;
+using UltraSonic.Items;
 
 namespace UltraSonic
 {
@@ -87,7 +88,7 @@ namespace UltraSonic
             {
                 case TaskStatus.RanToCompletion:
                     if (task.Result && isTrack)
-                        SubsonicApi.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
+                        SubsonicClient.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
 
                     break;
             } 
@@ -111,7 +112,7 @@ namespace UltraSonic
                                                                                  Playlist = null
                                                                              };
 
-                                              PlaylistItem currentStarredPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null);
+                                              PlaylistItem currentStarredPlaylist = Enumerable.FirstOrDefault<PlaylistItem>(_playlistItems, p => p.Playlist == null);
 
                                               if (currentStarredPlaylist == null)
                                                   _playlistItems.Add(newStarredPlaylist);
@@ -128,7 +129,7 @@ namespace UltraSonic
         private void CheckPlaylistSave(Task<bool> task)
         {
             if (task.Status != TaskStatus.RanToCompletion || !task.Result) return;
-            SubsonicApi.GetPlaylistsAsync(null, GetCancellationToken("CheckPlaylistSave")).ContinueWith(UpdatePlaylists);
+            SubsonicClient.GetPlaylistsAsync(null, GetCancellationToken("CheckPlaylistSave")).ContinueWith(UpdatePlaylists);
         }
     }
 }

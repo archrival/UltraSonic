@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UltraSonic.Items;
 
 namespace UltraSonic
 {
@@ -41,12 +42,12 @@ namespace UltraSonic
                 ProgressIndicator.Visibility = System.Windows.Visibility.Visible;
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
-                    await SubsonicApi.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
+                    await SubsonicClient.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
                 else
                 {
                     CurrentPlaylist = playlistItem.Playlist;
-                    if (playlistItem.Playlist != null) await SubsonicApi.GetPlaylistAsync(playlistItem.Playlist.Id, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
+                    if (playlistItem.Playlist != null) await SubsonicClient.GetPlaylistAsync(playlistItem.Playlist.Id, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
                 ProgressIndicator.Visibility = System.Windows.Visibility.Hidden;
             }
@@ -70,11 +71,11 @@ namespace UltraSonic
             {
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
-                    MessageBox.Show("Playlist 'Starred' is a dynamic playlist and cannot be deleted.", AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    MessageBox.Show("Playlist 'Starred' is a dynamic playlist and cannot be deleted.", UltraSonic.MainWindow.AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", playlistItem.Name), AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", playlistItem.Name), UltraSonic.MainWindow.AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
                     if (result == MessageBoxResult.Yes && playlistItem.Playlist != null)
                     {
@@ -82,7 +83,7 @@ namespace UltraSonic
                         if (CurrentPlaylist == playlistItem.Playlist)
                             CurrentPlaylist = null;
 
-                        SubsonicApi.DeletePlaylistAsync(playlistItem.Playlist.Id).ContinueWith(t => UpdatePlaylists());
+                        SubsonicClient.DeletePlaylistAsync(playlistItem.Playlist.Id).ContinueWith(t => UpdatePlaylists());
                     }
                 }
             }

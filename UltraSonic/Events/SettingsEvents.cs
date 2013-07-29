@@ -1,11 +1,10 @@
-﻿using System.Globalization;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Input;
-using Subsonic.Rest.Api;
 using System;
 using System.IO;
 using System.Text;
 using System.Windows;
+using Subsonic.Common;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 using Directory = System.IO.Directory;
@@ -105,19 +104,19 @@ namespace UltraSonic
                 Settings.Default.AlbumArtSize = _albumArtSize;
                 Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
                 Settings.Default.ShowAlbumArt = _showAlbumArt;
-                Settings.Default.DoubleClickBehavior = Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
-                Settings.Default.AlbumPlayButtonBehavior = Enum.GetName(typeof (AlbumPlayButtonBehavior), _albumPlayButtonBehavior);
+                Settings.Default.DoubleClickBehavior = System.Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
+                Settings.Default.AlbumPlayButtonBehavior = System.Enum.GetName(typeof (AlbumPlayButtonBehavior), _albumPlayButtonBehavior);
                 Settings.Default.CachePlaylistTracks = _cachePlaylistTracks;
 
                 Settings.Default.Save();
 
                 InitSubsonicApi();
 
-                License license = SubsonicApi.GetLicense();
+                License license = SubsonicClient.GetLicense();
 
                 if (!license.Valid)
                 {
-                    MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
+                    MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", UltraSonic.MainWindow.AppName));
                 }
                 else
                 {
@@ -131,7 +130,7 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), UltraSonic.MainWindow.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -162,12 +162,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Subsonic.Rest\Subsonic.Rest.Api.csproj">
-      <Project>{f77f0e5e-33fb-4bbf-8b2d-d1ef97ca0d72}</Project>
-      <Name>Subsonic.Rest.Api</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\media-playback-pause.png" />
     <Resource Include="Images\media-playback-start.png" />
     <Resource Include="Images\media-playback-stop.png" />
@@ -183,12 +177,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\ultrasonic-logo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\ultrasonic-logo-black.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\ultrasonic-logo-black.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\ultrasonic-logo.ico" />
@@ -245,6 +233,20 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\filter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Common\Subsonic.Client.Common.csproj">
+      <Project>{cbb112d5-2507-4453-83be-51232fb95ca6}</Project>
+      <Name>Subsonic.Client.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Windows\Subsonic.Client.Windows.csproj">
+      <Project>{3b48cbdf-812e-4d3d-afad-d09fe6786f52}</Project>
+      <Name>Subsonic.Client.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SubsonicSharp\Subsonic.Common\Subsonic.Common.csproj">
+      <Project>{a533a041-6d2d-46b3-a3e7-4cc7e64a16f3}</Project>
+      <Name>Subsonic.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

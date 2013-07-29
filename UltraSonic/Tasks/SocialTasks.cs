@@ -1,23 +1,25 @@
-﻿using Subsonic.Rest.Api;
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using Subsonic.Client.Windows;
+using Subsonic.Common;
 using UltraSonic.Static;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void UpdateNowPlayingAlbumImageArt(Task<Image> task, NowPlayingItem nowPlayingItem)
+        private void UpdateNowPlayingAlbumImageArt(Task<IImageFormat<Image>> task, NowPlayingItem nowPlayingItem)
         {
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        Image coverArtImage = task.Result;
+                        Image coverArtImage = task.Result.GetImage();
 
                         if (coverArtImage == null) return;
 
@@ -62,7 +64,7 @@ namespace UltraSonic
                                 When = (DateTime.Now - TimeSpan.FromMinutes(entry.MinutesAgo)).ToShortTimeString()
                             };
 
-                            if (_nowPlayingItems.Any(a => a.Album == nowPlayingItem.Album && a.Artist == nowPlayingItem.Artist && a.Starred == nowPlayingItem.Starred && a.Title == nowPlayingItem.Title)) continue;
+                            if (Enumerable.Any<NowPlayingItem>(_nowPlayingItems, a => a.Album == nowPlayingItem.Album && a.Artist == nowPlayingItem.Artist && a.Starred == nowPlayingItem.Starred && a.Title == nowPlayingItem.Title)) continue;
 
                             //NowPlayingStatusLabel.Content = string.Format("{0} is playing {1} by {2}", nowPlayingItem.User, nowPlayingItem.Title, nowPlayingItem.Artist);
                             _nowPlayingItems.Add(nowPlayingItem);
@@ -79,7 +81,7 @@ namespace UltraSonic
                             }
                             else
                             {
-                                SubsonicApi.GetCoverArtAsync(entry.CoverArt).ContinueWith(t => UpdateNowPlayingAlbumImageArt(t, nowPlayingItem));
+                                SubsonicClient.GetCoverArtAsync(entry.CoverArt).ContinueWith(t => UpdateNowPlayingAlbumImageArt(t, nowPlayingItem));
                             }
                         }
                     });
@@ -102,10 +104,10 @@ namespace UltraSonic
                         {
                             DateTime timeStamp = StaticMethods.DateTimeFromUnixTimestamp(chatMessage.Time).ToLocalTime();
 
-                            if (_chatMessages.Any(c => c.TimeStamp == timeStamp && c.Message == chatMessage.Message && c.User == chatMessage.Username)) continue;
+                            if (Enumerable.Any<ChatItem>(_chatMessages, c => c.TimeStamp == timeStamp && c.Message == chatMessage.Message && c.User == chatMessage.Username)) continue;
 
                             if (!SocialTab.IsSelected && _newChatNotify)
-                                SocialTab.SetValue(StyleProperty, Resources["FlashingHeader"]);
+                                SocialTab.SetValue(FrameworkElement.StyleProperty, Resources["FlashingHeader"]);
 
                             _chatMessages.Add(new ChatItem { User = chatMessage.Username, Message = chatMessage.Message, TimeStamp = timeStamp });
                         }

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -26,7 +27,7 @@ namespace UltraSonic
 
         private async void ArtistTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
 
             ArtistItem artistItem = e.NewValue as ArtistItem;
             _albumListItem = null;
@@ -35,7 +36,7 @@ namespace UltraSonic
             if (artistItem == null || artistItem.Artist == null) return;
 
             ProgressIndicator.Visibility = Visibility.Visible;
-            await SubsonicApi.GetMusicDirectoryAsync(artistItem.Artist.Id, GetCancellationToken("ArtistTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid);
+            await SubsonicClient.GetMusicDirectoryAsync(artistItem.Artist.Id, GetCancellationToken("ArtistTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid);
             ProgressIndicator.Visibility = Visibility.Hidden;
         }
     }

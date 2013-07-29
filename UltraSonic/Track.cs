@@ -1,9 +1,10 @@
-﻿using Subsonic.Rest.Api;
+﻿using Subsonic.Common;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Directory = Subsonic.Rest.Api.Directory;
+using UltraSonic.Items;
+using Directory = Subsonic.Common.Directory;
 
 namespace UltraSonic
 {
@@ -11,13 +12,13 @@ namespace UltraSonic
     {
         public static bool IsTrackCached(string fileName, Child child)
         {
-            FileInfo fi = new FileInfo(fileName);
+            var fi = new FileInfo(fileName);
             return fi.Exists && fi.Length == child.Size;
         }
 
         private IEnumerable<TrackItem> GetTrackItemCollection(IEnumerable<Child> children)
         {
-            ObservableCollection<TrackItem> trackItems = new ObservableCollection<TrackItem>();
+            var trackItems = new ObservableCollection<TrackItem>();
 
             foreach (Child child in children.Where(child => child.IsDir == false && child.Type == MediaType.Music))
                 trackItems.Add(TrackItem.Create(child, _musicCacheDirectoryName));

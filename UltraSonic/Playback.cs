@@ -1,9 +1,8 @@
-﻿using System.Windows.Controls;
-using Subsonic.Rest.Api;
-using System;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
+using Subsonic.Common;
+using UltraSonic.Items;
 
 namespace UltraSonic
 {
@@ -104,7 +103,7 @@ namespace UltraSonic
 
             if (_streamItems.All(s => s.OriginalString == trackItem.FileName) && trackItem.Cached)
             {
-                SubsonicApi.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"), true);
+                SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"), true);
                 QueueTrack(fileNameUri, trackItem);
                 UpdateAlbumArt(child);
             }
@@ -117,12 +116,12 @@ namespace UltraSonic
                 {
                     _caching = true;
                     DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
-                    SubsonicApi.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?)_maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack")).ContinueWith(t => QueueTrack(t, trackItem));
+                    SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?)_maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack")).ContinueWith(t => QueueTrack(t, trackItem));
                 }
-                else
-                {
-                    QueueTrack(new Uri(SubsonicApi.BuildStreamUrl(child.Id)), trackItem); // Works with non-SSL servers
-                }
+                //else
+                //{
+                //    QueueTrack(new Uri(SubsonicClient.BuildStreamUrl(child.Id)), trackItem); // Works with non-SSL servers
+                //}
             }
         }
 

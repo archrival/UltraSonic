@@ -1,5 +1,5 @@
-﻿using Subsonic.Rest.Api;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Subsonic.Common;
 
 namespace UltraSonic
 {

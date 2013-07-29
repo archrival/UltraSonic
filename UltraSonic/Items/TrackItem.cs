@@ -1,7 +1,7 @@
-﻿using Subsonic.Rest.Api;
-using System;
+﻿using System;
+using Subsonic.Common;
 
-namespace UltraSonic
+namespace UltraSonic.Items
 {
     public class TrackItem : ChildItem
     {

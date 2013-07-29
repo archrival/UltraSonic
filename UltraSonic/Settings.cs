@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Windows.Controls;
 using System.Xml.Serialization;
+using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 
@@ -97,7 +97,7 @@ namespace UltraSonic
                                       if (!string.IsNullOrWhiteSpace(_currentPlaylist))
                                       {
                                           ObservableCollection<TrackItem> playlistTrackItems;
-                                          XmlSerializer xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
+                                          var xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
 
                                           using (TextReader reader = new StringReader(_currentPlaylist))
                                               playlistTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackItem>;
@@ -111,7 +111,7 @@ namespace UltraSonic
 
         private void PopulateMaxBitrateComboBox()
         {
-            List<int> listData = new List<int> { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
+            var listData = new List<int> { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
 
             MaxBitrateComboBox.ItemsSource = listData;
             MaxBitrateComboBox.SelectedItem = _maxBitrate;
@@ -119,7 +119,7 @@ namespace UltraSonic
 
         private void PopulateDoubleClickComboBox()
         {
-            List<DoubleClickBehavior> listData = new List<DoubleClickBehavior> { DoubleClickBehavior.Add, DoubleClickBehavior.Play };
+            var listData = new List<DoubleClickBehavior> { DoubleClickBehavior.Add, DoubleClickBehavior.Play };
 
             DoubleClickComboBox.ItemsSource = listData;
             DoubleClickComboBox.SelectedItem = DoubleClickBehavior.Add;
@@ -127,7 +127,7 @@ namespace UltraSonic
 
         private void PopulateAlbumPlayBehaviorComboBox()
         {
-            List<AlbumPlayButtonBehavior> listData = new List<AlbumPlayButtonBehavior> { AlbumPlayButtonBehavior.Ask, AlbumPlayButtonBehavior.Play };
+            var listData = new List<AlbumPlayButtonBehavior> { AlbumPlayButtonBehavior.Ask, AlbumPlayButtonBehavior.Play };
 
             AlbumPlayButtonBehaviorComboBox.ItemsSource = listData;
             AlbumPlayButtonBehaviorComboBox.SelectedItem = AlbumPlayButtonBehavior.Ask;

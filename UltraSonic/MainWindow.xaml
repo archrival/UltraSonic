@@ -1,4 +1,6 @@
-﻿<Window x:Class="UltraSonic.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic" xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended" Icon="Images/ultrasonic-logo.ico" Title="UltraSonic" Height="700" Width="1030" MinWidth="1030" MinHeight="700" Closed="WindowClosed">
+﻿<Window x:Class="UltraSonic.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic" xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+        xmlns:items="clr-namespace:UltraSonic.Items"
+        Icon="Images/ultrasonic-logo.ico" Title="UltraSonic" Height="700" Width="1030" MinWidth="1030" MinHeight="700" Closed="WindowClosed">
     <Window.Resources>
         <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -210,7 +212,7 @@
                                 </ContextMenu>
                             </TreeView.ContextMenu>
                             <TreeView.Resources>
-                                <HierarchicalDataTemplate DataType="{x:Type local:ArtistItem}" ItemsSource="{Binding Path=Children}">
+                                <HierarchicalDataTemplate DataType="{x:Type items:ArtistItem}" ItemsSource="{Binding Path=Children}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Path=Name}"/>
                                     </StackPanel>

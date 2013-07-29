@@ -1,8 +1,9 @@
 ﻿using System.Windows.Controls;
-using Subsonic.Rest.Api;
+using Subsonic.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -11,13 +12,13 @@ namespace UltraSonic
     {
         private void UpdatePlaylists()
         {
-            if (SubsonicApi == null) return;
-            SubsonicApi.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
+            if (SubsonicClient == null) return;
+            SubsonicClient.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
         }
 
         private void UpdatePlaylists(IEnumerable<Playlist> playlists)
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
 
             Dispatcher.Invoke(() =>
             {
@@ -40,14 +41,14 @@ namespace UltraSonic
                     _playlistItems.Add(playlistItem);
                 }
 
-                if (SubsonicApi.ServerApiVersion >= Version.Parse("1.8.0")) // Get starred tracks to create dynamic Starred playlist
-                    SubsonicApi.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
+                if (SubsonicClient.SubsonicClient.ServerApiVersion >= Version.Parse("1.8.0")) // Get starred tracks to create dynamic Starred playlist
+                    SubsonicClient.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
             });
         }
 
         private TrackItem AddTrackItemToPlaylist(TrackItem trackItem)
         {
-            TrackItem playlistTrackItem = new TrackItem();
+            var playlistTrackItem = new TrackItem();
             trackItem.CopyTo(playlistTrackItem);
             playlistTrackItem.Source = trackItem;
             playlistTrackItem.Duration = TimeSpan.FromSeconds(playlistTrackItem.Child.Duration);

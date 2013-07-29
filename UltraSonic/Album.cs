@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-using Subsonic.Rest.Api;
+using Subsonic.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +26,7 @@ namespace UltraSonic
                 }
                 else
                 {
-                    SubsonicApi.GetCoverArtAsync(child.CoverArt, null, GetCancellationToken("UpdateAlbumArt")).ContinueWith(t => UpdateCoverArt(t, child));
+                    SubsonicClient.GetCoverArtAsync(child.CoverArt, null, GetCancellationToken("UpdateAlbumArt")).ContinueWith(t => UpdateCoverArt(t, child));
                 }
             });
         }

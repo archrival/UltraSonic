@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -9,7 +10,7 @@ namespace UltraSonic
     {
         private void ChangeItemStarState(ToggleButton toggleButton)
         {
-            if (SubsonicApi == null || toggleButton == null) return;
+            if (SubsonicClient == null || toggleButton == null) return;
 
             // Find parent DataGrid, if any
             DataGrid dataGrid = UiHelpers.TryFindParent<DataGrid>(toggleButton);
@@ -20,9 +21,9 @@ namespace UltraSonic
             if (childItem == null) return;
 
             if (toggleButton.IsChecked.HasValue && toggleButton.IsChecked.Value)
-                SubsonicApi.StarAsync(new List<string> { childItem.Child.Id }).ContinueWith(t => RefreshStarredPlaylist(t, !childItem.Child.IsDir));
+                SubsonicClient.StarAsync(new List<string> { childItem.Child.Id }).ContinueWith(t => RefreshStarredPlaylist(t, !childItem.Child.IsDir));
             else
-                SubsonicApi.UnStarAsync(new List<string> { childItem.Child.Id }).ContinueWith(t => RefreshStarredPlaylist(t, !childItem.Child.IsDir));
+                SubsonicClient.UnStarAsync(new List<string> { childItem.Child.Id }).ContinueWith(t => RefreshStarredPlaylist(t, !childItem.Child.IsDir));
         }
     }
 }

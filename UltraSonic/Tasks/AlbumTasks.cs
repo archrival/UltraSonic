@@ -1,18 +1,19 @@
 ﻿using System.Windows;
-using Subsonic.Rest.Api;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Subsonic.Client.Windows;
+using Subsonic.Common;
 using UltraSonic.Static;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void UpdateAlbumGrid(Task<Subsonic.Rest.Api.Directory> task)
+        private void UpdateAlbumGrid(Task<Subsonic.Common.Directory> task)
         {
             switch (task.Status)
             {
@@ -46,14 +47,14 @@ namespace UltraSonic
             }
         }
 
-        private void UpdateAlbumImageArt(Task<Image> task, AlbumItem albumItem)
+        private void UpdateAlbumImageArt(Task<IImageFormat<Image>> task, AlbumItem albumItem)
         {
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        Image coverArtImage = task.Result;
+                        Image coverArtImage = task.Result.GetImage();
 
                         if (coverArtImage == null) return;
 

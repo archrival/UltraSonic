@@ -3,7 +3,8 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows.Controls;
-using Subsonic.Rest.Api;
+using Subsonic.Client.Windows;
+using Subsonic.Common;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 using Image = System.Drawing.Image;
@@ -79,7 +81,7 @@ namespace UltraSonic
         private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
         private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
 
-        private SubsonicApi SubsonicApi { get; set; }
+        private Client SubsonicClient { get; set; }
         private string Username { get; set; }
         private string Password { get; set; }
         private string ServerUrl { get; set; }
@@ -120,9 +122,9 @@ namespace UltraSonic
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
                 {
                     InitSubsonicApi();
-                    if (SubsonicApi != null)
+                    if (SubsonicClient != null)
                     {
-                        License license = SubsonicApi.GetLicense();
+                        License license = SubsonicClient.GetLicense();
                         UpdateLicenseInformation(license);
 
                         if (!license.Valid)
@@ -195,8 +197,8 @@ namespace UltraSonic
 
                         if (!artistItems.Any()) continue;
 
-                        ArtistItem newArtistItem = new ArtistItem();
-                        ObservableCollection<ArtistItem> children = new ObservableCollection<ArtistItem>(artistItems);
+                        var newArtistItem = new ArtistItem();
+                        var children = new ObservableCollection<ArtistItem>(artistItems);
                         artistItem.CopyTo(newArtistItem);
                         newArtistItem.Children = children;
                         _filteredArtistItems.Add(newArtistItem);
@@ -220,7 +222,7 @@ namespace UltraSonic
             {
                 ServicePointManager.ServerCertificateValidationCallback += sslFailureCallback;
                 string groupName = Guid.NewGuid().ToString();
-                HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
+                var req = WebRequest.Create(url) as HttpWebRequest;
                 if (req != null)
                 {
                     req.ConnectionGroupName = groupName;
@@ -273,21 +275,21 @@ namespace UltraSonic
 
         private void InitSubsonicApi()
         {
-            Uri serverUri = new Uri(ServerUrl);
+            var serverUri = new Uri(ServerUrl);
 
             if (!ValidateCertificate(serverUri))
             {
                 MessageBox.Show("Unable to validate server certificate, this issue must be corrected before continuing.", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
-                SubsonicApi = null;
+                SubsonicClient = null;
             }
             else
             {
-                SubsonicApi = UseProxy ? new SubsonicApi(serverUri, Username, Password, ProxyPassword, ProxyUsername, ProxyPort, ProxyServer) {UserAgent = AppName} : new SubsonicApi(serverUri, Username, Password) {UserAgent = AppName};
-                SubsonicApi.Ping();
-                ServerApiLabel.Text = SubsonicApi.ServerApiVersion.ToString();
-                SubsonicApi.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
+                SubsonicClient = UseProxy ? new Client(serverUri.ToString(), Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, AppName) : new Client(serverUri.ToString(), Username, Password, AppName);
+                SubsonicClient.Ping();
+                ServerApiLabel.Text = SubsonicClient.SubsonicClient.ServerApiVersion.ToString();
+                SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
 
-                if (SubsonicApi.ServerApiVersion < Version.Parse("1.8.0"))
+                if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
                 {
                     Dispatcher.Invoke(() =>
                                           {
@@ -298,10 +300,10 @@ namespace UltraSonic
                                               UserShareLabel2.Visibility = Visibility.Hidden;
                                           });
                 }
-                else if (SubsonicApi.ServerApiVersion < Version.Parse("1.4.0"))
+                else if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
                 {
                     MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
-                    SubsonicApi = null;
+                    SubsonicClient = null;
                 }
             }
         }
@@ -322,32 +324,32 @@ namespace UltraSonic
 
         private async void UpdateArtists()
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
             ProgressIndicator.Visibility = Visibility.Visible;
-            await SubsonicApi.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
+            await SubsonicClient.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
             ProgressIndicator.Visibility = Visibility.Hidden;
         }
 
         private async void UpdateNowPlaying()
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
             if (_working) return;
 
             _working = true;
             ProgressIndicator.Visibility = Visibility.Visible;
-            await SubsonicApi.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
+            await SubsonicClient.GetNowPlayingAsync(GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateNowPlaying);
             ProgressIndicator.Visibility = Visibility.Hidden;
             _working = false;
         }
 
         private async void UpdateChatMessages()
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
             if (_working) return;
 
             _working = true;
             ProgressIndicator.Visibility = Visibility.Visible;
-            await SubsonicApi.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
+            await SubsonicClient.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
             ProgressIndicator.Visibility = Visibility.Hidden;
             _working = false;
         }
@@ -382,7 +384,7 @@ namespace UltraSonic
 
         private void DownloadCoverArt(AlbumItem albumItem)
         {
-            SubsonicApi.GetCoverArtAsync(albumItem.Child.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
+            SubsonicClient.GetCoverArtAsync(albumItem.Child.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
         }
 
         private void UpdateTrackListingGrid(IEnumerable<Child> children)

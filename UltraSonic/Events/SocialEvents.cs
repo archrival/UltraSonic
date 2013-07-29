@@ -16,7 +16,7 @@ namespace UltraSonic
 
         private void ChatListTextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (SubsonicApi == null) return;
+            if (SubsonicClient == null) return;
 
             switch (e.Key)
             {
@@ -26,7 +26,7 @@ namespace UltraSonic
 
                         if (string.IsNullOrWhiteSpace(chatMessage)) return;
 
-                        SubsonicApi.AddChatMessageAsync(chatMessage);
+                        SubsonicClient.AddChatMessageAsync(chatMessage);
                         ChatListInput.Text = string.Empty;
                     }
                     break;

@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using CheckBox = System.Windows.Controls.CheckBox;
 
 namespace UltraSonic
 {

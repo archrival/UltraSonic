@@ -1,9 +1,9 @@
-﻿using System.Runtime.CompilerServices;
-using Subsonic.Rest.Api;
+﻿using Subsonic.Common;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using UltraSonic.Annotations;
 
-namespace UltraSonic
+namespace UltraSonic.Items
 {
     public class ChildItem : INotifyPropertyChanged
     {
