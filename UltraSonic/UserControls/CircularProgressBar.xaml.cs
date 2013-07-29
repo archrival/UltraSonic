@@ -3,7 +3,6 @@
     using System;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Input;
     using System.Windows.Shapes;
     using System.Windows.Threading;
 
@@ -26,11 +25,6 @@
         /// Timer for the Animation.
         /// </summary>
         private readonly DispatcherTimer _animationTimer;
-
-        /// <summary>
-        /// Mouse Cursor.
-        /// </summary>
-        private Cursor _originalCursor;
 
         /// <summary>
         /// Initializes a new instance of the CircularProgressBar class.
