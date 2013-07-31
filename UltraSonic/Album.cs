@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.ComponentModel;
+using System.Windows.Controls;
+using System.Windows.Data;
 using Subsonic.Common;
 using System;
 using System.Collections.Generic;
@@ -39,8 +41,14 @@ namespace UltraSonic
 
                                       _albumItems.Clear();
 
+                                      ICollectionView view = CollectionViewSource.GetDefaultView(AlbumDataGrid.ItemsSource);
+                                      
+                                      if (view != null && view.SortDescriptions.Count > 0)
+                                          view.SortDescriptions.Clear();
+
                                       foreach (DataGridColumn column in AlbumDataGrid.Columns)
                                       {
+                                          column.SortDirection = null;
                                           column.Width = column.MinWidth;
                                           column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                       }
