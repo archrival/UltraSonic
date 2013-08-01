@@ -1,3 +1,3 @@
 [submodule "SubsonicSharp"]
 	path = SubsonicSharp
-	url = git://github.com/archrival/SubsonicSharp.git
+	url = https://github.com/archrival/SubsonicSharp.git

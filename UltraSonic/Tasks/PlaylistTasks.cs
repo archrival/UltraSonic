@@ -112,7 +112,7 @@ namespace UltraSonic
                                                                                  Playlist = null
                                                                              };
 
-                                              PlaylistItem currentStarredPlaylist = Enumerable.FirstOrDefault<PlaylistItem>(_playlistItems, p => p.Playlist == null);
+                                              PlaylistItem currentStarredPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null);
 
                                               if (currentStarredPlaylist == null)
                                                   _playlistItems.Add(newStarredPlaylist);

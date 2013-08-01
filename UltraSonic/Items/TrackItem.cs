@@ -5,7 +5,7 @@ namespace UltraSonic.Items
 {
     public class TrackItem : ChildItem
     {
-        public bool _cached;
+        private bool _cached;
 
         public bool Selected { get; set; }
         public int DiscNumber { get; set; }

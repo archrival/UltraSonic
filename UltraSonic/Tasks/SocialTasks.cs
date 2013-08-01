@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Subsonic.Common;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using Subsonic.Client.Windows;
-using Subsonic.Common;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -64,7 +62,7 @@ namespace UltraSonic
                                 When = (DateTime.Now - TimeSpan.FromMinutes(entry.MinutesAgo)).ToShortTimeString()
                             };
 
-                            if (Enumerable.Any<NowPlayingItem>(_nowPlayingItems, a => a.Album == nowPlayingItem.Album && a.Artist == nowPlayingItem.Artist && a.Starred == nowPlayingItem.Starred && a.Title == nowPlayingItem.Title)) continue;
+                            if (_nowPlayingItems.Any(a => a.Album == nowPlayingItem.Album && a.Artist == nowPlayingItem.Artist && a.Starred == nowPlayingItem.Starred && a.Title == nowPlayingItem.Title)) continue;
 
                             //NowPlayingStatusLabel.Content = string.Format("{0} is playing {1} by {2}", nowPlayingItem.User, nowPlayingItem.Title, nowPlayingItem.Artist);
                             _nowPlayingItems.Add(nowPlayingItem);
@@ -104,10 +102,10 @@ namespace UltraSonic
                         {
                             DateTime timeStamp = StaticMethods.DateTimeFromUnixTimestamp(chatMessage.Time).ToLocalTime();
 
-                            if (Enumerable.Any<ChatItem>(_chatMessages, c => c.TimeStamp == timeStamp && c.Message == chatMessage.Message && c.User == chatMessage.Username)) continue;
+                            if (_chatMessages.Any(c => c.TimeStamp == timeStamp && c.Message == chatMessage.Message && c.User == chatMessage.Username)) continue;
 
                             if (!SocialTab.IsSelected && _newChatNotify)
-                                SocialTab.SetValue(FrameworkElement.StyleProperty, Resources["FlashingHeader"]);
+                                SocialTab.SetValue(StyleProperty, Resources["FlashingHeader"]);
 
                             _chatMessages.Add(new ChatItem { User = chatMessage.Username, Message = chatMessage.Message, TimeStamp = timeStamp });
                         }

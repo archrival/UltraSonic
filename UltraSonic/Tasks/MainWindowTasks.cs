@@ -1,8 +1,7 @@
-﻿using System.Drawing;
+﻿using Subsonic.Common;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
-using Subsonic.Client.Windows;
-using Subsonic.Common;
 using UltraSonic.Static;
 
 namespace UltraSonic

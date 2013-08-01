@@ -3,7 +3,7 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
-        public enum DoubleClickBehavior
+        private enum DoubleClickBehavior
         {
             Play,
             Add

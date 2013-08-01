@@ -31,10 +31,10 @@
                                                                   RelativeSource={RelativeSource TemplatedParent}}">
                                     <ToggleButton.Style>
                                         <Style TargetType="ToggleButton">
-                                            <Setter Property="UIElement.Focusable" Value="false" />
-                                            <Setter Property="FrameworkElement.Width" Value="16" />
-                                            <Setter Property="FrameworkElement.Height" Value="16" />
-                                            <Setter Property="Control.Template">
+                                            <Setter Property="Focusable" Value="false" />
+                                            <Setter Property="Width" Value="16" />
+                                            <Setter Property="Height" Value="16" />
+                                            <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ToggleButton">
                                                         <Border Width="16"
@@ -74,6 +74,7 @@
                                     </ToggleButton.Style>
                                 </ToggleButton>
                                 <Border x:Name="Bd"
+                                        Grid.Row="0"
                                         Grid.Column="1"
                                         HorizontalAlignment="Stretch"
                                         Background="{TemplateBinding Panel.Background}"
@@ -221,9 +222,6 @@
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
     <Grid x:Name="MainGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
@@ -255,7 +253,9 @@
                                        HorizontalContentAlignment="Right"
                                        DockPanel.Dock="Right" />
         </DockPanel>
-        <TabControl Grid.ColumnSpan="3" Margin="10,5,10,108">
+        <TabControl Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Margin="10,5,10,108">
             <TabItem x:Name="MusicTab" Header="Music">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -267,9 +267,7 @@
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <DockPanel Grid.RowSpan="3"
-                               Grid.Column="0"
-                               Grid.ColumnSpan="1">
+                    <DockPanel Grid.RowSpan="3" Grid.Column="0">
                         <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                 BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                                 BorderThickness="1"
@@ -284,7 +282,7 @@
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch"
                                   VerticalContentAlignment="Top"
-                                  DataContext="{Binding local:MainWindow.ArtistItems}"
+                                  DataContext="{Binding ArtistItems}"
                                   DockPanel.Dock="Top"
                                   ItemsSource="{Binding}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
@@ -308,7 +306,6 @@
                         </TreeView>
                     </DockPanel>
                     <DockPanel Grid.Row="0"
-                               Grid.RowSpan="1"
                                Grid.Column="1"
                                Grid.ColumnSpan="2"
                                HorizontalAlignment="Stretch"
@@ -632,7 +629,7 @@
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <DockPanel Grid.Column="0" Grid.ColumnSpan="1">
+                    <DockPanel Grid.Column="0">
                         <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                 BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                                 BorderThickness="1"
@@ -731,7 +728,7 @@
                                                     Header="Disc"
                                                     IsReadOnly="True" />
                                 <DataGridTextColumn Binding="{Binding TrackNumber}"
-                                                    Header="Title"
+                                                    Header="Track"
                                                     IsReadOnly="True" />
                                 <DataGridTextColumn Binding="{Binding Artist}"
                                                     Header="Artist"
@@ -957,14 +954,11 @@
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <ScrollViewer Grid.Column="0"
-                                  Grid.ColumnSpan="1"
-                                  VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                     BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-                                    BorderThickness="1"
-                                    DockPanel.Dock="Top">
+                                    BorderThickness="1">
                                 <TextBlock HorizontalAlignment="Center"
                                            FontSize="12"
                                            FontWeight="Bold"
@@ -1232,14 +1226,11 @@
                             </Expander>
                         </StackPanel>
                     </ScrollViewer>
-                    <ScrollViewer Grid.Column="1"
-                                  Grid.ColumnSpan="1"
-                                  VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                     BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-                                    BorderThickness="1"
-                                    DockPanel.Dock="Top">
+                                    BorderThickness="1">
                                 <TextBlock HorizontalAlignment="Center"
                                            FontSize="12"
                                            FontWeight="Bold"
@@ -1252,8 +1243,7 @@
                             </DockPanel>
                             <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                     BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-                                    BorderThickness="1"
-                                    DockPanel.Dock="Top">
+                                    BorderThickness="1">
                                 <TextBlock HorizontalAlignment="Center"
                                            FontSize="12"
                                            FontWeight="Bold"
@@ -1286,14 +1276,11 @@
                             </DockPanel>
                         </StackPanel>
                     </ScrollViewer>
-                    <ScrollViewer Grid.Column="2"
-                                  Grid.ColumnSpan="1"
-                                  VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                     BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-                                    BorderThickness="1"
-                                    DockPanel.Dock="Top">
+                                    BorderThickness="1">
                                 <TextBlock HorizontalAlignment="Center"
                                            FontSize="12"
                                            FontWeight="Bold"
@@ -1383,8 +1370,7 @@
                             <Border x:Name="AvatarLabel"
                                     Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                     BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-                                    BorderThickness="1"
-                                    DockPanel.Dock="Top">
+                                    BorderThickness="1">
                                 <TextBlock HorizontalAlignment="Center"
                                            FontSize="12"
                                            FontWeight="Bold"
@@ -1460,6 +1446,7 @@
                        FontWeight="Bold" />
         </StackPanel>
         <Button x:Name="PreviousButton"
+                Grid.Column="0"
                 Width="32"
                 Height="32"
                 Margin="10,0,0,61"
@@ -1470,6 +1457,7 @@
             <Image Source="Images/media-skip-backward.png" />
         </Button>
         <Button x:Name="StopButton"
+                Grid.Column="0"
                 Width="32"
                 Height="32"
                 Margin="47,0,0,61"
@@ -1480,6 +1468,7 @@
             <Image Source="Images/media-playback-stop.png" />
         </Button>
         <Button x:Name="PlayButton"
+                Grid.Column="0"
                 Width="45"
                 Height="32"
                 Margin="84,0,0,61"
@@ -1490,6 +1479,7 @@
             <Image Source="Images/media-playback-start.png" />
         </Button>
         <Button x:Name="PauseButton"
+                Grid.Column="0"
                 Width="32"
                 Height="32"
                 Margin="134,0,0,61"
@@ -1500,6 +1490,7 @@
             <Image Source="Images/media-playback-pause.png" />
         </Button>
         <Button x:Name="NextButton"
+                Grid.Column="0"
                 Width="32"
                 Height="32"
                 Margin="171,0,0,61"
@@ -1592,6 +1583,7 @@
                 UseLayoutRounding="True"
                 ValueChanged="VolumeSliderValueChanged" />
         <Slider x:Name="ProgressSlider"
+                Grid.Column="0"
                 Grid.ColumnSpan="3"
                 Height="22"
                 Margin="10,0,10,34"
@@ -1600,6 +1592,7 @@
                 PreviewMouseLeftButtonDown="ProgressSliderMouseLeftButtonDown"
                 PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" />
         <MediaElement x:Name="MediaPlayer"
+                      Grid.Column="0"
                       Width="1"
                       Height="1"
                       Margin="0,0,0,0"
@@ -1640,8 +1633,7 @@
                    Height="20"
                    Margin="4,0,4,0"
                    Source="Images\filter.png" />
-            <TextBox x:Name="ArtistFilterTextBox"
-                     Width="200"
+            <TextBox Width="200"
                      Height="Auto"
                      PreviewKeyDown="ArtistFilterTextBoxKeyDown"
                      TextChanged="ArtistFilterTextBoxTextChanged"

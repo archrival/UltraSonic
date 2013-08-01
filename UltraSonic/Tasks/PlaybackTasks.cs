@@ -17,7 +17,7 @@ namespace UltraSonic
 
                         Uri thisUri;
                         _streamItems.TryDequeue(out thisUri);
-                        trackItem.Cached = UltraSonic.MainWindow.IsTrackCached(trackItem.FileName, trackItem.Child);
+                        trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
                         _caching = false;
 
                         if (trackItem.Source != null)

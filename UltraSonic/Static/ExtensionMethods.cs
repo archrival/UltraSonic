@@ -15,12 +15,12 @@ namespace UltraSonic.Static
             objectThatNotifies.PropertyChanged += (s, e) =>
                 {
                     var lambda = expression as LambdaExpression;
-                    MemberExpression memberExpression = null;
+                    MemberExpression memberExpression;
 
                     if (lambda.Body is UnaryExpression)
                     {
                         UnaryExpression unaryExpression = lambda.Body as UnaryExpression;
-                        if (unaryExpression != null) memberExpression = unaryExpression.Operand as MemberExpression;
+                        memberExpression = unaryExpression.Operand as MemberExpression;
                     }
                     else
                     {
@@ -40,13 +40,13 @@ namespace UltraSonic.Static
         {
             if (null == eventHandler) return;
             
-            LambdaExpression lambda = expression as LambdaExpression;
-            MemberExpression memberExpression = null;
+            LambdaExpression lambda = expression;
+            MemberExpression memberExpression;
 
             if (lambda.Body is UnaryExpression)
             {
                 UnaryExpression unaryExpression = lambda.Body as UnaryExpression;
-                if (unaryExpression != null) memberExpression = unaryExpression.Operand as MemberExpression;
+                memberExpression = unaryExpression.Operand as MemberExpression;
             }
             else
             {
@@ -59,9 +59,8 @@ namespace UltraSonic.Static
             var propertyInfo = memberExpression.Member as PropertyInfo;
 
             foreach (var del in eventHandler.GetInvocationList().Where(del => constantExpression != null).Where(del => propertyInfo != null).Where(del => constantExpression != null))
-            {
-                del.DynamicInvoke(new object[] { constantExpression.Value, new PropertyChangedEventArgs(propertyInfo.Name) });
-            }
+                if (constantExpression != null && propertyInfo != null)
+                    del.DynamicInvoke(new[] {constantExpression.Value, new PropertyChangedEventArgs(propertyInfo.Name)});
         }
     }
 

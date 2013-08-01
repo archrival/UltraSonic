@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Windows.Input;
-using UltraSonic.Items;
 
 namespace UltraSonic
 {
@@ -8,17 +7,17 @@ namespace UltraSonic
     {
         private void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && (MediaPlayer.Source != null || Enumerable.Any<TrackItem>(_playlistTrackItems));
+            e.CanExecute = MediaPlayer != null && (MediaPlayer.Source != null || _playlistTrackItems.Any());
         }
 
         private void PreviousCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && Enumerable.Any<TrackItem>(_playlistTrackItems) && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) > 0);
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) > 0);
         }
 
         private void NextCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && Enumerable.Any<TrackItem>(_playlistTrackItems) && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) < _playlistTrackItems.Count - 1);
+            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) < _playlistTrackItems.Count - 1);
         }
     }
 }
