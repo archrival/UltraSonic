@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic

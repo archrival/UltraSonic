@@ -104,8 +104,8 @@ namespace UltraSonic
                 Settings.Default.AlbumArtSize = _albumArtSize;
                 Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
                 Settings.Default.ShowAlbumArt = _showAlbumArt;
-                Settings.Default.DoubleClickBehavior = System.Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
-                Settings.Default.AlbumPlayButtonBehavior = System.Enum.GetName(typeof (AlbumPlayButtonBehavior), _albumPlayButtonBehavior);
+                Settings.Default.DoubleClickBehavior = Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
+                Settings.Default.AlbumPlayButtonBehavior = Enum.GetName(typeof (AlbumPlayButtonBehavior), _albumPlayButtonBehavior);
                 Settings.Default.CachePlaylistTracks = _cachePlaylistTracks;
 
                 Settings.Default.Save();
@@ -116,7 +116,7 @@ namespace UltraSonic
 
                 if (!license.Valid)
                 {
-                    MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", UltraSonic.MainWindow.AppName));
+                    MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
                 }
                 else
                 {
@@ -130,7 +130,7 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), UltraSonic.MainWindow.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

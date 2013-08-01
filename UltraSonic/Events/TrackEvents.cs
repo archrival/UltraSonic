@@ -46,7 +46,7 @@ namespace UltraSonic
             _working = false;
         }
 
-        private void PlayTrackImageMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void PlayTrackImageMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DataGridRow test = UiHelpers.GetVisualParent<DataGridRow>(sender);
             TrackItem trackItem = test.Item as TrackItem;
@@ -58,8 +58,7 @@ namespace UltraSonic
 
         private void AddTrackToPlaylistAndPlay(TrackItem trackItem)
         {
-            TrackItem playlistTrackItem = null;
-            playlistTrackItem = AddTrackItemToPlaylist(trackItem);
+            TrackItem playlistTrackItem = AddTrackItemToPlaylist(trackItem);
             PlaylistTrackGrid.SelectedItem = playlistTrackItem;
             StopMusic();
             PlayButtonClick(null, null);

@@ -1,53 +1,70 @@
-﻿<Window x:Class="UltraSonic.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:UltraSonic" xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
-        Icon="Images/ultrasonic-logo.ico" Title="UltraSonic" Height="700" Width="1030" MinWidth="1030" MinHeight="700" Closed="WindowClosed">
+﻿<Window x:Class="UltraSonic.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:UltraSonic"
+        Title="UltraSonic"
+        Width="1030"
+        Height="700"
+        MinWidth="1030"
+        MinHeight="700"
+        Closed="WindowClosed"
+        Icon="Images/ultrasonic-logo.ico">
     <Window.Resources>
-        <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="TreeViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TreeViewItem">
                         <StackPanel>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" MinWidth="19"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto" MinWidth="19" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <ToggleButton IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press" Name="Expander">
+                                <ToggleButton Name="Expander"
+                                              ClickMode="Press"
+                                              IsChecked="{Binding Path=IsExpanded,
+                                                                  RelativeSource={RelativeSource TemplatedParent}}">
                                     <ToggleButton.Style>
                                         <Style TargetType="ToggleButton">
-                                            <Setter Property="UIElement.Focusable" Value="false"/>
-                                            <Setter Property="FrameworkElement.Width" Value="16"/>
-                                            <Setter Property="FrameworkElement.Height" Value="16"/>
+                                            <Setter Property="UIElement.Focusable" Value="false" />
+                                            <Setter Property="FrameworkElement.Width" Value="16" />
+                                            <Setter Property="FrameworkElement.Height" Value="16" />
                                             <Setter Property="Control.Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ToggleButton">
-                                                        <Border Padding="5,5,5,5" Background="#00FFFFFF" Width="16" Height="16">
-                                                            <Path Fill="#00FFFFFF" Stroke="#FF989898" Name="ExpandPath">
+                                                        <Border Width="16"
+                                                                Height="16"
+                                                                Background="#00FFFFFF"
+                                                                Padding="5,5,5,5">
+                                                            <Path Name="ExpandPath"
+                                                                  Fill="#00FFFFFF"
+                                                                  Stroke="#FF989898">
                                                                 <Path.Data>
-                                                                    <PathGeometry Figures="M0,0L0,6L6,0z"/>
+                                                                    <PathGeometry Figures="M0,0L0,6L6,0z" />
                                                                 </Path.Data>
                                                                 <Path.RenderTransform>
-                                                                    <RotateTransform Angle="135" CenterX="3" CenterY="3"/>
+                                                                    <RotateTransform Angle="135" CenterX="3" CenterY="3" />
                                                                 </Path.RenderTransform>
                                                             </Path>
                                                         </Border>
                                                         <ControlTemplate.Triggers>
                                                             <Trigger Property="UIElement.IsMouseOver" Value="True">
-                                                                <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF1BBBFA"/>
-                                                                <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#00FFFFFF"/>
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF1BBBFA" />
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#00FFFFFF" />
                                                             </Trigger>
                                                             <Trigger Property="ToggleButton.IsChecked" Value="True">
                                                                 <Setter TargetName="ExpandPath" Property="UIElement.RenderTransform">
                                                                     <Setter.Value>
-                                                                        <RotateTransform Angle="180" CenterX="3" CenterY="3"/>
+                                                                        <RotateTransform Angle="180" CenterX="3" CenterY="3" />
                                                                     </Setter.Value>
                                                                 </Setter>
-                                                                <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#FF595959"/>
-                                                                <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF262626"/>
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Fill" Value="#FF595959" />
+                                                                <Setter TargetName="ExpandPath" Property="Shape.Stroke" Value="#FF262626" />
                                                             </Trigger>
                                                         </ControlTemplate.Triggers>
                                                     </ControlTemplate>
@@ -56,33 +73,49 @@
                                         </Style>
                                     </ToggleButton.Style>
                                 </ToggleButton>
-                                <Border x:Name="Bd" HorizontalAlignment="Stretch" BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Padding="{TemplateBinding Control.Padding}" Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True" Grid.Column="1">
-                                    <ContentPresenter x:Name="PART_Header" Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}" ContentSource="Header" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"/>
+                                <Border x:Name="Bd"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch"
+                                        Background="{TemplateBinding Panel.Background}"
+                                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                                        BorderThickness="{TemplateBinding Border.BorderThickness}"
+                                        Padding="{TemplateBinding Control.Padding}"
+                                        SnapsToDevicePixels="True">
+                                    <ContentPresenter x:Name="PART_Header"
+                                                      HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                                      Content="{TemplateBinding HeaderedContentControl.Header}"
+                                                      ContentSource="Header"
+                                                      ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}"
+                                                      ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}"
+                                                      ContentTemplateSelector="{TemplateBinding HeaderedItemsControl.HeaderTemplateSelector}"
+                                                      SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                 </Border>
-                                <ItemsPresenter x:Name="ItemsHost" Grid.Column="1" Grid.Row="1"/>
+                                <ItemsPresenter x:Name="ItemsHost"
+                                                Grid.Row="1"
+                                                Grid.Column="1" />
                             </Grid>
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="TreeViewItem.IsExpanded" Value="False">
-                                <Setter TargetName="ItemsHost" Property="UIElement.Visibility" Value="Collapsed"/>
+                                <Setter TargetName="ItemsHost" Property="UIElement.Visibility" Value="Collapsed" />
                             </Trigger>
                             <Trigger Property="ItemsControl.HasItems" Value="False">
-                                <Setter TargetName="Expander" Property="UIElement.Visibility" Value="Hidden"/>
+                                <Setter TargetName="Expander" Property="UIElement.Visibility" Value="Hidden" />
                             </Trigger>
                             <Trigger Property="TreeViewItem.IsSelected" Value="True">
-                                <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
                             </Trigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
-                                    <Condition Property="TreeViewItem.IsSelected" Value="True"/>
-                                    <Condition Property="Selector.IsSelectionActive" Value="False"/>
+                                    <Condition Property="TreeViewItem.IsSelected" Value="True" />
+                                    <Condition Property="Selector.IsSelectionActive" Value="False" />
                                 </MultiTrigger.Conditions>
-                                <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                                <Setter TargetName="Bd" Property="Panel.Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
                             </MultiTrigger>
                             <Trigger Property="UIElement.IsEnabled" Value="False">
-                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -94,45 +127,28 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type CheckBox}">
                         <StackPanel Orientation="Horizontal">
-                            <Image x:Name="imageCheckBox" Source="Images/star-active2.png" Width="20" Height="20"/>
-                            <ContentPresenter VerticalAlignment="Center"/>
+                            <Image x:Name="imageCheckBox"
+                                   Width="20"
+                                   Height="20"
+                                   Source="Images/star-active2.png" />
+                            <ContentPresenter VerticalAlignment="Center" />
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="False">
-                                <Setter TargetName="imageCheckBox" Property="Source" Value="Images/star-inactive.png"/>
+                                <Setter TargetName="imageCheckBox" Property="Source" Value="Images/star-inactive.png" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="FlashingHeader" TargetType="TabItem">
-            <Setter Property="TabItem.HeaderTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <!--Make The Header -->
-                        <TextBlock x:Name="header" Foreground ="Black" Text="{Binding}"/>
-                        <!--Make The Background Flash-->
-                        <DataTemplate.Triggers>
-                            <Trigger Property="Visibility" Value="Visible">
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard Storyboard.TargetName="header" AutoReverse="True" RepeatBehavior="Forever" Storyboard.TargetProperty="Foreground.Color">
-                                            <ColorAnimation To="Transparent" AutoReverse="True" Duration="0:0:.75"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                            </Trigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         <DataTemplate x:Key="ChatMessageUserCellTemplate">
-            <TextBlock FontWeight="Bold" Foreground="Black" TextAlignment="Center">
+            <TextBlock FontWeight="Bold"
+                       Foreground="Black"
+                       TextAlignment="Center">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="{}&lt;{0}&gt;">
-                        <Binding Path="User"/>
+                        <Binding Path="User" />
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
@@ -141,140 +157,270 @@
             <TextBlock Foreground="Black" TextAlignment="Center">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="{}[{0}]">
-                        <Binding Path="TimeStamp"/>
+                        <Binding Path="TimeStamp" />
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="ChatMessageCellTemplate">
-            <TextBlock FontWeight="Normal" Foreground="Black" TextAlignment="Left" Text="{Binding Path=Message}" Width="Auto"/>
+            <TextBlock Width="Auto"
+                       FontWeight="Normal"
+                       Foreground="Black"
+                       Text="{Binding Path=Message}"
+                       TextAlignment="Left" />
         </DataTemplate>
     </Window.Resources>
     <Window.CommandBindings>
-        <CommandBinding Command="MediaCommands.Play" Executed="PlayButtonClick" CanExecute="CommandCanExecute"/>
-        <CommandBinding Command="MediaCommands.Stop" Executed="StopButtonClick" CanExecute="CommandCanExecute"/>
-        <CommandBinding Command="MediaCommands.Pause" Executed="PauseButtonClick" CanExecute="CommandCanExecute"/>
-        <CommandBinding Command="MediaCommands.PreviousTrack" Executed="PreviousButtonClick" CanExecute="PreviousCanExecute"/>
-        <CommandBinding Command="MediaCommands.NextTrack" Executed="NextButtonClick" CanExecute="NextCanExecute"/>
+        <CommandBinding CanExecute="CommandCanExecute"
+                        Command="MediaCommands.Play"
+                        Executed="PlayButtonClick" />
+        <CommandBinding CanExecute="CommandCanExecute"
+                        Command="MediaCommands.Stop"
+                        Executed="StopButtonClick" />
+        <CommandBinding CanExecute="CommandCanExecute"
+                        Command="MediaCommands.Pause"
+                        Executed="PauseButtonClick" />
+        <CommandBinding CanExecute="PreviousCanExecute"
+                        Command="MediaCommands.PreviousTrack"
+                        Executed="PreviousButtonClick" />
+        <CommandBinding CanExecute="NextCanExecute"
+                        Command="MediaCommands.NextTrack"
+                        Executed="NextButtonClick" />
     </Window.CommandBindings>
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo>
             <TaskbarItemInfo.ThumbButtonInfos>
                 <ThumbButtonInfoCollection>
-                    <ThumbButtonInfo Description="Previous" DismissWhenClicked="False" Command="MediaCommands.PreviousTrack" CommandTarget="{Binding ElementName=PreviousButton}" ImageSource="Images/media-skip-backward-dark-16.png"/>
-                    <ThumbButtonInfo Description="Play" DismissWhenClicked="False" Command="MediaCommands.Play" CommandTarget="{Binding ElementName=PlayButton}" ImageSource="Images/media-playback-start-dark-16.png"/>
-                    <ThumbButtonInfo Description="Pause" DismissWhenClicked="False" Command="MediaCommands.Pause" CommandTarget="{Binding ElementName=PauseButton}" ImageSource="Images/media-playback-pause-dark-16.png"/>
-                    <ThumbButtonInfo Description="Stop" DismissWhenClicked="False" Command="MediaCommands.Stop" CommandTarget="{Binding ElementName=StopButton}" ImageSource="Images/media-playback-stop-dark-16.png"/>
-                    <ThumbButtonInfo Description="Next" DismissWhenClicked="False" Command="MediaCommands.NextTrack" CommandTarget="{Binding ElementName=NextButton}" ImageSource="Images/media-skip-forward-dark-16.png"/>
+                    <ThumbButtonInfo Command="MediaCommands.PreviousTrack"
+                                     CommandTarget="{Binding ElementName=PreviousButton}"
+                                     Description="Previous"
+                                     DismissWhenClicked="False"
+                                     ImageSource="Images/media-skip-backward-dark-16.png" />
+                    <ThumbButtonInfo Command="MediaCommands.Play"
+                                     CommandTarget="{Binding ElementName=PlayButton}"
+                                     Description="Play"
+                                     DismissWhenClicked="False"
+                                     ImageSource="Images/media-playback-start-dark-16.png" />
+                    <ThumbButtonInfo Command="MediaCommands.Pause"
+                                     CommandTarget="{Binding ElementName=PauseButton}"
+                                     Description="Pause"
+                                     DismissWhenClicked="False"
+                                     ImageSource="Images/media-playback-pause-dark-16.png" />
+                    <ThumbButtonInfo Command="MediaCommands.Stop"
+                                     CommandTarget="{Binding ElementName=StopButton}"
+                                     Description="Stop"
+                                     DismissWhenClicked="False"
+                                     ImageSource="Images/media-playback-stop-dark-16.png" />
+                    <ThumbButtonInfo Command="MediaCommands.NextTrack"
+                                     CommandTarget="{Binding ElementName=NextButton}"
+                                     Description="Next"
+                                     DismissWhenClicked="False"
+                                     ImageSource="Images/media-skip-forward-dark-16.png" />
                 </ThumbButtonInfoCollection>
             </TaskbarItemInfo.ThumbButtonInfos>
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.ColumnSpan="3" Height="29" VerticalAlignment="Bottom" LastChildFill="True" HorizontalAlignment="Stretch" Background="Linen" >
-            <StatusBarItem x:Name="MusicTimeRemainingLabel" Width="100" FontSize="10"/>
-            <StatusBarItem x:Name="MusicPlayStatusLabel" Width="100" FontSize="10"/>
-            <StatusBarItem x:Name="SearchStatusLabel" Width="100" FontSize="10"/>
-            <StatusBarItem x:Name="DownloadStatusLabel" Width="200" FontSize="10"/>
-            <local:CircularProgressBar x:Name="ProgressIndicator" Margin="10,0,10,0" Width="14" Height="14" DockPanel.Dock="Right" HorizontalAlignment="Right" HorizontalContentAlignment="Right"/>
+        <DockPanel Grid.ColumnSpan="3"
+                   Height="29"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Bottom"
+                   Background="Linen"
+                   LastChildFill="True">
+            <StatusBarItem x:Name="MusicTimeRemainingLabel"
+                           Width="100"
+                           FontSize="10" />
+            <StatusBarItem x:Name="MusicPlayStatusLabel"
+                           Width="100"
+                           FontSize="10" />
+            <StatusBarItem x:Name="SearchStatusLabel"
+                           Width="100"
+                           FontSize="10" />
+            <StatusBarItem x:Name="DownloadStatusLabel"
+                           Width="200"
+                           FontSize="10" />
+            <local:CircularProgressBar x:Name="ProgressIndicator"
+                                       Width="14"
+                                       Height="14"
+                                       Margin="10,0,10,0"
+                                       HorizontalAlignment="Right"
+                                       HorizontalContentAlignment="Right"
+                                       DockPanel.Dock="Right" />
         </DockPanel>
-        <TabControl Margin="10,5,10,108" Grid.ColumnSpan="3">
-            <TabItem Header="Music" x:Name="MusicTab">
+        <TabControl Grid.ColumnSpan="3" Margin="10,5,10,108">
+            <TabItem x:Name="MusicTab" Header="Music">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <DockPanel Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="3">
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                            <TextBlock Text="Artists" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                    <DockPanel Grid.RowSpan="3"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="1">
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Artists" />
                         </Border>
-                        <TreeView DockPanel.Dock="Top" x:Name="ArtistTreeView" ItemsSource="{Binding}" DataContext="{Binding local:MainWindow.ArtistItems}" SelectedItemChanged="ArtistTreeViewSelectedItemChanged" UseLayoutRounding="True" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <TreeView x:Name="ArtistTreeView"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  VerticalContentAlignment="Top"
+                                  DataContext="{Binding local:MainWindow.ArtistItems}"
+                                  DockPanel.Dock="Top"
+                                  ItemsSource="{Binding}"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  SelectedItemChanged="ArtistTreeViewSelectedItemChanged"
+                                  UseLayoutRounding="True">
                             <TreeView.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Refresh" Click="ArtistRefreshClick"/>
-                                    <MenuItem Header="Expand All" Click="ExpandAllArtistsClick"/>
-                                    <MenuItem Header="Collapse All" Click="CollapseAllArtistsClick"/>
+                                    <MenuItem Click="ArtistRefreshClick" Header="Refresh" />
+                                    <MenuItem Click="ExpandAllArtistsClick" Header="Expand All" />
+                                    <MenuItem Click="CollapseAllArtistsClick" Header="Collapse All" />
                                 </ContextMenu>
                             </TreeView.ContextMenu>
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type local:ArtistItem}" ItemsSource="{Binding Path=Children}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Path=Name}"/>
+                                        <TextBlock Text="{Binding Path=Name}" />
                                     </StackPanel>
                                 </HierarchicalDataTemplate>
                             </TreeView.Resources>
                         </TreeView>
                     </DockPanel>
-                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                            <TextBlock Text="Albums" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                    <DockPanel Grid.Row="0"
+                               Grid.RowSpan="1"
+                               Grid.Column="1"
+                               Grid.ColumnSpan="2"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch">
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Albums" />
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" LoadingRow="DataGridLoadingRow" ItemsSource="{Binding}" DataContext="{Binding}" x:Name="AlbumDataGrid" GridLinesVisibility="None" MouseLeftButtonUp="AlbumDataGridSelectionChanged" MouseDoubleClick="AlbumDataGridMouseDoubleClick" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <DataGrid x:Name="AlbumDataGrid"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  AutoGenerateColumns="False"
+                                  Background="White"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  CanUserResizeRows="False"
+                                  DataContext="{Binding}"
+                                  DockPanel.Dock="Top"
+                                  GridLinesVisibility="None"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  ItemsSource="{Binding}"
+                                  LoadingRow="DataGridLoadingRow"
+                                  MouseDoubleClick="AlbumDataGridMouseDoubleClick"
+                                  MouseLeftButtonUp="AlbumDataGridSelectionChanged"
+                                  RowBackground="White"
+                                  VerticalScrollBarVisibility="Auto">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Icon="" Header="Add To Playlist" Click="AlbumDataGridAddClick"/>
-                                    <MenuItem x:Name="AlbumDataGridDownload" Header="Download" Click="AlbumDataGridDownloadClick"/>
-                                    <MenuItem x:Name="AlbumDataGridEnableCoverArt" Click="AlbumDataGridEnableCoverArtClick"/>
-                                    <Separator/>
-                                    <MenuItem Header="Random" Click="AlbumDataGridAlbumListClick"/>
-                                    <MenuItem Header="Newest" Click="AlbumDataGridAlbumListClick"/>
-                                    <MenuItem Header="Highest Rated" Click="AlbumDataGridAlbumListClick"/>
-                                    <MenuItem Header="Frequently Played" Click="AlbumDataGridAlbumListClick"/>
-                                    <MenuItem Header="Recently Played" Click="AlbumDataGridAlbumListClick"/>
-                                    <MenuItem x:Name="AlbumDataGridStarred" Header="Starred" Click="AlbumDataGridAlbumListClick"/>
-                                    <MenuItem x:Name="AlbumDataGridNext" Visibility="Collapsed" Click="AlbumDataGridNextClick"/>
+                                    <MenuItem Click="AlbumDataGridAddClick"
+                                              Header="Add To Playlist"
+                                              Icon="" />
+                                    <MenuItem x:Name="AlbumDataGridDownload"
+                                              Click="AlbumDataGridDownloadClick"
+                                              Header="Download" />
+                                    <MenuItem x:Name="AlbumDataGridEnableCoverArt" Click="AlbumDataGridEnableCoverArtClick" />
+                                    <Separator />
+                                    <MenuItem Click="AlbumDataGridAlbumListClick" Header="Random" />
+                                    <MenuItem Click="AlbumDataGridAlbumListClick" Header="Newest" />
+                                    <MenuItem Click="AlbumDataGridAlbumListClick" Header="Highest Rated" />
+                                    <MenuItem Click="AlbumDataGridAlbumListClick" Header="Frequently Played" />
+                                    <MenuItem Click="AlbumDataGridAlbumListClick" Header="Recently Played" />
+                                    <MenuItem x:Name="AlbumDataGridStarred"
+                                              Click="AlbumDataGridAlbumListClick"
+                                              Header="Starred" />
+                                    <MenuItem x:Name="AlbumDataGridNext"
+                                              Click="AlbumDataGridNextClick"
+                                              Visibility="Collapsed" />
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn SortMemberPath="Starred">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="AlbumDataGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                            <CheckBox x:Name="AlbumDataGridStarredCheckbox"
+                                                      Click="StarredCheckBoxClick"
+                                                      IsChecked="{Binding Path=Starred,
+                                                                          Mode=TwoWay,
+                                                                          UpdateSourceTrigger=PropertyChanged}"
+                                                      IsThreeState="False"
+                                                      Style="{StaticResource StyleCustomCheckBox}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTemplateColumn x:Name="AlbumDataGridAlbumArtColumn">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Image Source="{Binding Image, NotifyOnTargetUpdated=True}" Height="{Binding AlbumArtSize}" Width="{Binding AlbumArtSize}"/>
+                                            <Image Width="{Binding AlbumArtSize}"
+                                                   Height="{Binding AlbumArtSize}"
+                                                   Source="{Binding Image,
+                                                                    NotifyOnTargetUpdated=True}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="Play">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Image x:Name="PlayTrackImage" Source="Images\media-playback-start.png" Width="20" Height="20"  MouseLeftButtonDown="PlayAlbumImageMouseLeftButtonDown"/>
+                                            <Image x:Name="PlayTrackImage"
+                                                   Width="20"
+                                                   Height="20"
+                                                   MouseLeftButtonDown="PlayAlbumImageMouseLeftButtonDown"
+                                                   Source="Images\media-playback-start.png" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>                                
-                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True" SortMemberPath="Artist">
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Artist"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Artist">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Artist}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Artist}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Album" IsReadOnly="True" SortMemberPath="Name">
+                                <DataGridTemplateColumn Header="Album"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Name">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Name}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Name}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -282,109 +428,183 @@
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
-                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                            <TextBlock Text="Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                    <DockPanel Grid.Row="1"
+                               Grid.RowSpan="1"
+                               Grid.Column="1"
+                               Grid.ColumnSpan="2"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch">
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Tracks" />
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding NotifyOnSourceUpdated=True}" x:Name="TrackDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MouseDoubleClick="TrackDataGridMouseDoubleClick" SelectionMode="Extended" LoadingRow="DataGridLoadingRow">
+                        <DataGrid x:Name="TrackDataGrid"
+                                  AutoGenerateColumns="False"
+                                  Background="White"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  CanUserResizeRows="False"
+                                  DockPanel.Dock="Top"
+                                  GridLinesVisibility="None"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  ItemsSource="{Binding NotifyOnSourceUpdated=True}"
+                                  LoadingRow="DataGridLoadingRow"
+                                  MouseDoubleClick="TrackDataGridMouseDoubleClick"
+                                  RowBackground="White"
+                                  SelectionMode="Extended"
+                                  VerticalScrollBarVisibility="Auto">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Add To Playlist" Click="TrackDataGridAddClick"/>
-                                    <MenuItem x:Name="TrackDataGridDownload" Header="Download" Click="TrackDataGridDownloadClick"/>
+                                    <MenuItem Click="TrackDataGridAddClick" Header="Add To Playlist" />
+                                    <MenuItem x:Name="TrackDataGridDownload"
+                                              Click="TrackDataGridDownloadClick"
+                                              Header="Download" />
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn x:Name="TrackDataGridStarred">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                            <CheckBox x:Name="StarredCheckbox"
+                                                      Click="StarredCheckBoxClick"
+                                                      IsChecked="{Binding Path=Starred,
+                                                                          Mode=TwoWay,
+                                                                          UpdateSourceTrigger=PropertyChanged}"
+                                                      IsThreeState="False"
+                                                      Style="{StaticResource StyleCustomCheckBox}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="Play">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Image x:Name="PlayTrackImage" Source="Images\media-playback-start.png" Width="20" Height="20"  MouseLeftButtonDown="PlayTrackImageMouseLeftButtonDown"/>
+                                            <Image x:Name="PlayTrackImage"
+                                                   Width="20"
+                                                   Height="20"
+                                                   MouseLeftButtonDown="PlayTrackImageMouseLeftButtonDown"
+                                                   Source="Images\media-playback-start.png" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Disc" IsReadOnly="True" SortMemberPath="DiscNumber">
+                                <DataGridTemplateColumn Header="Disc"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="DiscNumber">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding DiscNumber}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding DiscNumber}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Track" IsReadOnly="True" SortMemberPath="Track">
+                                <DataGridTemplateColumn Header="Track"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Track">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding TrackNumber}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding TrackNumber}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Artist" IsReadOnly="True" SortMemberPath="Artist">
+                                <DataGridTemplateColumn Header="Artist"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Artist">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Artist}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Artist}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Title" IsReadOnly="True" SortMemberPath="Title">
+                                <DataGridTemplateColumn Header="Title"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Title">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Title, NotifyOnTargetUpdated=True}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Title, NotifyOnTargetUpdated=True}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Album" IsReadOnly="True" SortMemberPath="Album">
+                                <DataGridTemplateColumn Header="Album"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Album">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Album}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Album}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Genre" IsReadOnly="True" SortMemberPath="Genre">
+                                <DataGridTemplateColumn Header="Genre"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Genre">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Genre}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Genre}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Year" IsReadOnly="True" SortMemberPath="Year">
+                                <DataGridTemplateColumn Header="Year"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Year">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Year}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Year}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Duration" IsReadOnly="True" SortMemberPath="Duration">
+                                <DataGridTemplateColumn Header="Duration"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Duration">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Duration}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Duration}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="BitRate" IsReadOnly="True" SortMemberPath="BitRate">
+                                <DataGridTemplateColumn Header="BitRate"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="BitRate">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding BitRate}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding BitRate}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -392,7 +612,11 @@
                                 <DataGridTemplateColumn Header="Cached" SortMemberPath="Cached">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox VerticalAlignment="Center" x:Name="CachedCheckbox" IsThreeState="False" IsChecked="{Binding Path=Cached, Mode=TwoWay}" />
+                                            <CheckBox x:Name="CachedCheckbox"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{Binding Path=Cached,
+                                                                          Mode=TwoWay}"
+                                                      IsThreeState="False" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -401,119 +625,241 @@
                     </DockPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Playlists" x:Name="PlaylistTab">
+            <TabItem x:Name="PlaylistTab" Header="Playlists">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <DockPanel Grid.Column="0" Grid.ColumnSpan="1">
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                            <TextBlock Text="Playlists" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Playlists" />
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistsDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewMouseLeftButtonUp="PlaylistsDataGridSelectionChanged" LoadingRow="DataGridLoadingRow">
+                        <DataGrid x:Name="PlaylistsDataGrid"
+                                  AutoGenerateColumns="False"
+                                  Background="White"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  CanUserResizeRows="False"
+                                  DockPanel.Dock="Top"
+                                  GridLinesVisibility="None"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  LoadingRow="DataGridLoadingRow"
+                                  PreviewMouseLeftButtonUp="PlaylistsDataGridSelectionChanged"
+                                  RowBackground="White"
+                                  VerticalScrollBarVisibility="Auto">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem x:Name="PlaylistsGridDeletePlaylist" Header="Delete Playlist" Click="PlaylistsDataGridDeletePlaylistClick"/>
-                                    <MenuItem Header="Refresh" Click="PlaylistsDataGridRefreshClick"/>
+                                    <MenuItem x:Name="PlaylistsGridDeletePlaylist"
+                                              Click="PlaylistsDataGridDeletePlaylistClick"
+                                              Header="Delete Playlist" />
+                                    <MenuItem Click="PlaylistsDataGridRefreshClick" Header="Refresh" />
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Binding="{Binding Tracks}" Header="Titles" IsReadOnly="True" Width="auto"/>
-                                <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True" Width="auto"/>
+                                <DataGridTextColumn Width="auto"
+                                                    Binding="{Binding Name}"
+                                                    Header="Name"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Width="auto"
+                                                    Binding="{Binding Tracks}"
+                                                    Header="Titles"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Width="auto"
+                                                    Binding="{Binding Duration}"
+                                                    Header="Duration"
+                                                    IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
                     <DockPanel Grid.Column="1" Grid.ColumnSpan="2">
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                            <TextBlock Text="Playlist Tracks" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Playlist Tracks" />
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" x:Name="PlaylistTrackGrid" ItemsSource="{Binding NotifyOnSourceUpdated=True}" SelectionMode="Single" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="True" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" LoadingRow="DataGridLoadingRow" MouseDoubleClick="PlaylistTrackGridMouseDoubleClick">
+                        <DataGrid x:Name="PlaylistTrackGrid"
+                                  AutoGenerateColumns="False"
+                                  Background="White"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="True"
+                                  CanUserResizeRows="False"
+                                  DockPanel.Dock="Top"
+                                  GridLinesVisibility="None"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  ItemsSource="{Binding NotifyOnSourceUpdated=True}"
+                                  LoadingRow="DataGridLoadingRow"
+                                  MouseDoubleClick="PlaylistTrackGridMouseDoubleClick"
+                                  RowBackground="White"
+                                  SelectionMode="Single"
+                                  VerticalScrollBarVisibility="Auto">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem x:Name="PlaylistTrackGridDownload" Header="Download" Click="PlaylistTrackGridDownloadClick"/>
+                                    <MenuItem x:Name="PlaylistTrackGridDownload"
+                                              Click="PlaylistTrackGridDownloadClick"
+                                              Header="Download" />
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn x:Name="PlaylistGridStarred">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="StarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                            <CheckBox x:Name="StarredCheckbox"
+                                                      Click="StarredCheckBoxClick"
+                                                      IsChecked="{Binding Path=Starred,
+                                                                          Mode=TwoWay,
+                                                                          UpdateSourceTrigger=PropertyChanged}"
+                                                      IsThreeState="False"
+                                                      Style="{StaticResource StyleCustomCheckBox}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Binding="{Binding DiscNumber}" Header="Disc" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding TrackNumber}" Header="Title" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding Artist}" Header="Artist" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding Title}" Header="Title" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding Album}" Header="Album" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding Genre}" Header="Genre" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding Year}" Header="Year" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding Duration}" Header="Duration" IsReadOnly="True"/>
-                                <DataGridTextColumn Binding="{Binding BitRate}" Header="BitRate" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding DiscNumber}"
+                                                    Header="Disc"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding TrackNumber}"
+                                                    Header="Title"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Artist}"
+                                                    Header="Artist"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Title}"
+                                                    Header="Title"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Album}"
+                                                    Header="Album"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Genre}"
+                                                    Header="Genre"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Year}"
+                                                    Header="Year"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Duration}"
+                                                    Header="Duration"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding BitRate}"
+                                                    Header="BitRate"
+                                                    IsReadOnly="True" />
                                 <DataGridTemplateColumn Header="Cached" SortMemberPath="Cached">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox x:Name="CachedCheckbox" VerticalAlignment="Center" IsThreeState="False" IsChecked="{Binding Path=Cached, Mode=TwoWay}" />
+                                            <CheckBox x:Name="CachedCheckbox"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{Binding Path=Cached,
+                                                                          Mode=TwoWay}"
+                                                      IsThreeState="False" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
-                    <!-- Drag and Drop Popup -->
-                    <Popup x:Name="PlaylistDragPopup" IsHitTestVisible="False" Placement="RelativePoint" PlacementTarget="{Binding ElementName=me}" AllowsTransparency="True">
-                        <Border BorderBrush="Black" BorderThickness="1" Background="White" Opacity="0.75">
+                    <!--  Drag and Drop Popup  -->
+                    <Popup x:Name="PlaylistDragPopup"
+                           AllowsTransparency="True"
+                           IsHitTestVisible="False"
+                           Placement="RelativePoint"
+                           PlacementTarget="{Binding ElementName=me}">
+                        <Border Background="White"
+                                BorderBrush="Black"
+                                BorderThickness="1"
+                                Opacity="0.75">
                             <StackPanel>
-                                <Image Source="/Images/view-sort.png" Width="36" Height="36"/>
+                                <Image Width="36"
+                                       Height="36"
+                                       Source="/Images/view-sort.png" />
                             </StackPanel>
                         </Border>
                     </Popup>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="SocialTab" Header="Social" GotFocus="SocialTabGotFocus">
+            <TabItem x:Name="SocialTab"
+                     GotFocus="SocialTabGotFocus"
+                     Header="Social">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="497*"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="497*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <DockPanel Grid.Column="0">
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                            <TextBlock Text="Recently Played" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Recently Played" />
                         </Border>
-                        <DataGrid DockPanel.Dock="Top" x:Name="NowPlayingDataGrid" GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" RowBackground="White" Background="White" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" MouseDoubleClick="NowPlayingDataGridMouseDoubleClick">
+                        <DataGrid x:Name="NowPlayingDataGrid"
+                                  HorizontalAlignment="Stretch"
+                                  AutoGenerateColumns="False"
+                                  Background="White"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  CanUserResizeRows="False"
+                                  DockPanel.Dock="Top"
+                                  GridLinesVisibility="None"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  MouseDoubleClick="NowPlayingDataGridMouseDoubleClick"
+                                  RowBackground="White"
+                                  VerticalScrollBarVisibility="Auto">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Refresh" Click="NowPlayingRefreshClick"/>
-                                    <MenuItem x:Name="SocialEnableCoverArt" Click="AlbumDataGridEnableCoverArtClick"/>
+                                    <MenuItem Click="NowPlayingRefreshClick" Header="Refresh" />
+                                    <MenuItem x:Name="SocialEnableCoverArt" Click="AlbumDataGridEnableCoverArtClick" />
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox Style="{StaticResource StyleCustomCheckBox}" x:Name="NowPlayingGridStarredCheckbox" IsThreeState="False" IsChecked="{Binding Path=Starred, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="StarredCheckBoxClick"/>
+                                            <CheckBox x:Name="NowPlayingGridStarredCheckbox"
+                                                      Click="StarredCheckBoxClick"
+                                                      IsChecked="{Binding Path=Starred,
+                                                                          Mode=TwoWay,
+                                                                          UpdateSourceTrigger=PropertyChanged}"
+                                                      IsThreeState="False"
+                                                      Style="{StaticResource StyleCustomCheckBox}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTemplateColumn x:Name="SocalAlbumArtColumn">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Image Source="{Binding Image, NotifyOnTargetUpdated=True}" Height="{Binding AlbumArtSize}" Width="{Binding AlbumArtSize}"/>
+                                            <Image Width="{Binding AlbumArtSize}"
+                                                   Height="{Binding AlbumArtSize}"
+                                                   Source="{Binding Image,
+                                                                    NotifyOnTargetUpdated=True}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="User" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding User}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding User}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -521,8 +867,10 @@
                                 <DataGridTemplateColumn Header="Artist" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Artist}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Artist}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -530,8 +878,11 @@
                                 <DataGridTemplateColumn Header="Title" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Title}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Title}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -539,17 +890,23 @@
                                 <DataGridTemplateColumn Header="Album" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding Album}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Album}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="When" IsReadOnly="True" >
+                                <DataGridTemplateColumn Header="When" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0,4,0">
-                                                <TextBlock Text="{Binding When}"/>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding When}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -558,26 +915,35 @@
                         </DataGrid>
                     </DockPanel>
                     <DockPanel Grid.Column="1">
-                        <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                            <TextBlock Text="Chat" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Chat" />
                         </Border>
-                        <TextBox DockPanel.Dock="Top" x:Name="ChatListInput" KeyDown="ChatListTextBoxKeyDown"/>
-                        <ListView DockPanel.Dock="Top" x:Name="ChatListView">
+                        <TextBox x:Name="ChatListInput"
+                                 DockPanel.Dock="Top"
+                                 KeyDown="ChatListTextBoxKeyDown" />
+                        <ListView x:Name="ChatListView" DockPanel.Dock="Top">
                             <ListView.Resources>
                                 <Style TargetType="{x:Type GridViewColumnHeader}">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Setter Property="Visibility" Value="Collapsed" />
                                 </Style>
                             </ListView.Resources>
                             <ListView.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Refresh" Click="ChatListRefreshClick"/>
+                                    <MenuItem Click="ChatListRefreshClick" Header="Refresh" />
                                 </ContextMenu>
                             </ListView.ContextMenu>
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageTimeStampCellTemplate}"/>
-                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageUserCellTemplate}"/>
-                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageCellTemplate}"/>
+                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageTimeStampCellTemplate}" />
+                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageUserCellTemplate}" />
+                                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource ChatMessageCellTemplate}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -587,339 +953,709 @@
             <TabItem x:Name="SettingsTab" Header="Settings">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0" Grid.ColumnSpan="1">
+                    <ScrollViewer Grid.Column="0"
+                                  Grid.ColumnSpan="1"
+                                  VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                                <TextBlock Text="Settings / Preferences" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                    BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                    BorderThickness="1"
+                                    DockPanel.Dock="Top">
+                                <TextBlock HorizontalAlignment="Center"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                           Text="Settings / Preferences" />
                             </Border>
-                            <Expander x:Name="ServerSettingsExpander" Header="Server Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander x:Name="ServerSettingsExpander"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Header="Server Settings">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type PasswordBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <TextBlock Text="Server Address" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsServerAddressTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap" ToolTip="Enter Subsonic server address URL"/>
-                                    <TextBlock Text="Username" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsUsernameTextBox" HorizontalAlignment="Stretch" TextWrapping="NoWrap" ToolTip="Subsonic Username, this is case sensitive"/>
-                                    <TextBlock Text="Password" HorizontalAlignment="Left" Width="Auto"/>
-                                    <PasswordBox x:Name="SettingsPasswordPasswordBox" HorizontalAlignment="Stretch" ToolTip="Subsonic Password"/>
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Server Address" />
+                                    <TextBox x:Name="SettingsServerAddressTextBox"
+                                             HorizontalAlignment="Stretch"
+                                             TextWrapping="NoWrap"
+                                             ToolTip="Enter Subsonic server address URL" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Username" />
+                                    <TextBox x:Name="SettingsUsernameTextBox"
+                                             HorizontalAlignment="Stretch"
+                                             TextWrapping="NoWrap"
+                                             ToolTip="Subsonic Username, this is case sensitive" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Password" />
+                                    <PasswordBox x:Name="SettingsPasswordPasswordBox"
+                                                 HorizontalAlignment="Stretch"
+                                                 ToolTip="Subsonic Password" />
                                 </StackPanel>
                             </Expander>
-                            <Expander Header="Proxy Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Header="Proxy Settings">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type PasswordBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type CheckBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <CheckBox x:Name="SettingsUseProxyCheckbox" Content="Use Proxy" HorizontalAlignment="Left" Width="Auto" UseLayoutRounding="True" ClickMode="Press" Checked="SettingsUseProxyCheckboxChecked" Unchecked="SettingsUseProxyCheckboxUnChecked" ToolTip="If enabled, use proxy configuration entered for communication with Subsonic"/>
-                                    <TextBlock Text="Proxy Address" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerAddressTextBox" TextWrapping="NoWrap" Width="Auto" ToolTip="Proxy IP or FQDN"/>
-                                    <TextBlock Text="Proxy Port" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerPortTextBox" PreviewTextInput="TextBoxPreviewTextInput" TextWrapping="NoWrap" HorizontalAlignment="Left" Width="50" ToolTip="Proxy Port"/>
-                                    <TextBlock Text="Proxy Username" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="SettingsProxyServerUsernameTextBox" TextWrapping="NoWrap" Width="Auto" ToolTip="Proxy Username"/>
-                                    <TextBlock Text="Proxy Password" HorizontalAlignment="Left" Width="Auto"/>
-                                    <PasswordBox x:Name="SettingsProxyServerPasswordTextBox" Width="Auto" ToolTip="Proxy Password"/>
+                                    <CheckBox x:Name="SettingsUseProxyCheckbox"
+                                              Width="Auto"
+                                              HorizontalAlignment="Left"
+                                              Checked="SettingsUseProxyCheckboxChecked"
+                                              ClickMode="Press"
+                                              Content="Use Proxy"
+                                              ToolTip="If enabled, use proxy configuration entered for communication with Subsonic"
+                                              Unchecked="SettingsUseProxyCheckboxUnChecked"
+                                              UseLayoutRounding="True" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Proxy Address" />
+                                    <TextBox x:Name="SettingsProxyServerAddressTextBox"
+                                             Width="Auto"
+                                             TextWrapping="NoWrap"
+                                             ToolTip="Proxy IP or FQDN" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Proxy Port" />
+                                    <TextBox x:Name="SettingsProxyServerPortTextBox"
+                                             Width="50"
+                                             HorizontalAlignment="Left"
+                                             PreviewTextInput="TextBoxPreviewTextInput"
+                                             TextWrapping="NoWrap"
+                                             ToolTip="Proxy Port" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Proxy Username" />
+                                    <TextBox x:Name="SettingsProxyServerUsernameTextBox"
+                                             Width="Auto"
+                                             TextWrapping="NoWrap"
+                                             ToolTip="Proxy Username" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Proxy Password" />
+                                    <PasswordBox x:Name="SettingsProxyServerPasswordTextBox"
+                                                 Width="Auto"
+                                                 ToolTip="Proxy Password" />
                                 </StackPanel>
                             </Expander>
-                            <Expander Header="Social Settings" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Header="Social Settings">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type TextBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <TextBlock Text="Now Playing Interval" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="NowPlayingIntervalTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50"  ToolTip="Polling cycle for Now Playing entries, set to 0 to disable"/>
-                                    <TextBlock Text="Chat Messages Interval" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="ChatMessagesIntervalTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Polling cycle for Chat entries, set to 0 to disable"/>
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Now Playing Interval" />
+                                    <TextBox x:Name="NowPlayingIntervalTextBox"
+                                             Width="50"
+                                             HorizontalAlignment="Left"
+                                             PreviewTextInput="TextBoxPreviewTextInput"
+                                             ToolTip="Polling cycle for Now Playing entries, set to 0 to disable" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Chat Messages Interval" />
+                                    <TextBox x:Name="ChatMessagesIntervalTextBox"
+                                             Width="50"
+                                             HorizontalAlignment="Left"
+                                             PreviewTextInput="TextBoxPreviewTextInput"
+                                             ToolTip="Polling cycle for Chat entries, set to 0 to disable" />
                                 </StackPanel>
                             </Expander>
-                            <Expander Header="Playback Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Header="Playback Preferences">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type ComboBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
-                                            <Setter Property="Width" Value="50"/>
-                                            <Setter Property="Height" Value="25"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
+                                            <Setter Property="Width" Value="50" />
+                                            <Setter Property="Height" Value="25" />
+                                            <Setter Property="HorizontalAlignment" Value="Left" />
                                         </Style>
                                         <Style TargetType="{x:Type CheckBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <CheckBox x:Name="PlaybackFollowsCursorCheckBox" Content="Playback Follows Cursor" HorizontalAlignment="Left" ToolTip="If enabled, the currently playing track will be selected in the Playlist"/>
-                                    <CheckBox x:Name="SaveWorkingPlaylistCheckBox" Content="Save Working Playlist" HorizontalAlignment="Left" ToolTip="If enabled, the current playlist will be restored after the application is closed and re-opened"/>
-                                    <CheckBox x:Name="CachePlaylistTracksCheckBox" Content="Cache Playlist Tracks" HorizontalAlignment="Left" ToolTip="If enabled, any uncached tracks in the playlist will be cached if the application is in a playing state"/>
-                                    <CheckBox x:Name="UseDiskCacheCheckBox" Content="Use Disk Cache" HorizontalAlignment="Left" Checked="SettingsUseDiskCacheCheckboxChecked" Unchecked="SettingsUseDiskCacheCheckboxUnChecked" ToolTip="If enabled, save cover art and music to disk for offline playback"/>
-                                    <TextBlock Text="Cache Directory" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="CacheDirectoryTextBox" Width="Auto" ToolTip="Store cover art and music to this location. A subdirectory will be created per server URL"/>
-                                    <TextBlock Text="Max Bitrate" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="MaxBitrateComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Any songs higher than this bitrate will be transcoded to this bitrate at stream time, set to 0 to disable"/>
-                                    <TextBlock Text="Double Click Behavior" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="DoubleClickComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Behavior when doubling clicking on a track in the Track view. Play will add the track to the end of the playlist and begin playing. Add will add the track to the end of the playlist."/>
-                                    <TextBlock Text="Album Play Button Behavior" HorizontalAlignment="Left" Width="Auto"/>
-                                    <ComboBox x:Name="AlbumPlayButtonBehaviorComboBox" HorizontalAlignment="Left" Width="75" ToolTip="Behavior when clicking play on an album in the Album view. Play will clear the playlist and begin playing the album. Ask will ask to save any current playlist before clearing the playlist."/>
+                                    <CheckBox x:Name="PlaybackFollowsCursorCheckBox"
+                                              HorizontalAlignment="Left"
+                                              Content="Playback Follows Cursor"
+                                              ToolTip="If enabled, the currently playing track will be selected in the Playlist" />
+                                    <CheckBox x:Name="SaveWorkingPlaylistCheckBox"
+                                              HorizontalAlignment="Left"
+                                              Content="Save Working Playlist"
+                                              ToolTip="If enabled, the current playlist will be restored after the application is closed and re-opened" />
+                                    <CheckBox x:Name="CachePlaylistTracksCheckBox"
+                                              HorizontalAlignment="Left"
+                                              Content="Cache Playlist Tracks"
+                                              ToolTip="If enabled, any uncached tracks in the playlist will be cached if the application is in a playing state" />
+                                    <CheckBox x:Name="UseDiskCacheCheckBox"
+                                              HorizontalAlignment="Left"
+                                              Checked="SettingsUseDiskCacheCheckboxChecked"
+                                              Content="Use Disk Cache"
+                                              ToolTip="If enabled, save cover art and music to disk for offline playback"
+                                              Unchecked="SettingsUseDiskCacheCheckboxUnChecked" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Cache Directory" />
+                                    <TextBox x:Name="CacheDirectoryTextBox"
+                                             Width="Auto"
+                                             ToolTip="Store cover art and music to this location. A subdirectory will be created per server URL" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Max Bitrate" />
+                                    <ComboBox x:Name="MaxBitrateComboBox"
+                                              Width="75"
+                                              HorizontalAlignment="Left"
+                                              ToolTip="Any songs higher than this bitrate will be transcoded to this bitrate at stream time, set to 0 to disable" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Double Click Behavior" />
+                                    <ComboBox x:Name="DoubleClickComboBox"
+                                              Width="75"
+                                              HorizontalAlignment="Left"
+                                              ToolTip="Behavior when doubling clicking on a track in the Track view. Play will add the track to the end of the playlist and begin playing. Add will add the track to the end of the playlist." />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Album Play Button Behavior" />
+                                    <ComboBox x:Name="AlbumPlayButtonBehaviorComboBox"
+                                              Width="75"
+                                              HorizontalAlignment="Left"
+                                              ToolTip="Behavior when clicking play on an album in the Album view. Play will clear the playlist and begin playing the album. Ask will ask to save any current playlist before clearing the playlist." />
                                 </StackPanel>
                             </Expander>
-                            <Expander Header="Search Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Header="Search Preferences">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type TextBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <TextBlock Text="Album List Max" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="AlbumListMaxTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Maximum number of albums to be returned when viewing album lists"/>
-                                    <TextBlock Text="Max Search Results" HorizontalAlignment="Left" Width="Auto"/>
-                                    <TextBox x:Name="MaxSearchResultsTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Maximum number of albums/tracks to be returned when searching"/>
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Album List Max" />
+                                    <TextBox x:Name="AlbumListMaxTextBox"
+                                             Width="50"
+                                             HorizontalAlignment="Left"
+                                             PreviewTextInput="TextBoxPreviewTextInput"
+                                             ToolTip="Maximum number of albums to be returned when viewing album lists" />
+                                    <TextBlock Width="Auto"
+                                               HorizontalAlignment="Left"
+                                               Text="Max Search Results" />
+                                    <TextBox x:Name="MaxSearchResultsTextBox"
+                                             Width="50"
+                                             HorizontalAlignment="Left"
+                                             PreviewTextInput="TextBoxPreviewTextInput"
+                                             ToolTip="Maximum number of albums/tracks to be returned when searching" />
                                 </StackPanel>
                             </Expander>
-                            <Expander Header="Interface Preferences" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Header="Interface Preferences">
                                 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                         <Style TargetType="{x:Type CheckBox}">
-                                            <Setter Property="Margin" Value="10,2,0,2"/>
+                                            <Setter Property="Margin" Value="10,2,0,2" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <CheckBox x:Name="ShowAlbumArtCheckBox" Content="Show Album Art" HorizontalAlignment="Left" Checked="ShowAlbumArtCheckboxChecked" Unchecked="ShowAlbumArtCheckboxUnChecked" ToolTip="If enabled, show cover art in Album and Now Playing views"/>
-                                    <TextBlock Text="Throttle Image Loading"/>
-                                    <TextBox x:Name="ThrottleTextBox" Width="50" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" ToolTip="Limit simultaneous loading of cover art to this value, set to 0 to disable throttling"/>
-                                    <TextBlock Text="Album Art Size"/>
-                                    <TextBox x:Name="AlbumArtSizeTextBox" PreviewTextInput="TextBoxPreviewTextInput" HorizontalAlignment="Left" Width="50" ToolTip="Width of cover art in Album and Now Playing views"/>
+                                    <CheckBox x:Name="ShowAlbumArtCheckBox"
+                                              HorizontalAlignment="Left"
+                                              Checked="ShowAlbumArtCheckboxChecked"
+                                              Content="Show Album Art"
+                                              ToolTip="If enabled, show cover art in Album and Now Playing views"
+                                              Unchecked="ShowAlbumArtCheckboxUnChecked" />
+                                    <TextBlock Text="Throttle Image Loading" />
+                                    <TextBox x:Name="ThrottleTextBox"
+                                             Width="50"
+                                             HorizontalAlignment="Left"
+                                             PreviewTextInput="TextBoxPreviewTextInput"
+                                             ToolTip="Limit simultaneous loading of cover art to this value, set to 0 to disable throttling" />
+                                    <TextBlock Text="Album Art Size" />
+                                    <TextBox x:Name="AlbumArtSizeTextBox"
+                                             Width="50"
+                                             HorizontalAlignment="Left"
+                                             PreviewTextInput="TextBoxPreviewTextInput"
+                                             ToolTip="Width of cover art in Album and Now Playing views" />
                                 </StackPanel>
                             </Expander>
                         </StackPanel>
                     </ScrollViewer>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" Grid.ColumnSpan="1">
+                    <ScrollViewer Grid.Column="1"
+                                  Grid.ColumnSpan="1"
+                                  VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                                <TextBlock Text="Server Information" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                    BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                    BorderThickness="1"
+                                    DockPanel.Dock="Top">
+                                <TextBlock HorizontalAlignment="Center"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                           Text="Server Information" />
                             </Border>
                             <DockPanel>
-                                <TextBlock Text="REST API:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="ServerApiLabel" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="REST API:" />
+                                <TextBlock x:Name="ServerApiLabel" Margin="0,2,10,2" />
                             </DockPanel>
-                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                                <TextBlock Text="License Information" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                    BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                    BorderThickness="1"
+                                    DockPanel.Dock="Top">
+                                <TextBlock HorizontalAlignment="Center"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                           Text="License Information" />
                             </Border>
                             <DockPanel>
-                                <TextBlock Text="Email:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="LicenseEmailLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Email:" />
+                                <TextBlock x:Name="LicenseEmailLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Date:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="LicenseDateLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Date:" />
+                                <TextBlock x:Name="LicenseDateLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Key:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="LicenseKeyLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Key:" />
+                                <TextBlock x:Name="LicenseKeyLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Valid:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="LicenseValidLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Valid:" />
+                                <TextBlock x:Name="LicenseValidLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                         </StackPanel>
                     </ScrollViewer>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="2" Grid.ColumnSpan="1">
+                    <ScrollViewer Grid.Column="2"
+                                  Grid.ColumnSpan="1"
+                                  VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                                <TextBlock Text="User Information" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                    BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                    BorderThickness="1"
+                                    DockPanel.Dock="Top">
+                                <TextBlock HorizontalAlignment="Center"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                           Text="User Information" />
                             </Border>
                             <DockPanel>
-                                <TextBlock Text="Email:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserEmailLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Email:" />
+                                <TextBlock x:Name="UserEmailLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Scrobble:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserScrobblingLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Scrobble:" />
+                                <TextBlock x:Name="UserScrobblingLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Admin:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserAdminLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Admin:" />
+                                <TextBlock x:Name="UserAdminLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Settings:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserSettingsLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Settings:" />
+                                <TextBlock x:Name="UserSettingsLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Stream:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserStreamLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Stream:" />
+                                <TextBlock x:Name="UserStreamLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Jukebox:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserJukeboxLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Jukebox:" />
+                                <TextBlock x:Name="UserJukeboxLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Download:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserDownloadLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Download:" />
+                                <TextBlock x:Name="UserDownloadLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Upload:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserUploadLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Upload:" />
+                                <TextBlock x:Name="UserUploadLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Playlist:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserPlaylistLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Playlist:" />
+                                <TextBlock x:Name="UserPlaylistLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Cover Art:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserCoverArtLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Cover Art:" />
+                                <TextBlock x:Name="UserCoverArtLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Comment:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserCommentLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Comment:" />
+                                <TextBlock x:Name="UserCommentLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock Text="Podcast:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserPodcastLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock Margin="10,2,10,2" Text="Podcast:" />
+                                <TextBlock x:Name="UserPodcastLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
                             <DockPanel>
-                                <TextBlock x:Name="UserShareLabel2" Text="Share:" Margin="10,2,10,2"/>
-                                <TextBlock x:Name="UserShareLabel" Text="" Margin="0,2,10,2"/>
+                                <TextBlock x:Name="UserShareLabel2"
+                                           Margin="10,2,10,2"
+                                           Text="Share:" />
+                                <TextBlock x:Name="UserShareLabel"
+                                           Margin="0,2,10,2"
+                                           Text="" />
                             </DockPanel>
-                            <Border x:Name="AvatarLabel" DockPanel.Dock="Top" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" BorderThickness="1">
-                                <TextBlock Text="User Avatar" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" HorizontalAlignment="Center"/>
+                            <Border x:Name="AvatarLabel"
+                                    Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                    BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                    BorderThickness="1"
+                                    DockPanel.Dock="Top">
+                                <TextBlock HorizontalAlignment="Center"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                           Text="User Avatar" />
                             </Border>
-                            <Border x:Name="AvatarBorder" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="48" Width="48" Margin="10,10,10,10">
-                                <Image x:Name="AvatarImage" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+                            <Border x:Name="AvatarBorder"
+                                    Width="48"
+                                    Height="48"
+                                    Margin="10,10,10,10"
+                                    HorizontalAlignment="Left"
+                                    BorderBrush="Black"
+                                    BorderThickness="1">
+                                <Image x:Name="AvatarImage"
+                                       AllowDrop="False"
+                                       ScrollViewer.VerticalScrollBarVisibility="Disabled" />
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
-                    <DockPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="2">
+                    <DockPanel Grid.Column="2"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Bottom">
                         <DockPanel.Resources>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Margin" Value="2,0,2,0"/>
+                                <Setter Property="Margin" Value="2,0,2,0" />
                             </Style>
                         </DockPanel.Resources>
-                        <Button Content="Save" Width="75" Click="SettingsSaveButtonClick"/>
-                        <Button Content="Cancel" Width="75" Click="SettingsCancelButtonClick"/>
+                        <Button Width="75"
+                                Click="SettingsSaveButtonClick"
+                                Content="Save" />
+                        <Button Width="75"
+                                Click="SettingsCancelButtonClick"
+                                Content="Cancel" />
                     </DockPanel>
                 </Grid>
             </TabItem>
         </TabControl>
-        <Image x:Name="MusicCoverArt" Width="40" Height="40" Margin="10,0,0,61" AllowDrop="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" MouseLeftButtonUp="MusicCoverArtMouseLeftButtonUp" RenderTransformOrigin="0.689,0.343"/>
-        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1" Height="40" Margin="55,0,0,61" Width="175" MouseLeftButtonUp="TrackInfoStackPanelMouseLeftButtonUp">
-            <TextBlock x:Name="MusicArtistLabel" Width="175" FontSize="10" FontWeight="Normal" Margin="0,0,0,0" Height="13"/>
-            <TextBlock x:Name="MusicTitleLabel" Width="175" FontSize="10" FontWeight="Medium" Margin="0,0,0,0" Height="13"/>
-            <TextBlock x:Name="MusicAlbumLabel" Width="175" FontSize="10" FontWeight="Bold" Margin="0,0,0,0" Height="13"/>
+        <Image x:Name="MusicCoverArt"
+               Grid.Column="1"
+               Width="40"
+               Height="40"
+               Margin="10,0,0,61"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Bottom"
+               AllowDrop="False"
+               MouseLeftButtonUp="MusicCoverArtMouseLeftButtonUp"
+               RenderTransformOrigin="0.689,0.343"
+               ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+        <StackPanel Grid.Column="1"
+                    Width="175"
+                    Height="40"
+                    Margin="55,0,0,61"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    MouseLeftButtonUp="TrackInfoStackPanelMouseLeftButtonUp">
+            <TextBlock x:Name="MusicArtistLabel"
+                       Width="175"
+                       Height="13"
+                       Margin="0,0,0,0"
+                       FontSize="10"
+                       FontWeight="Normal" />
+            <TextBlock x:Name="MusicTitleLabel"
+                       Width="175"
+                       Height="13"
+                       Margin="0,0,0,0"
+                       FontSize="10"
+                       FontWeight="Medium" />
+            <TextBlock x:Name="MusicAlbumLabel"
+                       Width="175"
+                       Height="13"
+                       Margin="0,0,0,0"
+                       FontSize="10"
+                       FontWeight="Bold" />
         </StackPanel>
-        <Button x:Name="PreviousButton" HorizontalAlignment="Left" Margin="10,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.PreviousTrack" ToolTip="Previous Title">
-            <Image Source="Images/media-skip-backward.png"/>
+        <Button x:Name="PreviousButton"
+                Width="32"
+                Height="32"
+                Margin="10,0,0,61"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Command="MediaCommands.PreviousTrack"
+                ToolTip="Previous Title">
+            <Image Source="Images/media-skip-backward.png" />
         </Button>
-        <Button x:Name="StopButton" HorizontalAlignment="Left" Margin="47,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.Stop" ToolTip="Stop">
-            <Image Source="Images/media-playback-stop.png"/>
+        <Button x:Name="StopButton"
+                Width="32"
+                Height="32"
+                Margin="47,0,0,61"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Command="MediaCommands.Stop"
+                ToolTip="Stop">
+            <Image Source="Images/media-playback-stop.png" />
         </Button>
-        <Button x:Name="PlayButton" HorizontalAlignment="Left" Margin="84,0,0,61" VerticalAlignment="Bottom" Width="45" Height="32" Command="MediaCommands.Play" ToolTip="Play">
-            <Image Source="Images/media-playback-start.png"/>
+        <Button x:Name="PlayButton"
+                Width="45"
+                Height="32"
+                Margin="84,0,0,61"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Command="MediaCommands.Play"
+                ToolTip="Play">
+            <Image Source="Images/media-playback-start.png" />
         </Button>
-        <Button x:Name="PauseButton" HorizontalAlignment="Left" Margin="134,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.Pause" ToolTip="Pause">
-            <Image Source="Images/media-playback-pause.png"/>
+        <Button x:Name="PauseButton"
+                Width="32"
+                Height="32"
+                Margin="134,0,0,61"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Command="MediaCommands.Pause"
+                ToolTip="Pause">
+            <Image Source="Images/media-playback-pause.png" />
         </Button>
-        <Button x:Name="NextButton" HorizontalAlignment="Left" Margin="171,0,0,61" VerticalAlignment="Bottom" Width="32" Height="32" Command="MediaCommands.NextTrack" ToolTip="Next Title">
-            <Image Source="Images/media-skip-forward.png"/>
+        <Button x:Name="NextButton"
+                Width="32"
+                Height="32"
+                Margin="171,0,0,61"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Command="MediaCommands.NextTrack"
+                ToolTip="Next Title">
+            <Image Source="Images/media-skip-forward.png" />
         </Button>
-        <Button x:Name="RepeatButton" HorizontalAlignment="Right" Margin="0,0,266,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="RepeatButtonClick" ToolTip="Repeat: Disabled" Grid.Column="2">
+        <Button x:Name="RepeatButton"
+                Grid.Column="2"
+                Width="32"
+                Height="32"
+                Margin="0,0,266,61"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Click="RepeatButtonClick"
+                ToolTip="Repeat: Disabled">
             <Image x:Name="RepeatButtonIcon">
                 <Image.Style>
                     <Style TargetType="Image">
-                        <Setter Property="Source" Value="/Images/media-playlist-repeat-disabled.png"/>
+                        <Setter Property="Source" Value="/Images/media-playlist-repeat-disabled.png" />
                         <Style.Triggers>
                             <Trigger Property="Name" Value="RepeatEnabled">
-                                <Setter Property="Source" Value="/Images/media-playlist-repeat-enabled.png"/>
+                                <Setter Property="Source" Value="/Images/media-playlist-repeat-enabled.png" />
                             </Trigger>
                             <Trigger Property="Name" Value="RepeatDisabled">
-                                <Setter Property="Source" Value="/Images/media-playlist-repeat-disabled.png"/>
+                                <Setter Property="Source" Value="/Images/media-playlist-repeat-disabled.png" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Image.Style>
             </Image>
         </Button>
-        <Button HorizontalAlignment="Right" Margin="0,0,231,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="ShuffleButtonClick" ToolTip="Shuffle Playlist" Grid.Column="2">
-            <Image Source="Images/media-playlist-shuffle.png"/>
+        <Button Grid.Column="2"
+                Width="32"
+                Height="32"
+                Margin="0,0,231,61"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Click="ShuffleButtonClick"
+                ToolTip="Shuffle Playlist">
+            <Image Source="Images/media-playlist-shuffle.png" />
         </Button>
-        <Button x:Name="MuteButton" HorizontalAlignment="Right" Margin="0,0,196,61" VerticalAlignment="Bottom" Height="32" Width="32" Click="MuteButtonClick" ToolTip="Mute Volume" Grid.Column="2">
+        <Button x:Name="MuteButton"
+                Grid.Column="2"
+                Width="32"
+                Height="32"
+                Margin="0,0,196,61"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Click="MuteButtonClick"
+                ToolTip="Mute Volume">
             <Image x:Name="MuteButtonIcon">
                 <Image.Style>
                     <Style TargetType="Image">
-                        <Setter Property="Source" Value="/Images/audio-volume-zero-panel.png"/>
+                        <Setter Property="Source" Value="/Images/audio-volume-zero-panel.png" />
                         <Style.Triggers>
                             <Trigger Property="Name" Value="VolumeMuted">
-                                <Setter Property="Source" Value="/Images/audio-volume-muted-panel.png"/>
+                                <Setter Property="Source" Value="/Images/audio-volume-muted-panel.png" />
                             </Trigger>
                             <Trigger Property="Name" Value="VolumeZero">
-                                <Setter Property="Source" Value="/Images/audio-volume-zero-panel.png"/>
+                                <Setter Property="Source" Value="/Images/audio-volume-zero-panel.png" />
                             </Trigger>
                             <Trigger Property="Name" Value="VolumeLow">
-                                <Setter Property="Source" Value="/Images/audio-volume-low-panel.png"/>
+                                <Setter Property="Source" Value="/Images/audio-volume-low-panel.png" />
                             </Trigger>
                             <Trigger Property="Name" Value="VolumeMedium">
-                                <Setter Property="Source" Value="/Images/audio-volume-medium-panel.png"/>
+                                <Setter Property="Source" Value="/Images/audio-volume-medium-panel.png" />
                             </Trigger>
                             <Trigger Property="Name" Value="VolumeHigh">
-                                <Setter Property="Source" Value="/Images/audio-volume-high-panel.png"/>
+                                <Setter Property="Source" Value="/Images/audio-volume-high-panel.png" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Image.Style>
             </Image>
         </Button>
-        <Slider x:Name="VolumeSlider" Margin="0,0,10,61" IsMoveToPointEnabled="True" VerticalAlignment="Bottom" ValueChanged="VolumeSliderValueChanged" HorizontalAlignment="Right" Width="181" Height="32" VerticalContentAlignment="Center" UseLayoutRounding="True" MinHeight="32" MaxHeight="32" Grid.Column="2"/>
-        <Slider x:Name="ProgressSlider" Margin="10,0,10,34" IsMoveToPointEnabled="True" VerticalAlignment="Bottom" PreviewMouseLeftButtonDown="ProgressSliderMouseLeftButtonDown" PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" Height="22" Grid.ColumnSpan="3"/>
-        <MediaElement x:Name="MediaPlayer" HorizontalAlignment="Left" Height="1" VerticalAlignment="Top" Width="1" Margin="0,0,0,0" Visibility="Hidden" MediaOpened="MediaPlayerMediaOpened" UnloadedBehavior="Manual" LoadedBehavior="Manual"/>
-        <Button Margin="0,0,340,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="NewPlaylistButtonClick" ToolTip="New Playlist" HorizontalAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2">
-            <Image Source="Images/document-new.png"/>
+        <Slider x:Name="VolumeSlider"
+                Grid.Column="2"
+                Width="181"
+                Height="32"
+                MinHeight="32"
+                MaxHeight="32"
+                Margin="0,0,10,61"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                VerticalContentAlignment="Center"
+                IsMoveToPointEnabled="True"
+                UseLayoutRounding="True"
+                ValueChanged="VolumeSliderValueChanged" />
+        <Slider x:Name="ProgressSlider"
+                Grid.ColumnSpan="3"
+                Height="22"
+                Margin="10,0,10,34"
+                VerticalAlignment="Bottom"
+                IsMoveToPointEnabled="True"
+                PreviewMouseLeftButtonDown="ProgressSliderMouseLeftButtonDown"
+                PreviewMouseLeftButtonUp="ProgressSliderMouseLeftButtonUp" />
+        <MediaElement x:Name="MediaPlayer"
+                      Width="1"
+                      Height="1"
+                      Margin="0,0,0,0"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      LoadedBehavior="Manual"
+                      MediaOpened="MediaPlayerMediaOpened"
+                      UnloadedBehavior="Manual"
+                      Visibility="Hidden" />
+        <Button Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Width="32"
+                Height="32"
+                Margin="0,0,340,61"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Click="NewPlaylistButtonClick"
+                ToolTip="New Playlist">
+            <Image Source="Images/document-new.png" />
         </Button>
-        <Button x:Name="SavePlaylistButton" Margin="0,0,303,61" VerticalAlignment="Bottom" Width="32" Height="32" Click="SavePlaylistButtonClick" ToolTip="Save Playlist" HorizontalAlignment="Right" Grid.Column="2">
-            <Image Source="Images/document-save.png"/>
+        <Button x:Name="SavePlaylistButton"
+                Grid.Column="2"
+                Width="32"
+                Height="32"
+                Margin="0,0,303,61"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Click="SavePlaylistButtonClick"
+                ToolTip="Save Playlist">
+            <Image Source="Images/document-save.png" />
         </Button>
-        <DockPanel HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,4,10,0">
-            <Image Source="Images\filter.png" Width="20" Height="20" Margin="4,0,4,0"/>
-            <TextBox x:Name="ArtistFilterTextBox" Width="200" PreviewKeyDown="ArtistFilterTextBoxKeyDown"  TextChanged="ArtistFilterTextBoxTextChanged" ToolTip="Artist Filter" Height="Auto"/>
-            <Separator Margin="4,0,4,0"/>
-            <Image Source="Images\stock_search.png" Width="20" Height="20" Margin="4,0,4,0"/>
-            <TextBox x:Name="GlobalSearchTextBox" Width="200" PreviewKeyDown="GlobalSearchTextBoxKeyDown" ToolTip="Global Search" Height="Auto"/>
+        <DockPanel Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   Margin="0,4,10,0"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top">
+            <Image Width="20"
+                   Height="20"
+                   Margin="4,0,4,0"
+                   Source="Images\filter.png" />
+            <TextBox x:Name="ArtistFilterTextBox"
+                     Width="200"
+                     Height="Auto"
+                     PreviewKeyDown="ArtistFilterTextBoxKeyDown"
+                     TextChanged="ArtistFilterTextBoxTextChanged"
+                     ToolTip="Artist Filter" />
+            <Separator Margin="4,0,4,0" />
+            <Image Width="20"
+                   Height="20"
+                   Margin="4,0,4,0"
+                   Source="Images\stock_search.png" />
+            <TextBox x:Name="GlobalSearchTextBox"
+                     Width="200"
+                     Height="Auto"
+                     PreviewKeyDown="GlobalSearchTextBoxKeyDown"
+                     ToolTip="Global Search" />
         </DockPanel>
     </Grid>
 </Window>

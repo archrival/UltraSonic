@@ -10,8 +10,8 @@ namespace UltraSonic
         {
             if (SubsonicClient == null) return;
 
-            //foreach (TrackItem item in selectedItems)
-            //   Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id)); // Launch default URL handler for each download
+            foreach (TrackItem item in selectedItems)
+                Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id)); // Launch default URL handler for each download
         }
     }
 }

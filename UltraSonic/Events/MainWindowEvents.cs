@@ -14,7 +14,6 @@ using System.Xml.Serialization;
 using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
-using Image = System.Drawing.Image;
 
 namespace UltraSonic
 {
@@ -22,7 +21,7 @@ namespace UltraSonic
     {
         private void ShuffleButtonClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            Dispatcher.Invoke(() => ExtensionMethods.Shuffle<TrackItem>(_playlistTrackItems));
+            Dispatcher.Invoke(() => _playlistTrackItems.Shuffle());
         }
 
         private void MuteButtonClick(object sender, RoutedEventArgs e)
@@ -47,7 +46,7 @@ namespace UltraSonic
                                       {
                                           if (PlaylistTrackGrid.Items.Count > 0)
                                           {
-                                              foreach (TrackItem trackItem in Enumerable.Cast<TrackItem>(PlaylistTrackGrid.Items).Where(trackItem => !trackItem.Cached))
+                                              foreach (TrackItem trackItem in PlaylistTrackGrid.Items.Cast<TrackItem>().Where(trackItem => !trackItem.Cached))
                                               {
                                                   _shouldCachePlaylist = true;
                                                   break;
@@ -73,8 +72,8 @@ namespace UltraSonic
 
             foreach (TrackItem trackItem in playlistTracks)
             {
-                if (UltraSonic.MainWindow.IsTrackCached(trackItem.FileName, trackItem.Child)) continue;
-                if (Enumerable.All<TrackItem>(_playlistTrackItems, t => t != trackItem)) continue;
+                if (IsTrackCached(trackItem.FileName, trackItem.Child)) continue;
+                if (_playlistTrackItems.All(t => t != trackItem)) continue;
                 if (!_shouldCachePlaylist) break;
 
                 await _cachingThrottle.WaitAsync();
@@ -82,7 +81,7 @@ namespace UltraSonic
                 try
                 {
                     Uri uri = new Uri(trackItem.FileName);
-                    if (Enumerable.Any<Uri>(_streamItems, s => s == uri)) continue;
+                    if (_streamItems.Any(s => s == uri)) continue;
 
                     CancellationToken token = GetCancellationToken("CachePlaylistTracks");
 
@@ -107,7 +106,7 @@ namespace UltraSonic
                case TaskStatus.RanToCompletion:
                    Dispatcher.Invoke(() =>
                                          {
-                                             trackItem.Cached = UltraSonic.MainWindow.IsTrackCached(trackItem.FileName, trackItem.Child);
+                                             trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
                                              if (trackItem.Source != null) trackItem.Source.Cached = trackItem.Cached;
                                              _caching = false;
                                          });
@@ -174,7 +173,7 @@ namespace UltraSonic
 
             if (CurrentPlaylist != null)
             {
-                MessageBoxResult result = MessageBox.Show(string.Format((string) "Would you like to update the previously loaded playlist? '{0}'", (object) CurrentPlaylist.Name), UltraSonic.MainWindow.AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to update the previously loaded playlist? '{0}'", CurrentPlaylist.Name), AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                 updatePlaylist = (result == MessageBoxResult.Yes);
             }
 
@@ -183,7 +182,7 @@ namespace UltraSonic
                 Dispatcher.Invoke(() =>
                 {
                     List<string> playlistTracks = new List<string>();
-                    playlistTracks.AddRange(Enumerable.Select<TrackItem, string>(_playlistTrackItems, test => test.Child.Id));
+                    playlistTracks.AddRange(_playlistTrackItems.Select(test => test.Child.Id));
 
                     SubsonicClient.CreatePlaylistAsync(CurrentPlaylist.Id, null, playlistTracks).ContinueWith(CheckPlaylistSave);
                 });
@@ -200,7 +199,7 @@ namespace UltraSonic
                 Dispatcher.Invoke(() =>
                 {
                     List<string> playlistTracks = new List<string>();
-                    playlistTracks.AddRange(Enumerable.Select<TrackItem, string>(_playlistTrackItems, test => test.Child.Id));
+                    playlistTracks.AddRange(_playlistTrackItems.Select(test => test.Child.Id));
 
                     SubsonicClient.CreatePlaylistAsync(null, playlistName, playlistTracks).ContinueWith(CheckPlaylistSave);
                 });
@@ -209,7 +208,7 @@ namespace UltraSonic
 
         private void NewPlaylistButtonClick(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Would you like to clear the current playlist?", UltraSonic.MainWindow.AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            MessageBoxResult result = MessageBox.Show("Would you like to clear the current playlist?", AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
             if (result == MessageBoxResult.Yes)
                 Dispatcher.Invoke(() =>
@@ -319,11 +318,11 @@ namespace UltraSonic
             if (_currentAlbumArt.Height > ActualHeight * 0.9)
             {
                 int newHeight = (int)(ActualHeight * 0.9);
-                bitmap = ImageConverter.ToBitmapSource((Image) _currentAlbumArt).Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 0, newHeight);
+                bitmap = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 0, newHeight);
             }
             else
             {
-                bitmap = ImageConverter.ToBitmapSource((Image) _currentAlbumArt);
+                bitmap = _currentAlbumArt.ToBitmapSource();
             }
 
             AlbumArt albumArtWindow = new AlbumArt
