@@ -11,8 +11,6 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
-        StreamProxy StreamProxy { get; set; }
-
         private void PlayNextTrack()
         {
             Dispatcher.Invoke(() =>

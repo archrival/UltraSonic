@@ -93,6 +93,7 @@ namespace UltraSonic
         private bool UseProxy { get; set; }
         private Playlist CurrentPlaylist { get; set; }
         private User CurrentUser { get; set; }
+        private StreamProxy StreamProxy { get; set; }
 
         public MainWindow()
         {
@@ -181,6 +182,12 @@ namespace UltraSonic
             {
                 MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        ~MainWindow()
+        {
+            if (StreamProxy != null)
+                StreamProxy.Stop();
         }
 
         private ObservableCollection<ArtistItem> ArtistItems
