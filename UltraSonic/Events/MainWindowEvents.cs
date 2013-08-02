@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Subsonic.Client.Common.Items;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
-using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 

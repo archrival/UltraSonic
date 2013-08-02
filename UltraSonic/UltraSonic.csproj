@@ -42,6 +42,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -63,16 +64,12 @@
     <Compile Include="Enum\AlbumPlayButtonBehavior.cs" />
     <Compile Include="Enum\DoubleClickBehavior.cs" />
     <Compile Include="Events\AlbumEvents.cs" />
-    <Compile Include="Items\AlbumListItem.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Static\StaticMethods.cs" />
     <Compile Include="Tasks\AlbumTasks.cs" />
-    <Compile Include="Items\ArtistItem.cs" />
     <Compile Include="Tasks\ArtistTasks.cs" />
     <Compile Include="Cancellation.cs" />
-    <Compile Include="Items\ChatItem.cs" />
     <Compile Include="Events\CanExecuteEvents.cs" />
-    <Compile Include="Items\ChildItem.cs" />
     <Compile Include="Download.cs" />
     <Compile Include="Static\Dwm.cs" />
     <Compile Include="InterfaceUpdate.cs" />
@@ -80,7 +77,6 @@
     <Compile Include="Events\ArtistEvents.cs" />
     <Compile Include="Tasks\MainWindowTasks.cs" />
     <Compile Include="Tasks\TrackTasks.cs" />
-    <Compile Include="Items\NowPlayingItem.cs" />
     <Compile Include="DataGridDragAndDrop.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="Static\ExtensionMethods.cs" />
@@ -89,7 +85,6 @@
     <Compile Include="Tasks\PlaybackTasks.cs" />
     <Compile Include="Playlist.cs" />
     <Compile Include="Events\PlaylistEvents.cs" />
-    <Compile Include="Items\PlaylistItem.cs" />
     <Compile Include="Tasks\PlaylistTasks.cs" />
     <Compile Include="SavePlaylist.xaml.cs">
       <DependentUpon>SavePlaylist.xaml</DependentUpon>
@@ -101,7 +96,6 @@
     <Compile Include="Star.cs" />
     <Compile Include="Track.cs" />
     <Compile Include="Events\TrackEvents.cs" />
-    <Compile Include="Items\TrackItem.cs" />
     <Compile Include="Static\UIHelpers.cs" />
     <Compile Include="Tasks\UserTasks.cs" />
     <Compile Include="UserControls\CircularProgressBar.xaml.cs">
@@ -119,7 +113,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Items\AlbumItem.cs" />
     <Compile Include="Static\ImageConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

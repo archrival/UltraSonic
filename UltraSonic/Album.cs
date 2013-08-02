@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Subsonic.Client.Common;
+using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 using System;
 using System.Collections.Generic;

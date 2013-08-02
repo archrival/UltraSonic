@@ -2,8 +2,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Subsonic.Client.Common;
+using Subsonic.Client.Common.Items;
 using Subsonic.Common;
-using UltraSonic.Items;
 
 namespace UltraSonic
 {

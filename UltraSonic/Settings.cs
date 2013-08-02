@@ -5,7 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
-using UltraSonic.Items;
+using Subsonic.Client.Common;
+using Subsonic.Client.Common.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 

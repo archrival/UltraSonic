@@ -1,4 +1,6 @@
-﻿using Subsonic.Common;
+﻿using Subsonic.Client.Common;
+using Subsonic.Client.Common.Items;
+using Subsonic.Common;
 using System;
 using System.Drawing;
 using System.IO;

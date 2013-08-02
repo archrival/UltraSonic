@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Subsonic.Client.Common.Items;
+using System;
 using System.Threading.Tasks;
-using UltraSonic.Items;
 
 namespace UltraSonic
 {
@@ -12,22 +12,21 @@ namespace UltraSonic
             {
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
-                    {
-                        DownloadStatusLabel.Content = string.Empty;
+                                          {
+                                              DownloadStatusLabel.Content = string.Empty;
 
-                        Uri thisUri;
-                        _streamItems.TryDequeue(out thisUri);
-                        trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
-                        _caching = false;
+                                              Uri thisUri;
+                                              _streamItems.TryDequeue(out thisUri);
+                                              trackItem.Cached = IsTrackCached(trackItem.FileName, trackItem.Child);
+                                              _caching = false;
 
-                        if (trackItem.Source != null)
-                            trackItem.Source.Cached = trackItem.Cached;
+                                              if (trackItem.Source != null)
+                                                  trackItem.Source.Cached = trackItem.Cached;
 
-                        QueueTrack(thisUri, trackItem);
-                    });
+                                              //QueueTrack(thisUri, trackItem);
+                                          });
                     break;
             }
         }
-
     }
 }

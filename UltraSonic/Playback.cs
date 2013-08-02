@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
+using System.Web;
 using System.Windows;
+using Subsonic.Client.Common;
+using Subsonic.Client.Common.Items;
 using Subsonic.Common;
-using UltraSonic.Items;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
+        StreamProxy StreamProxy { get; set; }
+
         private void PlayNextTrack()
         {
             Dispatcher.Invoke(() =>
@@ -73,6 +78,12 @@ namespace UltraSonic
 
         private void StopMusic()
         {
+            if (StreamProxy != null)
+            {
+                StreamProxy.Stop();
+                StreamProxy = null;
+            }
+
             if (MediaPlayer.Source != null)
             {
                 MediaPlayer.Stop();
@@ -112,12 +123,18 @@ namespace UltraSonic
                 _streamItems.Enqueue(fileNameUri);
                 UpdateAlbumArt(child);
 
-                if (_useDiskCache)
-                {
-                    _caching = true;
-                    DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
-                    SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?)_maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack")).ContinueWith(t => QueueTrack(t, trackItem));
-                }
+                _caching = true;
+                DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
+                var streamTask = SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
+                QueueTrack(new Uri("http://localhost"), trackItem);
+                streamTask.ContinueWith(t => QueueTrack(t, trackItem));
+
+                //if (_useDiskCache)
+                //{
+                //    _caching = true;
+                //    DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
+                //    SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?)_maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack")).ContinueWith(t => QueueTrack(t, trackItem));
+                //}
                 //else
                 //{
                 //    QueueTrack(new Uri(SubsonicClient.BuildStreamUrl(child.Id)), trackItem); // Works with non-SSL servers
@@ -132,7 +149,16 @@ namespace UltraSonic
                 try
                 {
                     StopMusic();
-                    MediaPlayer.Source = uri;
+
+                    if (StreamProxy == null)
+                    {
+                        StreamProxy = new StreamProxy(trackItem);
+                        StreamProxy.Start();
+                    }
+
+                    string dataSource = string.Format("http://127.0.0.1:{0}/{1}", StreamProxy.GetPort(), HttpUtility.UrlEncode(trackItem.FileName, Encoding.UTF8));
+
+                    MediaPlayer.Source = new Uri(dataSource);
                     ProgressSlider.Value = 0;
                     _nowPlayingTrack = trackItem;
                     PlayMusic();

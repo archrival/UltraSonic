@@ -1,8 +1,5 @@
-﻿using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Windows.Controls;
+﻿using Subsonic.Client.Common;
+using Subsonic.Client.Common.Items;
 using Subsonic.Client.Windows;
 using Subsonic.Common;
 using System;
@@ -12,10 +9,13 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
-using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 using Image = System.Drawing.Image;
@@ -28,6 +28,7 @@ namespace UltraSonic
     public partial class MainWindow
     {
         private const string AppName = "UltraSonic";
+        private const string ClientName = "UltraSonic for Windows";
 
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellableTasks = new ConcurrentDictionary<string, CancellationTokenSource>();
         private string _cacheDirectory;
@@ -284,7 +285,7 @@ namespace UltraSonic
             }
             else
             {
-                SubsonicClient = UseProxy ? new Client(serverUri.ToString(), Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, AppName) : new Client(serverUri.ToString(), Username, Password, AppName);
+                SubsonicClient = UseProxy ? new Client(serverUri.ToString(), Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new Client(serverUri.ToString(), Username, Password, ClientName);
                 SubsonicClient.Ping();
                 ServerApiLabel.Text = SubsonicClient.SubsonicClient.ServerApiVersion.ToString();
                 SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);

@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Windows;
+using Subsonic.Client.Common;
+using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 using UltraSonic.Properties;
 using UltraSonic.Static;
