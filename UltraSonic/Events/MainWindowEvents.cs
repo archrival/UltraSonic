@@ -267,6 +267,11 @@ namespace UltraSonic
             }
 
             Settings.Default.Save();
+
+            if (StreamProxy == null) return;
+
+            StreamProxy.Stop();
+            StreamProxy = null;
         }
 
         private void GlobalSearchTextBoxKeyDown(object sender, KeyEventArgs e)

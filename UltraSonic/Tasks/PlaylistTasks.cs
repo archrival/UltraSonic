@@ -1,10 +1,9 @@
-﻿using System.Windows.Controls;
+﻿using Subsonic.Client.Common.Items;
+using Subsonic.Common;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+using System.Windows.Controls;
 
 namespace UltraSonic
 {
@@ -82,6 +81,31 @@ namespace UltraSonic
                     break;
             }
         }
+
+
+        private void UpdatePlaylistGrid(Task<AlbumList> task)
+        {
+            switch (task.Status)
+            {
+                case TaskStatus.RanToCompletion:
+                    Dispatcher.Invoke(() =>
+                    {
+                        _playlistTrackItems.Clear();
+
+                        foreach (DataGridColumn column in PlaylistTrackGrid.Columns)
+                        {
+                            column.Width = column.MinWidth;
+                            column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                        }
+
+                        var tracks = task.Result.Album.Where(a => !a.IsDir).ToList();
+
+                        foreach (TrackItem trackItem in GetTrackItemCollection(tracks))
+                            AddTrackItemToPlaylist(trackItem);
+                    });
+                    break;
+            }
+        }
     
         private void RefreshStarredPlaylist(Task<bool> task, bool isTrack)
         {
@@ -93,6 +117,18 @@ namespace UltraSonic
 
                     break;
             } 
+        }
+
+        private void RefreshHighestRatedPlaylist(Task<bool> task, bool isTrack)
+        {
+            switch (task.Status)
+            {
+                case TaskStatus.RanToCompletion:
+                    if (task.Result && isTrack)
+                        SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, GetCancellationToken("UpdatePlaylists")).ContinueWith(AddHighestRatedToPlaylists);
+
+                    break;
+            }
         }
         
         private void AddStarredToPlaylists(Task<Starred> task)
@@ -113,7 +149,7 @@ namespace UltraSonic
                                                                                  Playlist = null
                                                                              };
 
-                                              PlaylistItem currentStarredPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null);
+                                              PlaylistItem currentStarredPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null && p.Name == "Starred");
 
                                               if (currentStarredPlaylist == null)
                                                   _playlistItems.Add(newStarredPlaylist);
@@ -123,6 +159,39 @@ namespace UltraSonic
                                                   _playlistItems.Add(newStarredPlaylist);
                                               }
                                           });
+                    break;
+            }
+        }
+
+        private void AddHighestRatedToPlaylists(Task<AlbumList> task)
+        {
+            switch (task.Status)
+            {
+                case TaskStatus.RanToCompletion:
+                    Dispatcher.Invoke(() =>
+                    {
+                        AlbumList albumList = task.Result;
+                        var tracks = albumList.Album.Where(a => !a.IsDir).ToList();
+                        int duration = tracks.Sum(child => child.Duration);
+
+                        PlaylistItem newHighestRatedPlaylist = new PlaylistItem
+                        {
+                            Duration = TimeSpan.FromSeconds(duration),
+                            Name = "Highest Rated",
+                            Tracks = tracks.Count,
+                            Playlist = null
+                        };
+
+                        PlaylistItem currentHighestRatedPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null && p.Name == "Highest Rated");
+
+                        if (currentHighestRatedPlaylist == null)
+                            _playlistItems.Add(newHighestRatedPlaylist);
+                        else
+                        {
+                            _playlistItems.Remove(currentHighestRatedPlaylist);
+                            _playlistItems.Add(newHighestRatedPlaylist);
+                        }
+                    });
                     break;
             }
         }

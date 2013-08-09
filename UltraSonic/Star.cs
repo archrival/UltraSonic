@@ -1,8 +1,7 @@
-﻿using Subsonic.Client.Common;
+﻿using Subsonic.Client.Common.Items;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Subsonic.Client.Common.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic

@@ -43,7 +43,10 @@ namespace UltraSonic
                 }
 
                 if (SubsonicClient.SubsonicClient.ServerApiVersion >= Version.Parse("1.8.0")) // Get starred tracks to create dynamic Starred playlist
-                    SubsonicClient.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
+                    SubsonicClient.GetStarredAsync(GetCancellationToken("UpdateStarredPlaylists")).ContinueWith(AddStarredToPlaylists);
+
+                if (SubsonicClient.SubsonicClient.ServerApiVersion >= Version.Parse("1.2.0")) // Get starred tracks to create dynamic Highest Rated playlist
+                    SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, GetCancellationToken("UpdateHighestRatedPlaylists")).ContinueWith(AddHighestRatedToPlaylists);
             });
         }
 

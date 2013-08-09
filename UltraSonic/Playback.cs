@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Windows;
-using Subsonic.Client.Common;
 using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 
@@ -76,12 +75,6 @@ namespace UltraSonic
 
         private void StopMusic()
         {
-            if (StreamProxy != null)
-            {
-                StreamProxy.Stop();
-                StreamProxy = null;
-            }
-
             if (MediaPlayer.Source != null)
             {
                 MediaPlayer.Stop();
@@ -112,8 +105,9 @@ namespace UltraSonic
 
             if (_streamItems.All(s => s.OriginalString == trackItem.FileName) && trackItem.Cached)
             {
-                SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"), true);
-                QueueTrack(fileNameUri, trackItem);
+                // Use this to tell Subsonic we're playing back the track, this will result in the server indicating we have cancelled the data transfer, it isn't very nice.
+                //SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"), true);
+                QueueTrackItemForPlayback(trackItem, false);
                 UpdateAlbumArt(child);
             }
             else
@@ -124,7 +118,7 @@ namespace UltraSonic
                 _caching = true;
                 DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
                 var streamTask = SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
-                QueueTrack(new Uri("http://localhost"), trackItem);
+                QueueTrackItemForPlayback(trackItem, true);
                 streamTask.ContinueWith(t => QueueTrack(t, trackItem));
 
                 //if (_useDiskCache)
@@ -140,7 +134,7 @@ namespace UltraSonic
             }
         }
 
-        private void QueueTrack(Uri uri, TrackItem trackItem)
+        private void QueueTrackItemForPlayback(TrackItem trackItem, bool stream)
         {
             Dispatcher.Invoke(() =>
             {
@@ -148,13 +142,16 @@ namespace UltraSonic
                 {
                     StopMusic();
 
-                    if (StreamProxy == null)
-                    {
-                        StreamProxy = new StreamProxy(trackItem);
-                        StreamProxy.Start();
-                    }
+                    StreamProxy.SetTrackItem(trackItem);
 
-                    string dataSource = string.Format("http://127.0.0.1:{0}/{1}", StreamProxy.GetPort(), HttpUtility.UrlEncode(trackItem.FileName, Encoding.UTF8));
+                    string dataSource = stream ? string.Format("http://127.0.0.1:{0}/{1}", StreamProxy.GetPort(), HttpUtility.UrlEncode(trackItem.FileName, Encoding.UTF8)) : trackItem.FileName;
+
+                    if (stream)
+                    {
+                        _position = TimeSpan.FromSeconds(trackItem.Child.Duration);
+                        ProgressSlider.Minimum = 0;
+                        ProgressSlider.Maximum = _position.TotalMilliseconds;
+                    }
 
                     MediaPlayer.Source = new Uri(dataSource);
                     ProgressSlider.Value = 0;

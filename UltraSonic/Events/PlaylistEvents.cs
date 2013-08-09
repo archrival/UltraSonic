@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Subsonic.Client.Common;
 using Subsonic.Client.Common.Items;
+using Subsonic.Common;
 
 namespace UltraSonic
 {
@@ -45,6 +46,10 @@ namespace UltraSonic
                 {
                     await SubsonicClient.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
+                else if (playlistItem.Playlist == null && playlistItem.Name == "Highest Rated")
+                {
+                    await SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
+                }
                 else
                 {
                     CurrentPlaylist = playlistItem.Playlist;
@@ -73,6 +78,10 @@ namespace UltraSonic
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
                     MessageBox.Show("Playlist 'Starred' is a dynamic playlist and cannot be deleted.", AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                }
+                else if (playlistItem.Playlist == null && playlistItem.Name == "Highest Rated")
+                {
+                    MessageBox.Show("Playlist 'Highest Rated' is a dynamic playlist and cannot be deleted.", AppName, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
                 }
                 else
                 {

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace UltraSonic
 {
@@ -25,7 +26,12 @@ namespace UltraSonic
 
         private void StarredCheckBoxClick(object sender, RoutedEventArgs e)
         {
-            ChangeItemStarState(e.Source as CheckBox);
+            ChangeItemStarState(e.Source as ToggleButton);
+        }
+
+        private void RatingClick(object sender, RoutedEventArgs e)
+        {
+            ChangeItemRating(e.Source as RatingControl);
         }
     }
 }

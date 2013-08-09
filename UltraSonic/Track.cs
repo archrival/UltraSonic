@@ -1,5 +1,4 @@
-﻿using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
+﻿using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

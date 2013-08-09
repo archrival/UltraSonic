@@ -60,10 +60,7 @@ namespace UltraSonic
                                       SemaphoreSlim throttler = null;
 
                                       if (_throttle > 0)
-                                          throttler =
-                                              new SemaphoreSlim(enumerable.Count < _throttle
-                                                                    ? enumerable.Count
-                                                                    : _throttle);
+                                          throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
 
                                       foreach (
                                           AlbumItem albumItem in
@@ -74,9 +71,10 @@ namespace UltraSonic
                                                           AlbumArtSize = _albumArtSize,
                                                           Artist = child.Artist,
                                                           Name = child.Album,
+                                                          Rating = child.UserRating,
                                                           Child = child,
                                                           Starred = (child.Starred != default(DateTime))
-                                                      }))
+                                                      }).Where(a => a.Child.IsDir))
                                       {
                                           _albumItems.Add(albumItem);
 

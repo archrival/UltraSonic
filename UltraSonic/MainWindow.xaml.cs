@@ -121,9 +121,16 @@ namespace UltraSonic
                 MainGrid.MouseLeftButtonUp += playlistTrackDragAndDrop.DataGridOnMouseLeftButtonUp;
                 MainGrid.MouseMove += playlistTrackDragAndDrop.DataGridOnMouseMove;
 
+                if (StreamProxy == null)
+                {
+                    StreamProxy = new StreamProxy();
+                    StreamProxy.Start();
+                }
+
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
                 {
                     InitSubsonicApi();
+
                     if (SubsonicClient != null)
                     {
                         License license = SubsonicClient.GetLicense();
@@ -182,12 +189,6 @@ namespace UltraSonic
             {
                 MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        ~MainWindow()
-        {
-            if (StreamProxy != null)
-                StreamProxy.Stop();
         }
 
         private ObservableCollection<ArtistItem> ArtistItems
