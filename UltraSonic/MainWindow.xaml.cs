@@ -25,7 +25,7 @@ namespace UltraSonic
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : IDisposable
     {
         private const string AppName = "UltraSonic";
         private const string ClientName = "UltraSonic for Windows";
@@ -49,6 +49,7 @@ namespace UltraSonic
         private int _chatMessagesInterval = 5;
         private int _throttle = 6;
         private int _albumArtSize = 50;
+        private const double ScalingFactor = 1.6180339887;
         private string _serverHash;
         private string _musicCacheDirectoryName = string.Empty;
         private string _coverArtCacheDirectoryName = string.Empty;
@@ -82,7 +83,7 @@ namespace UltraSonic
         private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
         private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
 
-        private Client SubsonicClient { get; set; }
+        private SubsonicClientWindows SubsonicClient { get; set; }
         private string Username { get; set; }
         private string Password { get; set; }
         private string ServerUrl { get; set; }
@@ -293,7 +294,7 @@ namespace UltraSonic
             }
             else
             {
-                SubsonicClient = UseProxy ? new Client(serverUri.ToString(), Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new Client(serverUri.ToString(), Username, Password, ClientName);
+                SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
                 SubsonicClient.Ping();
                 ServerApiLabel.Text = SubsonicClient.SubsonicClient.ServerApiVersion.ToString();
                 SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
@@ -413,5 +414,18 @@ namespace UltraSonic
                                       ProgressIndicator.Visibility = Visibility.Hidden;
                                   });
         }
-   }
+
+
+        protected virtual void Dispose(bool managed)
+        {
+            if (_cachingThrottle != null)
+                _cachingThrottle.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+    }
 }

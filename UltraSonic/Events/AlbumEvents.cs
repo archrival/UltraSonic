@@ -47,7 +47,7 @@ namespace UltraSonic
             if (SubsonicClient == null) return;
 
             foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
-                Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id));
+                Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id).ToString());
         }
 
         private void AlbumDataGridAlbumListClick(object sender, RoutedEventArgs e)

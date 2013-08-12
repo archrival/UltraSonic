@@ -1,4 +1,5 @@
-﻿using Subsonic.Common;
+﻿using System.Windows.Media;
+using Subsonic.Common;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,7 +43,7 @@ namespace UltraSonic
                         string localFileName = GetCoverArtFilename(child);
                         _currentAlbumArt.Save(localFileName);
 
-                        Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(MusicCoverArt.Width * 1.5), (int)(MusicCoverArt.Height * 1.5)));
+                        Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(MusicCoverArt.Width * ScalingFactor), (int)(MusicCoverArt.Height * ScalingFactor)));
                     }
 
                     break;

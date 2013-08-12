@@ -9,15 +9,6 @@ namespace UltraSonic.Static
 {
     public static class Dwm
     {
-        [DllImport("dwmapi.dll", PreserveSig = true)]
-        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
-
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
-
-        [DllImport("dwmapi.dll", PreserveSig = false)]
-        private static extern bool DwmIsCompositionEnabled();
-
         /// <summary> 
         /// Drops a standard shadow to a WPF Window, even if the window isborderless. Only works with DWM (Vista and Seven). 
         /// This method is much more efficient than setting AllowsTransparency to true and using the DropShadow effect, 
@@ -51,16 +42,16 @@ namespace UltraSonic.Static
         {
             try
             {
-                 if (DwmIsCompositionEnabled())
+                 if (NativeMethods.DwmIsCompositionEnabled())
                  {
                      WindowInteropHelper helper = new WindowInteropHelper(window);
                      int val = 2;
-                     int ret1 = DwmSetWindowAttribute(helper.Handle, 2, ref val, 4);
+                     int ret1 = NativeMethods.DwmSetWindowAttribute(helper.Handle, 2, ref val, 4);
 
                      if (ret1 == 0)
                      {
                          Margins m = new Margins { Bottom = 0, Left = 0, Right = 0, Top = 0 };
-                         int ret2 = DwmExtendFrameIntoClientArea(helper.Handle, ref m);
+                         int ret2 = NativeMethods.DwmExtendFrameIntoClientArea(helper.Handle, ref m);
                          return ret2 == 0;
                      }
                  }

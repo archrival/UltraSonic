@@ -1,4 +1,5 @@
-﻿using Subsonic.Client.Common.Items;
+﻿using System.Windows.Media;
+using Subsonic.Client.Common.Items;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -323,8 +324,8 @@ namespace UltraSonic
 
             if (_currentAlbumArt.Height > ActualHeight * 0.9)
             {
-                int newHeight = (int)(ActualHeight * 0.9);
-                bitmap = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, 0, newHeight);
+                var newHeight = (int)(ActualHeight * 0.9);
+                bitmap = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, 0, newHeight);
             }
             else
             {

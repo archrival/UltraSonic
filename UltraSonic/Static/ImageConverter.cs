@@ -30,11 +30,11 @@ namespace UltraSonic.Static
         /// </remarks>
         /// <param name="source">The source bitmap.</param>
         /// <returns>A BitmapSource</returns>
-        public static BitmapSource ToBitmapSource(this Bitmap source)
+        private static BitmapSource ToBitmapSource(this Bitmap source)
         {
             BitmapSource bitSrc;
 
-            IntPtr hBitmap = source.GetHbitmap();
+            var hBitmap = source.GetHbitmap();
 
             try
             {
@@ -82,17 +82,25 @@ namespace UltraSonic.Static
                 newHeight = height;
             }
 
+            float dpiX;
+            float dpiY;
+
+            using (var graphics = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                dpiX = graphics.DpiX;
+                dpiY = graphics.DpiY;
+            }
+
             RenderOptions.SetBitmapScalingMode(group, scalingMode);
             group.Children.Add(new ImageDrawing(photo, new Rect(0, 0, newWidth, newHeight)));
             DrawingVisual targetVisual = new DrawingVisual();
             DrawingContext targetContext = targetVisual.RenderOpen();
             targetContext.DrawDrawing(group);
-            RenderTargetBitmap target = new RenderTargetBitmap((int)newWidth, (int)newHeight, 96, 96, PixelFormats.Default);
+            RenderTargetBitmap target = new RenderTargetBitmap((int)newWidth, (int)newHeight, dpiX, dpiY, PixelFormats.Default);
             targetContext.Close();
             target.Render(targetVisual);
-            BitmapFrame targetFrame = BitmapFrame.Create(target);
 
-            return targetFrame;
+            return BitmapFrame.Create(target);
         }
     }
 }

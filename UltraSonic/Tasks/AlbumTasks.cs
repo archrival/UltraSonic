@@ -1,4 +1,5 @@
-﻿using Subsonic.Client.Common;
+﻿using System.Windows.Media;
+using Subsonic.Client.Common;
 using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 using System;
@@ -64,7 +65,7 @@ namespace UltraSonic
                         if (!File.Exists(localFileName))
                             coverArtImage.Save(localFileName);
 
-                        BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * 1.5), (int)(_albumArtSize * 1.5));
+                        BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                         coverArtImage.Dispose();
                         GC.Collect();
                         albumItem.Image = bitmapFrame;

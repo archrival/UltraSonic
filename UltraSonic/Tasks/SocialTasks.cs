@@ -1,4 +1,5 @@
-﻿using Subsonic.Client.Common;
+﻿using System.Windows.Media;
+using Subsonic.Client.Common;
 using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 using System;
@@ -26,7 +27,7 @@ namespace UltraSonic
                         string localFileName = GetCoverArtFilename(nowPlayingItem.Child);
                         coverArtImage.Save(localFileName);
 
-                        nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * 1.5), (int)(_albumArtSize * 1.5));
+                        nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                     });
                     break;
             }
@@ -76,7 +77,7 @@ namespace UltraSonic
                             if (File.Exists(localFileName))
                             {
                                 Image thisImage = Image.FromFile(localFileName);
-                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int) (_albumArtSize*1.5), (int) (_albumArtSize*1.5));
+                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int) (_albumArtSize * ScalingFactor), (int) (_albumArtSize * ScalingFactor));
                                 thisImage.Dispose();
                             }
                             else

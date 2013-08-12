@@ -1,15 +1,15 @@
-﻿using System.ComponentModel;
-using System.Windows.Controls;
-using System.Windows.Data;
-using Subsonic.Client.Common;
+﻿using System.Windows.Media;
 using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using UltraSonic.Static;
 using Image = System.Drawing.Image;
@@ -23,10 +23,11 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
             {
                 string localFileName = GetCoverArtFilename(child);
+
                 if (File.Exists(localFileName))
                 {
                     _currentAlbumArt = Image.FromFile(localFileName);
-                    MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(System.Windows.Media.BitmapScalingMode.HighQuality, true, (int)MusicCoverArt.Width, (int)MusicCoverArt.Height);
+                    MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(MusicCoverArt.Width * ScalingFactor), (int)(MusicCoverArt.Height * ScalingFactor));
                 }
                 else
                 {
@@ -98,23 +99,8 @@ namespace UltraSonic
                                                                      try
                                                                      {
                                                                          await Task.Delay(1);
-                                                                         Image image =
-                                                                             Image.FromFile(
-                                                                                 GetCoverArtFilename(item.Child));
-                                                                         BitmapFrame bitmapFrame = image.ToBitmapSource()
-                                                                                                        .Resize(
-                                                                                                            System
-                                                                                                                .Windows
-                                                                                                                .Media
-                                                                                                                .BitmapScalingMode
-                                                                                                                .HighQuality,
-                                                                                                            true,
-                                                                                                            (int)
-                                                                                                            (_albumArtSize*
-                                                                                                             1.5),
-                                                                                                            (int)
-                                                                                                            (_albumArtSize*
-                                                                                                             1.5));
+                                                                         Image image = Image.FromFile(GetCoverArtFilename(item.Child)); 
+                                                                         BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                                                                          image.Dispose();
                                                                          bitmapFrame.Freeze();
                                                                          GC.Collect();
