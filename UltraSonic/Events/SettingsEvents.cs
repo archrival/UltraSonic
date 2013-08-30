@@ -114,6 +114,9 @@ namespace UltraSonic
 
                 InitSubsonicApi();
 
+                if (SubsonicClient == null)
+                    return;
+
                 License license = SubsonicClient.GetLicense();
 
                 if (!license.Valid)

@@ -27,20 +27,29 @@ namespace UltraSonic
     /// </summary>
     public partial class MainWindow : IDisposable
     {
+        private const double ScalingFactor = 1.6180339887;
         private const string AppName = "UltraSonic";
         private const string ClientName = "UltraSonic for Windows";
 
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellableTasks = new ConcurrentDictionary<string, CancellationTokenSource>();
-        private string _cacheDirectory;
         private readonly string _roamingPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private readonly ConcurrentQueue<Uri> _streamItems = new ConcurrentQueue<Uri>();
         private readonly DispatcherTimer _mainTimer = new DispatcherTimer();
         private readonly DispatcherTimer _nowPlayingTimer = new DispatcherTimer();
         private readonly DispatcherTimer _chatMessagesTimer = new DispatcherTimer();
+        private readonly SemaphoreSlim _cachingThrottle = new SemaphoreSlim(1);
+        private readonly ObservableCollection<NowPlayingItem> _nowPlayingItems = new ObservableCollection<NowPlayingItem>();
+        private readonly ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
+        private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
+        private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
+        private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
+        private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
+        private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
+        public AlbumArt AlbumArtWindow;
+        private string _cacheDirectory;
         private string _artistFilter = string.Empty;
         private TrackItem _nowPlayingTrack;
         private Image _currentAlbumArt;
-        public AlbumArt AlbumArtWindow;
         private TimeSpan _position;
         private int _maxSearchResults = 25;
         private int _maxBitrate;
@@ -49,7 +58,6 @@ namespace UltraSonic
         private int _chatMessagesInterval = 5;
         private int _throttle = 6;
         private int _albumArtSize = 50;
-        private const double ScalingFactor = 1.6180339887;
         private string _serverHash;
         private string _musicCacheDirectoryName = string.Empty;
         private string _coverArtCacheDirectoryName = string.Empty;
@@ -72,17 +80,10 @@ namespace UltraSonic
         private bool _movingSlider;
         private bool _working;
 
-        private readonly SemaphoreSlim _cachingThrottle = new SemaphoreSlim(1);
-
-        private readonly ObservableCollection<NowPlayingItem> _nowPlayingItems = new ObservableCollection<NowPlayingItem>();
-        private readonly ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
         private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
-        private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
-        private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
-        private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
-        private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
-        private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
 
+        private Playlist CurrentPlaylist { get; set; }
+        private User CurrentUser { get; set; }
         private SubsonicClientWindows SubsonicClient { get; set; }
         private string Username { get; set; }
         private string Password { get; set; }
@@ -92,9 +93,37 @@ namespace UltraSonic
         private string ProxyUsername { get; set; }
         private string ProxyPassword { get; set; }
         private bool UseProxy { get; set; }
-        private Playlist CurrentPlaylist { get; set; }
-        private User CurrentUser { get; set; }
         private StreamProxy StreamProxy { get; set; }
+        private FileLogger FileLogger { get; set; }
+
+        private ObservableCollection<ArtistItem> ArtistItems
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_artistFilter))
+                {
+                    _filteredArtistItems = new ObservableCollection<ArtistItem>();
+
+                    foreach (ArtistItem artistItem in _artistItems)
+                    {
+                        IEnumerable<ArtistItem> filteredArtistItems = artistItem.Children.Where(c => c.Name.Contains(_artistFilter, StringComparison.OrdinalIgnoreCase));
+                        List<ArtistItem> artistItems = filteredArtistItems as List<ArtistItem> ?? filteredArtistItems.ToList();
+
+                        if (!artistItems.Any()) continue;
+
+                        var newArtistItem = new ArtistItem();
+                        var children = new ObservableCollection<ArtistItem>(artistItems);
+                        artistItem.CopyTo(newArtistItem);
+                        newArtistItem.Children = children;
+                        _filteredArtistItems.Add(newArtistItem);
+                    }
+
+                    return _filteredArtistItems;
+                }
+
+                return _artistItems;
+            }
+        }
 
         public MainWindow()
         {
@@ -102,11 +131,24 @@ namespace UltraSonic
 
             try
             {
+                FileLogger = new FileLogger("ultrasonic.log", Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
+                FileLogger.Log("UltraSonic Started", Subsonic.Client.Common.Enums.LoggingLevel.Basic);
+                
                 WindowStartupLocation = WindowStartupLocation.Manual;
+
+                FileLogger.Log(string.Format("WindowLeft: {0}", Settings.Default.WindowLeft), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
                 Left = Settings.Default.WindowLeft;
+
+                FileLogger.Log(string.Format("WindowTop: {0}", Settings.Default.WindowTop), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
                 Top = Settings.Default.WindowTop;
+                
+                FileLogger.Log(string.Format("WindowHeight: {0}", Settings.Default.WindowHeight), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
                 Height = Settings.Default.WindowHeight;
+
+                FileLogger.Log(string.Format("WindowWidth: {0}", Settings.Default.WindowWidth), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
                 Width = Settings.Default.WindowWidth;
+
+                FileLogger.Log(string.Format("WindowMaximized: {0}", Settings.Default.WindowMaximized), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
                 
                 if (Settings.Default.WindowMaximized)
                     WindowState = WindowState.Maximized;
@@ -124,8 +166,12 @@ namespace UltraSonic
 
                 if (StreamProxy == null)
                 {
+                    FileLogger.Log("Creating StreamProxy", Subsonic.Client.Common.Enums.LoggingLevel.Information);
+
                     StreamProxy = new StreamProxy();
                     StreamProxy.Start();
+
+                    FileLogger.Log(string.Format("StreamProxy Port: {0}", StreamProxy.GetPort()), Subsonic.Client.Common.Enums.LoggingLevel.Information);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
@@ -192,33 +238,70 @@ namespace UltraSonic
             }
         }
 
-        private ObservableCollection<ArtistItem> ArtistItems
+        private void InitSubsonicApi()
         {
-            get
+            var serverUri = new Uri(ServerUrl);
+
+            if (!ValidateCertificate(serverUri))
             {
-                if (!string.IsNullOrEmpty(_artistFilter))
+                FileLogger.Log("Unable to validate server certificate, this issue must be corrected before continuing.", Subsonic.Client.Common.Enums.LoggingLevel.Error);
+                MessageBox.Show("Unable to validate server certificate, this issue must be corrected before continuing.", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                SubsonicClient = null;
+            }
+            else
+            {
+                SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
+                SubsonicClient.Ping();
+                ServerApiLabel.Text = SubsonicClient.SubsonicClient.ServerApiVersion.ToString();
+                SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
+
+                FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicClient.SubsonicClient.ServerApiVersion), Subsonic.Client.Common.Enums.LoggingLevel.Information);
+
+                if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
                 {
-                    _filteredArtistItems = new ObservableCollection<ArtistItem>();
-
-                    foreach (ArtistItem artistItem in _artistItems)
+                    Dispatcher.Invoke(() =>
                     {
-                        IEnumerable<ArtistItem> filteredArtistItems = artistItem.Children.Where(c => c.Name.Contains(_artistFilter, StringComparison.OrdinalIgnoreCase));
-                        List<ArtistItem> artistItems = filteredArtistItems as List<ArtistItem> ?? filteredArtistItems.ToList();
+                        PlaylistGridStarred.Visibility = Visibility.Collapsed;
+                        TrackDataGridStarred.Visibility = Visibility.Collapsed;
+                        AlbumDataGridStarred.Visibility = Visibility.Collapsed;
+                        UserShareLabel.Visibility = Visibility.Hidden;
+                        UserShareLabel2.Visibility = Visibility.Hidden;
+                    });
+                }
+                else if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
+                {
+                    FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), Subsonic.Client.Common.Enums.LoggingLevel.Error);
+                    MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                    SubsonicClient = null;
+                }
+            }
+        }
 
-                        if (!artistItems.Any()) continue;
+        private bool ValidateCertificate(Uri serverUri)
+        {
+            if (serverUri.Scheme == "https")
+            {
+                X509Certificate2 cert = GetSslCertificate(serverUri);
 
-                        var newArtistItem = new ArtistItem();
-                        var children = new ObservableCollection<ArtistItem>(artistItems);
-                        artistItem.CopyTo(newArtistItem);
-                        newArtistItem.Children = children;
-                        _filteredArtistItems.Add(newArtistItem);
+                if (cert == null) return false;
+
+                if (!cert.Verify())
+                {
+                    MessageBoxResult result = MessageBox.Show(string.Format("Server certificate is not trusted, would you like to add it to trusted root certificate authorities (CAs)?\n\n\tName: {0}\n\tIssuer: {1}\n\tSerial: {2}\n\tThumbprint: {3}\n\tExpiration: {4}", cert.Subject, cert.Issuer, cert.GetSerialNumberString(), cert.Thumbprint, cert.GetExpirationDateString()), AppName, MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        X509Store store = new X509Store(StoreName.Root);
+                        store.Open(OpenFlags.ReadWrite);
+                        store.Add(cert);
+                        store.Close();
                     }
-
-                    return _filteredArtistItems;
                 }
 
-                return _artistItems;
+                return cert.Verify();
             }
+
+            return true;
         }
 
         private static X509Certificate2 GetSslCertificate(Uri url)
@@ -256,66 +339,23 @@ namespace UltraSonic
             return cert;
         }
 
-        private bool ValidateCertificate(Uri serverUri)
+        private void UpdateLicenseInformation(License license)
         {
-            if (serverUri.Scheme == "https")
+            Dispatcher.Invoke(() =>
             {
-                X509Certificate2 cert = GetSslCertificate(serverUri);
-
-                if (cert == null) return false;
-
-                if (!cert.Verify())
-                {
-                    MessageBoxResult result = MessageBox.Show(string.Format("Server certificate is not trusted, would you like to add it to trusted root certificate authorities (CAs)?\n\n\tName: {0}\n\tIssuer: {1}\n\tSerial: {2}\n\tThumbprint: {3}\n\tExpiration: {4}", cert.Subject, cert.Issuer, cert.GetSerialNumberString(), cert.Thumbprint, cert.GetExpirationDateString()), AppName, MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        X509Store store = new X509Store(StoreName.Root);
-                        store.Open(OpenFlags.ReadWrite);
-                        store.Add(cert);
-                        store.Close();
-                    }
-                }
-
-                return cert.Verify();
-            }
-
-            return true;
+                LicenseDateLabel.Text = license.Date != new DateTime() ? license.Date.ToString(CultureInfo.InvariantCulture) : string.Empty;
+                LicenseEmailLabel.Text = license.Email;
+                LicenseKeyLabel.Text = license.Key;
+                LicenseValidLabel.Text = license.Valid.ToString();
+            });
         }
 
-        private void InitSubsonicApi()
+        private async void UpdateArtists()
         {
-            var serverUri = new Uri(ServerUrl);
-
-            if (!ValidateCertificate(serverUri))
-            {
-                MessageBox.Show("Unable to validate server certificate, this issue must be corrected before continuing.", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
-                SubsonicClient = null;
-            }
-            else
-            {
-                SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
-                SubsonicClient.Ping();
-                ServerApiLabel.Text = SubsonicClient.SubsonicClient.ServerApiVersion.ToString();
-                SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
-
-                if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
-                {
-                    Dispatcher.Invoke(() =>
-                                          {
-                                              PlaylistGridStarred.Visibility = Visibility.Collapsed;
-                                              TrackDataGridStarred.Visibility = Visibility.Collapsed;
-                                              AlbumDataGridStarred.Visibility = Visibility.Collapsed;
-                                              UserShareLabel.Visibility = Visibility.Hidden;
-                                              UserShareLabel2.Visibility = Visibility.Hidden;
-                                          });
-                }
-                else if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
-                {
-                    MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
-                    SubsonicClient = null;
-                }
-            }
+            if (SubsonicClient == null) return;
+            ProgressIndicator.Visibility = Visibility.Visible;
+            await SubsonicClient.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
+            ProgressIndicator.Visibility = Visibility.Hidden;
         }
 
         private void Ticktock()
@@ -330,14 +370,6 @@ namespace UltraSonic
 
             if (_cachePlaylistTracks && _shouldCachePlaylist && _useDiskCache)
                 CachePlaylistTracks();
-        }
-
-        private async void UpdateArtists()
-        {
-            if (SubsonicClient == null) return;
-            ProgressIndicator.Visibility = Visibility.Visible;
-            await SubsonicClient.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
-            ProgressIndicator.Visibility = Visibility.Hidden;
         }
 
         private async void UpdateNowPlaying()
@@ -364,15 +396,25 @@ namespace UltraSonic
             _working = false;
         }
 
-        private void UpdateLicenseInformation(License license)
+        protected override void OnClosed(EventArgs e)
         {
-            Dispatcher.Invoke(() =>
-                {
-                    LicenseDateLabel.Text = license.Date != new DateTime() ? license.Date.ToString(CultureInfo.InvariantCulture) : string.Empty;
-                    LicenseEmailLabel.Text = license.Email;
-                    LicenseKeyLabel.Text = license.Key;
-                    LicenseValidLabel.Text = license.Valid.ToString();
-                });
+ 	        base.OnClosed(e);
+            Dispose();
+        }
+        
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool managed)
+        {
+            if (_cachingThrottle != null)
+                _cachingThrottle.Dispose();
+
+            if (FileLogger != null)
+                FileLogger.Dispose();
         }
 
         private string GetMusicFilename(Child child)
@@ -400,32 +442,19 @@ namespace UltraSonic
         private void UpdateTrackListingGrid(IEnumerable<Child> children)
         {
             Dispatcher.Invoke(() =>
-                                  {
-                                      ProgressIndicator.Visibility = Visibility.Visible;
-                                      _trackItems.Clear();
-                                      foreach (DataGridColumn column in TrackDataGrid.Columns)
-                                      {
-                                          column.Width = column.MinWidth;
-                                          column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
-                                      }
+            {
+                ProgressIndicator.Visibility = Visibility.Visible;
+                _trackItems.Clear();
+                foreach (DataGridColumn column in TrackDataGrid.Columns)
+                {
+                    column.Width = column.MinWidth;
+                    column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                }
 
-                                      PopulateTrackItemCollection(children);
-                                      UiHelpers.ScrollToTop(TrackDataGrid);
-                                      ProgressIndicator.Visibility = Visibility.Hidden;
-                                  });
-        }
-
-
-        protected virtual void Dispose(bool managed)
-        {
-            if (_cachingThrottle != null)
-                _cachingThrottle.Dispose();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+                PopulateTrackItemCollection(children);
+                UiHelpers.ScrollToTop(TrackDataGrid);
+                ProgressIndicator.Visibility = Visibility.Hidden;
+            });
         }
     }
 }
