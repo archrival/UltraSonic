@@ -139,7 +139,15 @@ namespace UltraSonic
 
             try
             {
-                FileLogger = new FileLogger("ultrasonic.log", Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
+                String appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppName);
+                var appDir = new DirectoryInfo(appData);
+                
+                if (!appDir.Exists)
+                    System.IO.Directory.CreateDirectory(appData);
+                
+                String logFile = Path.Combine(appData, "ultrasonic.log");
+
+                FileLogger = new FileLogger(logFile, Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
                 FileLogger.Log("UltraSonic Started", Subsonic.Client.Common.Enums.LoggingLevel.Basic);
                 
                 WindowStartupLocation = WindowStartupLocation.Manual;
