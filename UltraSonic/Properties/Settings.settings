@@ -95,5 +95,8 @@
     <Setting Name="AlbumPlayButtonBehavior" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">Ask</Value>
     </Setting>
+    <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

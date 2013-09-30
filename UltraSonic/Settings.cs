@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Subsonic.Client.Common.Items;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
-using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 
@@ -16,6 +15,13 @@ namespace UltraSonic
     {
         private void PopulateSettings()
         {
+            if (Settings.Default.UpgradeRequired)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+                Settings.Default.Save();
+            }
+
             Username = Settings.Default.Username;
             Password = Settings.Default.Password;
             ServerUrl = Settings.Default.ServerUrl;
