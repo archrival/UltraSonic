@@ -188,6 +188,15 @@
         <CommandBinding CanExecute="NextCanExecute"
                         Command="MediaCommands.NextTrack"
                         Executed="NextButtonClick" />
+        <CommandBinding CanExecute="CommandCanExecute"
+                        Command="local:MainWindow.PlayPauseCommand"
+                        Executed="PauseButtonClick" />
+        <CommandBinding CanExecute="PreviousCanExecute"
+                        Command="local:MainWindow.PreviousCommand"
+                        Executed="PreviousButtonClick" />
+        <CommandBinding CanExecute="NextCanExecute"
+                        Command="local:MainWindow.NextCommand"
+                        Executed="NextButtonClick" />
     </Window.CommandBindings>
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo>

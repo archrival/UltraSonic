@@ -1,4 +1,5 @@
-﻿using Subsonic.Client.Common;
+﻿using System.Windows.Input;
+using Subsonic.Client.Common;
 using Subsonic.Client.Common.Items;
 using Subsonic.Client.Windows;
 using Subsonic.Common;
@@ -95,6 +96,9 @@ namespace UltraSonic
         private bool UseProxy { get; set; }
         private StreamProxy StreamProxy { get; set; }
         private FileLogger FileLogger { get; set; }
+        public static RoutedCommand NextCommand = new RoutedCommand();
+        public static RoutedCommand PreviousCommand = new RoutedCommand();
+        public static RoutedCommand PlayPauseCommand = new RoutedCommand();
 
         private ObservableCollection<ArtistItem> ArtistItems
         {
@@ -128,6 +132,10 @@ namespace UltraSonic
         public MainWindow()
         {
             InitializeComponent();
+
+            NextCommand.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Alt));
+            PreviousCommand.InputGestures.Add(new KeyGesture(Key.P, ModifierKeys.Alt));
+            PlayPauseCommand.InputGestures.Add(new KeyGesture(Key.Space, ModifierKeys.Alt));
 
             try
             {
