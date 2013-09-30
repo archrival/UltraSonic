@@ -16,6 +16,9 @@ namespace UltraSonic
                     {
                         ArtistItems.Clear();
 
+                        if (task.Result == null || task.Result.Index == null)
+                            return;
+
                         foreach (Index index in task.Result.Index)
                         {
                             var artistItem = new ArtistItem { Name = index.Name };
