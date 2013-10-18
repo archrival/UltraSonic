@@ -247,13 +247,13 @@
                            Width="100"
                            FontSize="10" />
             <StatusBarItem x:Name="MusicPlayStatusLabel"
-                           Width="100"
+                           Width="120"
                            FontSize="10" />
             <StatusBarItem x:Name="SearchStatusLabel"
-                           Width="100"
+                           Width="120"
                            FontSize="10" />
             <StatusBarItem x:Name="DownloadStatusLabel"
-                           Width="200"
+                           Width="220"
                            FontSize="10" />
             <local:CircularProgressBar x:Name="ProgressIndicator"
                                        Width="14"
@@ -1498,19 +1498,19 @@
                        Height="13"
                        Margin="0,0,0,0"
                        FontSize="10"
-                       FontWeight="Normal" />
+                       FontWeight="Normal" TextTrimming="WordEllipsis" />
             <TextBlock x:Name="MusicTitleLabel"
                        Width="175"
                        Height="13"
                        Margin="0,0,0,0"
                        FontSize="10"
-                       FontWeight="Medium" />
+                       FontWeight="Medium" TextTrimming="WordEllipsis" />
             <TextBlock x:Name="MusicAlbumLabel"
                        Width="175"
                        Height="13"
                        Margin="0,0,0,0"
                        FontSize="10"
-                       FontWeight="Bold" />
+                       FontWeight="Bold" TextTrimming="WordEllipsis" />
         </StackPanel>
         <Button x:Name="PreviousButton"
                 Grid.Column="0"
