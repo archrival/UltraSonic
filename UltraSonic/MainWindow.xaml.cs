@@ -256,8 +256,9 @@ namespace UltraSonic
 
         private void InitSubsonicApi()
         {
-            var serverUri = new Uri(ServerUrl);
-
+            Uri serverUri = new Uri(ServerUrl);
+            Uri proxyUri = string.IsNullOrWhiteSpace(ProxyServer) ? null : new Uri(ProxyServer);
+            
             if (!ValidateCertificate(serverUri))
             {
                 FileLogger.Log("Unable to validate server certificate, this issue must be corrected before continuing.", Subsonic.Client.Common.Enums.LoggingLevel.Error);
@@ -266,7 +267,7 @@ namespace UltraSonic
             }
             else
             {
-                SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, ProxyServer, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
+                SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, proxyUri, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
                 SubsonicClient.Ping();
                 ServerApiLabel.Text = SubsonicClient.SubsonicClient.ServerApiVersion.ToString();
                 SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
@@ -293,7 +294,7 @@ namespace UltraSonic
             }
         }
 
-        private bool ValidateCertificate(Uri serverUri)
+        private static bool ValidateCertificate(Uri serverUri)
         {
             if (serverUri.Scheme == "https")
             {

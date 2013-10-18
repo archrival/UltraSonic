@@ -16,7 +16,8 @@ namespace UltraSonic.Static
             while ((child != null) && !(child is T))
                 child = VisualTreeHelper.GetParent(child);
 
-            return child as T;
+            //return child as T;
+            return (T) child;
         }   
 
         public static void ScrollToTop(DependencyObject dependencyObject)

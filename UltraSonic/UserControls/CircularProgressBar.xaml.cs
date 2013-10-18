@@ -142,7 +142,7 @@
         /// </summary>
         /// <param name="ellipse">The circle.</param>
         /// <param name="sequence">Sequence number of the circle.</param>
-        private void SetPosition(Ellipse ellipse, double sequence)
+        private static void SetPosition(Ellipse ellipse, double sequence)
         {
             ellipse.SetValue(
                 Canvas.LeftProperty,

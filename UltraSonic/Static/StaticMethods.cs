@@ -9,8 +9,9 @@ namespace UltraSonic.Static
         public static string CalculateSha256(string text, Encoding enc)
         {
             byte[] buffer = enc.GetBytes(text);
-            var cryptoTransformSha1 = new SHA256CryptoServiceProvider();
-            return BitConverter.ToString(cryptoTransformSha1.ComputeHash(buffer)).Replace("-", "");
+
+            using (var cryptoTransformSha1 = new SHA256CryptoServiceProvider())
+                return BitConverter.ToString(cryptoTransformSha1.ComputeHash(buffer)).Replace("-", "");
         }
 
         public static DateTime DateTimeFromUnixTimestamp(long timestamp)

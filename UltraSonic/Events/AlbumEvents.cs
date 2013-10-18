@@ -84,7 +84,7 @@ namespace UltraSonic
                     break;
             }
 
-            _albumListItem = new AlbumListItem {Type = albumListType, Current = 0};
+            _albumListItem = new AlbumListItem {AlbumListType = albumListType, Current = 0};
             SubsonicClient.GetAlbumListAsync(albumListType, _albumListMax, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListMax + 1, _albumListMax + _albumListMax));
         }
 
@@ -93,7 +93,7 @@ namespace UltraSonic
             if (SubsonicClient == null || _albumListItem == null) return;
 
             _albumListItem.Current += _albumListMax;
-            SubsonicClient.GetAlbumListAsync(_albumListItem.Type, _albumListMax, _albumListItem.Current, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax));
+            SubsonicClient.GetAlbumListAsync(_albumListItem.AlbumListType, _albumListMax, _albumListItem.Current, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax));
         }
 
         private void AlbumDataGridAddClick(object sender, RoutedEventArgs e)

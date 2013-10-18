@@ -16,11 +16,11 @@ namespace UltraSonic.Static
         /// <returns>A BitmapSource</returns>
         public static BitmapSource ToBitmapSource(this Image source)
         {
-            Bitmap bitmap = new Bitmap(source);
-            BitmapSource bitSrc = bitmap.ToBitmapSource();
-            bitmap.Dispose();
-
-            return bitSrc;
+            using (Bitmap bitmap = new Bitmap(source))
+            {
+                BitmapSource bitSrc = bitmap.ToBitmapSource();
+                return bitSrc;
+            }
         }
 
         /// <summary>

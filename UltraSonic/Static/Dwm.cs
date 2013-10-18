@@ -37,7 +37,7 @@ namespace UltraSonic.Static
         /// </summary> 
         /// <param name="window">Window to which the shadow will be applied</param> 
         /// <returns>True if the method succeeded, false if not</returns> 
-       [SecurityCritical, SecuritySafeCritical]
+       [SecurityCritical]
         private static bool DropShadow(Window window)
         {
             try

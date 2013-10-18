@@ -20,6 +20,7 @@ namespace UltraSonic.Static
         internal static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
 
         [DllImport("dwmapi.dll", PreserveSig = false)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool DwmIsCompositionEnabled();
     }
 }
