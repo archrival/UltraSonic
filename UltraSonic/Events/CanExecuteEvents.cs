@@ -7,17 +7,17 @@ namespace UltraSonic
     {
         private void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && (MediaPlayer.Source != null || _playlistTrackItems.Any());
+            e.CanExecute = MediaPlayer != null && (MediaPlayer.Source != null || _playbackTrackItems.Any());
         }
 
         private void PreviousCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) > 0);
+            e.CanExecute = MediaPlayer != null && _playbackTrackItems.Any() && (_nowPlayingTrack != null && _playbackTrackItems.IndexOf(_nowPlayingTrack) > 0);
         }
 
         private void NextCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = MediaPlayer != null && _playlistTrackItems.Any() && (_nowPlayingTrack != null && _playlistTrackItems.IndexOf(_nowPlayingTrack) < _playlistTrackItems.Count - 1);
+            e.CanExecute = MediaPlayer != null && _playbackTrackItems.Any() && (_nowPlayingTrack != null && _playbackTrackItems.IndexOf(_nowPlayingTrack) < _playbackTrackItems.Count - 1);
         }
     }
 }

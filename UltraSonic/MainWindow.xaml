@@ -663,12 +663,16 @@
             </TabItem>
             <TabItem x:Name="PlaylistTab" Header="Playlists">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
-                    <DockPanel Grid.Column="0">
+                    <DockPanel Grid.Column="0" Grid.RowSpan="2">
                         <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                 BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                                 BorderThickness="1"
@@ -689,7 +693,7 @@
                                   GridLinesVisibility="None"
                                   HorizontalScrollBarVisibility="Auto"
                                   LoadingRow="DataGridLoadingRow"
-                                  PreviewMouseLeftButtonUp="PlaylistsDataGridSelectionChanged"
+                                  MouseDoubleClick="PlaylistsDataGridSelectionChanged"
                                   RowBackground="White"
                                   VerticalScrollBarVisibility="Auto">
                             <DataGrid.ContextMenu>
@@ -716,7 +720,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
-                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2">
+                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0">
                         <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                 BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                                 BorderThickness="1"
@@ -818,12 +822,115 @@
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
+                    <DockPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1">
+                        <Border Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+                                BorderThickness="1"
+                                DockPanel.Dock="Top">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
+                                       Text="Playback Tracks" />
+                        </Border>
+                        <DataGrid x:Name="PlaybackTrackGrid"
+                                  AutoGenerateColumns="False"
+                                  Background="White"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="True"
+                                  CanUserResizeRows="False"
+                                  DockPanel.Dock="Top"
+                                  GridLinesVisibility="None"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  ItemsSource="{Binding NotifyOnSourceUpdated=True}"
+                                  LoadingRow="DataGridLoadingRow"
+                                  MouseDoubleClick="PlaybackTrackGridMouseDoubleClick"
+                                  RowBackground="White"
+                                  SelectionMode="Extended"
+                                  VerticalScrollBarVisibility="Auto">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Click="PlaybackTrackGridAddClick" Header="Add To Playlist" />
+                                    <MenuItem x:Name="PlaybackTrackGridDownload"
+                                              Click="PlaybackTrackGridDownloadClick"
+                                              Header="Download" />
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn x:Name="PlaybackGridStarred">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ToggleButton Name="StarredCheckbox"
+                                                          Width="16"
+                                                          Height="16"
+                                                          Click="StarredCheckBoxClick"
+                                                          Cursor="Hand"
+                                                          IsChecked="{Binding Path=Starred,
+                                                                              Mode=TwoWay,
+                                                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Template="{StaticResource ResourceKey=StarTemplate}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Binding="{Binding DiscNumber}"
+                                                    Header="Disc"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding TrackNumber}"
+                                                    Header="Track"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Artist}"
+                                                    Header="Artist"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Title}"
+                                                    Header="Title"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Album}"
+                                                    Header="Album"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Genre}"
+                                                    Header="Genre"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Year}"
+                                                    Header="Year"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding Duration}"
+                                                    Header="Duration"
+                                                    IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding BitRate}"
+                                                    Header="BitRate"
+                                                    IsReadOnly="True" />
+                                <DataGridTemplateColumn Header="Cached" SortMemberPath="Cached">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox x:Name="CachedCheckbox"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{Binding Path=Cached,
+                                                                          Mode=TwoWay}"
+                                                      IsThreeState="False" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Rating" SortMemberPath="Rating">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <local:RatingControl Name="RatingControl"
+                                                                 Width="87"
+                                                                 Height="16"
+                                                                 Click="RatingClick"
+                                                                 Cursor="Hand"
+                                                                 RatingValue="{Binding Path=Rating}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
                     <!--  Drag and Drop Popup  -->
                     <Popup x:Name="PlaylistDragPopup"
                            AllowsTransparency="True"
                            IsHitTestVisible="False"
                            Placement="RelativePoint"
-                           PlacementTarget="{Binding ElementName=me}">
+                           PlacementTarget="{Binding ElementName=me}" Grid.RowSpan="2">
                         <Border Background="White"
                                 BorderBrush="Black"
                                 BorderThickness="1"
@@ -1187,16 +1294,14 @@
                                               HorizontalAlignment="Left"
                                               Content="Save Working Playlist"
                                               ToolTip="If enabled, the current playlist will be restored after the application is closed and re-opened" />
+                                    <CheckBox x:Name="SavePlaybackListCheckBox"
+                                              HorizontalAlignment="Left"
+                                              Content="Save Playback List"
+                                              ToolTip="If enabled, the playback list will be restored after the application is closed and re-opened" />                                    
                                     <CheckBox x:Name="CachePlaylistTracksCheckBox"
                                               HorizontalAlignment="Left"
                                               Content="Cache Playlist Tracks"
                                               ToolTip="If enabled, any uncached tracks in the playlist will be cached if the application is in a playing state" />
-                                    <CheckBox x:Name="UseDiskCacheCheckBox"
-                                              HorizontalAlignment="Left"
-                                              Checked="SettingsUseDiskCacheCheckboxChecked"
-                                              Content="Use Disk Cache"
-                                              ToolTip="If enabled, save cover art and music to disk for offline playback"
-                                              Unchecked="SettingsUseDiskCacheCheckboxUnChecked" />
                                     <TextBlock Width="Auto"
                                                HorizontalAlignment="Left"
                                                Text="Cache Directory" />

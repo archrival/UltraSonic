@@ -37,7 +37,7 @@ namespace UltraSonic
             var selectedAlbum = source.CurrentItem as AlbumItem;
 
             if (selectedAlbum != null)
-                await SubsonicClient.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play));
+                await SubsonicClient.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play, true));
 
             _working = false;
         }
@@ -111,19 +111,11 @@ namespace UltraSonic
 
             if (albumItem == null) return;
 
-            StopMusic();
-
             Dispatcher.Invoke(() =>
                                   {
-                                      if (_albumPlayButtonBehavior == AlbumPlayButtonBehavior.Ask && _playlistTrackItems.Any())
-                                      {
-                                          MessageBoxResult result = MessageBox.Show("Would you like to save the current playlist?", AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                                      StopMusic();
 
-                                          if (result == MessageBoxResult.Yes)
-                                              SavePlaylistButtonClick(null, null);
-                                      }
-
-                                      _playlistTrackItems.Clear();
+                                      _playbackTrackItems.Clear();
 
                                       foreach (DataGridColumn column in PlaylistTrackGrid.Columns)
                                       {
@@ -131,7 +123,7 @@ namespace UltraSonic
                                           column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                       }
 
-                                      SubsonicClient.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true));
+                                      SubsonicClient.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true, true));
                                   });
         }
     }

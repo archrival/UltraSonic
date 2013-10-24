@@ -22,7 +22,7 @@ namespace UltraSonic
     {
         private void ShuffleButtonClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            Dispatcher.Invoke(() => _playlistTrackItems.Shuffle());
+            Dispatcher.Invoke(() => _playbackTrackItems.Shuffle());
         }
 
         private void MuteButtonClick(object sender, RoutedEventArgs e)
@@ -45,18 +45,18 @@ namespace UltraSonic
                                       }
                                       else
                                       {
-                                          if (PlaylistTrackGrid.Items.Count > 0)
+                                          if (PlaybackTrackGrid.Items.Count > 0)
                                           {
-                                              foreach (TrackItem trackItem in PlaylistTrackGrid.Items.Cast<TrackItem>().Where(trackItem => !trackItem.Cached))
+                                              foreach (TrackItem trackItem in PlaybackTrackGrid.Items.Cast<TrackItem>().Where(trackItem => !trackItem.Cached))
                                               {
                                                   _shouldCachePlaylist = true;
                                                   break;
                                               }
 
-                                              if (PlaylistTrackGrid.SelectedIndex == -1)
-                                                  PlaylistTrackGrid.SelectedIndex = 0;
+                                              if (PlaybackTrackGrid.SelectedIndex == -1)
+                                                  PlaybackTrackGrid.SelectedIndex = 0;
 
-                                              var playlistEntryItem = PlaylistTrackGrid.SelectedItem as TrackItem;
+                                              var playlistEntryItem = PlaybackTrackGrid.SelectedItem as TrackItem;
 
                                               if (playlistEntryItem != null)
                                                   QueueTrack(playlistEntryItem);
@@ -69,12 +69,12 @@ namespace UltraSonic
         {
             if (_caching) return;
 
-            List<TrackItem> playlistTracks = CollectionViewSource.GetDefaultView(_playlistTrackItems).Cast<TrackItem>().ToList();
+            List<TrackItem> playlistTracks = CollectionViewSource.GetDefaultView(_playbackTrackItems).Cast<TrackItem>().ToList();
 
             foreach (TrackItem trackItem in playlistTracks)
             {
                 if (IsTrackCached(trackItem.FileName, trackItem.Child)) continue;
-                if (_playlistTrackItems.All(t => t != trackItem)) continue;
+                if (_playbackTrackItems.All(t => t != trackItem)) continue;
                 if (!_shouldCachePlaylist) break;
 
                 await _cachingThrottle.WaitAsync();
@@ -265,6 +265,25 @@ namespace UltraSonic
             else
             {
                 Settings.Default.CurrentPlaylist = string.Empty;
+            }
+
+            if (_savePlaybackList)
+            {
+                string playlistXml;
+
+                using (StringWriter textWriter = new StringWriter())
+                {
+                    XmlSerializer xmlSerializer = new XmlSerializer(_playbackTrackItems.GetType());
+                    XmlWriter writer = XmlWriter.Create(textWriter);
+                    xmlSerializer.Serialize(writer, _playbackTrackItems);
+                    playlistXml = textWriter.ToString();
+                }
+
+                Settings.Default.CurrentPlaybackList = playlistXml;
+            }
+            else
+            {
+                Settings.Default.CurrentPlaybackList = string.Empty;
             }
 
             Settings.Default.Save();

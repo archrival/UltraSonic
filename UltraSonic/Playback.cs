@@ -15,14 +15,14 @@ namespace UltraSonic
             Dispatcher.Invoke(() =>
             {
                 bool playNextTrack = false;
-                int playlistTrack = _nowPlayingTrack != null ? _playlistTrackItems.IndexOf(_nowPlayingTrack) : PlaylistTrackGrid.SelectedIndex;
+                int playlistTrack = _nowPlayingTrack != null ? _playbackTrackItems.IndexOf(_nowPlayingTrack) : PlaybackTrackGrid.SelectedIndex;
 
-                if (playlistTrack == _playlistTrackItems.Count - 1)
+                if (playlistTrack == _playbackTrackItems.Count - 1)
                 {
                     if (_repeatPlaylist)
                     {
                         if (_playbackFollowsCursor)
-                            PlaylistTrackGrid.SelectedIndex = 0;
+                            PlaybackTrackGrid.SelectedIndex = 0;
 
                         playNextTrack = true;
                     }
@@ -30,7 +30,7 @@ namespace UltraSonic
                 else
                 {
                     if (_playbackFollowsCursor)
-                        PlaylistTrackGrid.SelectedIndex = playlistTrack + 1;
+                        PlaybackTrackGrid.SelectedIndex = playlistTrack + 1;
 
                     playNextTrack = true;
                 }
@@ -38,7 +38,7 @@ namespace UltraSonic
                 StopMusic();
 
                 if (playNextTrack)
-                    PlayTrack(_playlistTrackItems[playlistTrack + 1]);
+                    PlayTrack(_playbackTrackItems[playlistTrack + 1]);
             });
         }
 
@@ -46,14 +46,14 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
             {
-                int playlistTrack = _nowPlayingTrack != null ? _playlistTrackItems.IndexOf(_nowPlayingTrack) : PlaylistTrackGrid.SelectedIndex;
+                int playlistTrack = _nowPlayingTrack != null ? _playbackTrackItems.IndexOf(_nowPlayingTrack) : PlaybackTrackGrid.SelectedIndex;
 
                 if (_playbackFollowsCursor)
-                    PlaylistTrackGrid.SelectedIndex--;
+                    PlaybackTrackGrid.SelectedIndex--;
 
                 StopMusic();
 
-                PlayTrack(_playlistTrackItems[playlistTrack - 1]);
+                PlayTrack(_playbackTrackItems[playlistTrack - 1]);
             });
         }
 
@@ -112,7 +112,9 @@ namespace UltraSonic
             }
             else
             {
-                _streamItems.Enqueue(fileNameUri);
+                if (!_streamItems.Contains(fileNameUri))
+                    _streamItems.Enqueue(fileNameUri);
+
                 UpdateAlbumArt(child);
 
                 _caching = true;

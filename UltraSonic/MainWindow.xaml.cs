@@ -44,6 +44,7 @@ namespace UltraSonic
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
         private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
         private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
+        private readonly ObservableCollection<TrackItem> _playbackTrackItems = new ObservableCollection<TrackItem>();
         private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
         private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
         public AlbumArt AlbumArtWindow;
@@ -68,10 +69,11 @@ namespace UltraSonic
         private double _chatMessageSince;
         private AlbumListItem _albumListItem;
         private string _currentPlaylist = string.Empty;
+        private string _currentPlaybackList = string.Empty;
 
         private bool _repeatPlaylist;
-        private bool _useDiskCache = true;
         private bool _saveWorkingPlaylist;
+        private bool _savePlaybackList;
         private bool _showAlbumArt;
         private bool _newChatNotify;
         private bool _playbackFollowsCursor;
@@ -172,13 +174,13 @@ namespace UltraSonic
                 PopulateSettings();
                 MusicPlayStatusLabel.Content = "Stopped";
                 ArtistTreeView.DataContext = ArtistItems;
-                DataGridDragAndDrop<TrackItem> playlistTrackDragAndDrop = DataGridDragAndDrop<TrackItem>.Create(_playlistTrackItems, PlaylistTrackGrid, this, PlaylistDragPopup);
+                //DataGridDragAndDrop<TrackItem> playlistTrackDragAndDrop = DataGridDragAndDrop<TrackItem>.Create(_playlistTrackItems, PlaylistTrackGrid, this, PlaylistDragPopup);
 
-                PlaylistTrackGrid.BeginningEdit += playlistTrackDragAndDrop.DataGridOnBeginEdit;
-                PlaylistTrackGrid.CellEditEnding += playlistTrackDragAndDrop.DataGridOnEndEdit;
-                PlaylistTrackGrid.PreviewMouseLeftButtonDown += playlistTrackDragAndDrop.DataGridOnMouseLeftButtonDown;
-                MainGrid.MouseLeftButtonUp += playlistTrackDragAndDrop.DataGridOnMouseLeftButtonUp;
-                MainGrid.MouseMove += playlistTrackDragAndDrop.DataGridOnMouseMove;
+                //PlaylistTrackGrid.BeginningEdit += playlistTrackDragAndDrop.DataGridOnBeginEdit;
+                //PlaylistTrackGrid.CellEditEnding += playlistTrackDragAndDrop.DataGridOnEndEdit;
+                //PlaylistTrackGrid.PreviewMouseLeftButtonDown += playlistTrackDragAndDrop.DataGridOnMouseLeftButtonDown;
+                //MainGrid.MouseLeftButtonUp += playlistTrackDragAndDrop.DataGridOnMouseLeftButtonUp;
+                //MainGrid.MouseMove += playlistTrackDragAndDrop.DataGridOnMouseMove;
 
                 if (StreamProxy == null)
                 {
@@ -207,6 +209,7 @@ namespace UltraSonic
                         {
                             UpdateArtists();
                             PopulatePlaylist();
+                            PopulatePlaybackList();
                             UpdatePlaylists();
                         }
                     }
@@ -245,6 +248,7 @@ namespace UltraSonic
                 NowPlayingDataGrid.ItemsSource = _nowPlayingItems;
                 ChatListView.ItemsSource = _chatMessages;
                 PlaylistTrackGrid.ItemsSource = _playlistTrackItems;
+                PlaybackTrackGrid.ItemsSource = _playbackTrackItems;
                 PlaylistsDataGrid.ItemsSource = _playlistItems;
                 TrackDataGrid.ItemsSource = _trackItems;
             }
@@ -385,7 +389,7 @@ namespace UltraSonic
             MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
             UpdateTitle();
 
-            if (_cachePlaylistTracks && _shouldCachePlaylist && _useDiskCache)
+            if (_cachePlaylistTracks && _shouldCachePlaylist)
                 CachePlaylistTracks();
         }
 

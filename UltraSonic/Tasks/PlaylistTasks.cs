@@ -19,21 +19,28 @@ namespace UltraSonic
             }
         }
 
-        private void AddAlbumToPlaylist(Task<Directory> task, bool play = false)
+        private void AddAlbumToPlaylist(Task<Directory> task, bool play = false, bool playback = false)
         {
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
-                                          {
-                                              foreach (TrackItem trackItem in GetTrackItemCollection(task.Result))
-                                                  AddTrackItemToPlaylist(trackItem);
+                    {
+                        if (playback)
+                        {
+                            StopButtonClick(null, null);
+                            _playbackTrackItems.Clear();
+                        }
 
-                                              if (!play) return;
+                        foreach (TrackItem trackItem in GetTrackItemCollection(task.Result))
+                            AddTrackItemToPlaylist(trackItem, playback, false);
 
-                                              PlaylistTrackGrid.SelectedIndex = 0;
-                                              PlayButtonClick(null, null);
-                                          });
+                        if (!play) return;
+
+                        PlaybackTrackGrid.SelectedIndex = 0;
+                        PlayButtonClick(null, null);
+                    });
+
                     break;
             }
         }

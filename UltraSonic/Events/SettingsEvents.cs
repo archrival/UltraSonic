@@ -59,11 +59,11 @@ namespace UltraSonic
 
                 _cacheDirectory = CacheDirectoryTextBox.Text;
                 _serverHash = StaticMethods.CalculateSha256(ServerUrl, Encoding.Unicode);
-                _useDiskCache = UseDiskCacheCheckBox.IsChecked.HasValue && UseDiskCacheCheckBox.IsChecked.Value;
                 _nowPlayingTimer.Interval = TimeSpan.FromSeconds(_nowPlayingInterval);
                 _musicCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "Music");
                 _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
                 _saveWorkingPlaylist = SaveWorkingPlaylistCheckBox.IsChecked.HasValue && SaveWorkingPlaylistCheckBox.IsChecked.Value;
+                _savePlaybackList = SavePlaybackListCheckBox.IsChecked.HasValue && SavePlaybackListCheckBox.IsChecked.Value;
                 _showAlbumArt = ShowAlbumArtCheckBox.IsChecked.HasValue && ShowAlbumArtCheckBox.IsChecked.Value;
                 _doubleClickBehavior = (DoubleClickBehavior) DoubleClickComboBox.SelectedValue;
                 _albumPlayButtonBehavior = (AlbumPlayButtonBehavior) AlbumPlayButtonBehaviorComboBox.SelectedValue;
@@ -98,13 +98,13 @@ namespace UltraSonic
                 Settings.Default.MaxBitrate = _maxBitrate;
                 Settings.Default.AlbumListMax = _albumListMax;
                 Settings.Default.CacheDirectory = _cacheDirectory;
-                Settings.Default.UseDiskCache = _useDiskCache;
                 Settings.Default.NowPlayingInterval = _nowPlayingInterval;
                 Settings.Default.ChatMessagesInterval = _chatMessagesInterval;
                 Settings.Default.PlaybackFollowsCursor = _playbackFollowsCursor;
                 Settings.Default.Throttle = _throttle;
                 Settings.Default.AlbumArtSize = _albumArtSize;
                 Settings.Default.SaveWorkingPlaylist = _saveWorkingPlaylist;
+                Settings.Default.SavePlaybackList = _savePlaybackList;
                 Settings.Default.ShowAlbumArt = _showAlbumArt;
                 Settings.Default.DoubleClickBehavior = Enum.GetName(typeof (DoubleClickBehavior), _doubleClickBehavior);
                 Settings.Default.AlbumPlayButtonBehavior = Enum.GetName(typeof (AlbumPlayButtonBehavior), _albumPlayButtonBehavior);
@@ -153,11 +153,6 @@ namespace UltraSonic
             SetProxyEntryVisibility(true);
         }
 
-        private void SettingsUseDiskCacheCheckboxUnChecked(object sender, RoutedEventArgs e)
-        {
-            SetUseDiskCacheVisibility(false);
-        }
-
         private void ShowAlbumArtCheckboxChecked(object sender, RoutedEventArgs e)
         {
             SetAlbumArtSizeVisibility(true);
@@ -166,11 +161,6 @@ namespace UltraSonic
         private void ShowAlbumArtCheckboxUnChecked(object sender, RoutedEventArgs e)
         {
             SetAlbumArtSizeVisibility(false);
-        }
-
-        private void SettingsUseDiskCacheCheckboxChecked(object sender, RoutedEventArgs e)
-        {
-            SetUseDiskCacheVisibility(true);
         }
 
         private void SettingsCancelButtonClick(object sender, RoutedEventArgs e)

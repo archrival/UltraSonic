@@ -56,6 +56,9 @@ namespace UltraSonic
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
+                        if (task.Result == null)
+                            return;
+
                         Image coverArtImage = task.Result.GetImage();
 
                         if (coverArtImage == null) return;

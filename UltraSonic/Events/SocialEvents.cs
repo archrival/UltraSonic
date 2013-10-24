@@ -47,7 +47,7 @@ namespace UltraSonic
             NowPlayingItem selectedTrack = source.CurrentItem as NowPlayingItem;
 
             if (selectedTrack != null)
-                AddTrackItemToPlaylist(selectedTrack);
+                AddTrackItemToPlaylist(selectedTrack, _doubleClickBehavior == DoubleClickBehavior.Play);
 
             _working = false;
         }

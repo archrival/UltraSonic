@@ -50,7 +50,7 @@ namespace UltraSonic
             });
         }
 
-        private TrackItem AddTrackItemToPlaylist(TrackItem trackItem)
+        private TrackItem AddTrackItemToPlaylist(TrackItem trackItem, bool playback = false, bool clear = true)
         {
             var playlistTrackItem = new TrackItem();
             trackItem.CopyTo(playlistTrackItem);
@@ -58,7 +58,17 @@ namespace UltraSonic
             playlistTrackItem.Duration = TimeSpan.FromSeconds(playlistTrackItem.Child.Duration);
             playlistTrackItem.PlaylistGuid = Guid.NewGuid();
 
-            Dispatcher.Invoke(() => _playlistTrackItems.Add(playlistTrackItem));
+            if (playback)
+                Dispatcher.Invoke(() =>
+                {
+                    if (clear)
+                        _playbackTrackItems.Clear();
+
+                    _playbackTrackItems.Add(playlistTrackItem);
+
+                });
+            else
+                Dispatcher.Invoke(() => _playlistTrackItems.Add(playlistTrackItem));
 
             return playlistTrackItem;
         }

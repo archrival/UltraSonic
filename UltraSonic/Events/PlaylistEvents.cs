@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Subsonic.Client.Common;
 using Subsonic.Client.Common.Items;
 using Subsonic.Common;
 
@@ -9,7 +8,46 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
+        private void PlaybackTrackGridAddClick(object sender, RoutedEventArgs e)
+        {
+            foreach (TrackItem item in PlaybackTrackGrid.SelectedItems)
+                AddTrackItemToPlaylist(item);
+        }
+
         private void PlaylistTrackGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (_working) return;
+
+            _working = true;
+
+            DataGrid dataGrid = sender as DataGrid;
+            if (dataGrid == null) return;
+
+            if (dataGrid.Items.Count > 0)
+            {
+                StopButtonClick(null, null);
+                _playbackTrackItems.Clear();
+                _shouldCachePlaylist = true;
+            }
+            else
+            {
+                return;
+            }
+
+            for (int i = dataGrid.SelectedIndex; i < dataGrid.Items.Count; i++)
+            {
+                TrackItem playlistEntryItem = dataGrid.Items[i] as TrackItem;
+
+                if (playlistEntryItem != null)
+                    _playbackTrackItems.Add(playlistEntryItem);
+            }
+
+            PlayButtonClick(null, null);
+
+            _working = false;
+        }
+
+        private void PlaybackTrackGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (_working) return;
 
@@ -64,6 +102,11 @@ namespace UltraSonic
         private void PlaylistTrackGridDownloadClick(object sender, RoutedEventArgs e)
         {
             DownloadTracks(PlaylistTrackGrid.SelectedItems);
+        }
+
+        private void PlaybackTrackGridDownloadClick(object sender, RoutedEventArgs e)
+        {
+            DownloadTracks(PlaybackTrackGrid.SelectedItems);
         }
 
         private void PlaylistsDataGridRefreshClick(object sender, RoutedEventArgs e)

@@ -36,6 +36,9 @@ namespace UltraSonic
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
+                    if (task.Result == null)
+                        return;
+
                     _currentAlbumArt = task.Result.GetImage();
 
                     if (_currentAlbumArt != null)

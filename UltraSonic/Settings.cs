@@ -34,7 +34,6 @@ namespace UltraSonic
             _albumListMax = Settings.Default.AlbumListMax;
             _throttle = Settings.Default.Throttle;
             _cacheDirectory = string.IsNullOrWhiteSpace(Settings.Default.CacheDirectory) ? Path.Combine(Path.Combine(_roamingPath, AppName), "Cache") : Settings.Default.CacheDirectory;
-            _useDiskCache = Settings.Default.UseDiskCache;
             _nowPlayingInterval = Settings.Default.NowPlayingInterval;
             _chatMessagesInterval = Settings.Default.ChatMessagesInterval;
             _serverHash = StaticMethods.CalculateSha256(ServerUrl, Encoding.Unicode);
@@ -42,8 +41,10 @@ namespace UltraSonic
             _coverArtCacheDirectoryName = Path.Combine(Path.Combine(_cacheDirectory, _serverHash), "CoverArt");
             _playbackFollowsCursor = Settings.Default.PlaybackFollowsCursor;
             _currentPlaylist = Settings.Default.CurrentPlaylist ?? string.Empty;
+            _currentPlaybackList = Settings.Default.CurrentPlaybackList ?? string.Empty;
             _albumArtSize = Settings.Default.AlbumArtSize;
             _saveWorkingPlaylist = Settings.Default.SaveWorkingPlaylist;
+            _savePlaybackList = Settings.Default.SavePlaybackList;
             _showAlbumArt = Settings.Default.ShowAlbumArt;
             _cachePlaylistTracks = Settings.Default.CachePlaylistTracks;
 
@@ -79,9 +80,9 @@ namespace UltraSonic
             NowPlayingIntervalTextBox.Text = _nowPlayingInterval.ToString(CultureInfo.InvariantCulture);
             ChatMessagesIntervalTextBox.Text = _chatMessagesInterval.ToString(CultureInfo.InvariantCulture);
             CacheDirectoryTextBox.Text = _cacheDirectory;
-            UseDiskCacheCheckBox.IsChecked = _useDiskCache;
             PlaybackFollowsCursorCheckBox.IsChecked = _playbackFollowsCursor;
             AlbumArtSizeTextBox.Text = _albumArtSize.ToString(CultureInfo.InvariantCulture);
+            SavePlaybackListCheckBox.IsChecked = _savePlaybackList;
             SaveWorkingPlaylistCheckBox.IsChecked = _saveWorkingPlaylist;
             ShowAlbumArtCheckBox.IsChecked = _showAlbumArt;
             AlbumDataGridAlbumArtColumn.Visibility = !_showAlbumArt ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
@@ -93,7 +94,6 @@ namespace UltraSonic
             AlbumPlayButtonBehaviorComboBox.SelectedItem = _albumPlayButtonBehavior;
 
             SetProxyEntryVisibility(UseProxy);
-            SetUseDiskCacheVisibility(_useDiskCache);
             SetAlbumArtSizeVisibility(_showAlbumArt);
         }
 
@@ -111,9 +111,28 @@ namespace UltraSonic
 
                                           if (playlistTrackItems != null)
                                               foreach (TrackItem trackItem in playlistTrackItems)
-                                                  AddTrackItemToPlaylist(trackItem);
+                                                  AddTrackItemToPlaylist(trackItem, false, false);
                                       }
                                   });
+        }
+
+        private void PopulatePlaybackList()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (!string.IsNullOrWhiteSpace(_currentPlaybackList))
+                {
+                    ObservableCollection<TrackItem> playbackTrackItems;
+                    var xmlSerializer = new XmlSerializer(_playbackTrackItems.GetType());
+
+                    using (TextReader reader = new StringReader(_currentPlaybackList))
+                        playbackTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackItem>;
+
+                    if (playbackTrackItems != null)
+                        foreach (TrackItem trackItem in playbackTrackItems)
+                            AddTrackItemToPlaylist(trackItem, true, false);
+                }
+            });
         }
 
         private void PopulateMaxBitrateComboBox()
@@ -148,14 +167,6 @@ namespace UltraSonic
                 SettingsProxyServerPasswordTextBox.IsEnabled = isChecked;
                 SettingsProxyServerPortTextBox.IsEnabled = isChecked;
                 SettingsProxyServerUsernameTextBox.IsEnabled = isChecked;
-            });
-        }
-
-        private void SetUseDiskCacheVisibility(bool isChecked)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                CacheDirectoryTextBox.IsEnabled = isChecked;
             });
         }
 
