@@ -1,8 +1,7 @@
-﻿using System.Windows.Input;
-using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
+﻿using Subsonic.Client;
+using Subsonic.Client.Items;
 using Subsonic.Client.Windows;
-using Subsonic.Common;
+using Subsonic.Common.Classes;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,6 +15,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using UltraSonic.Properties;
 using UltraSonic.Static;
@@ -149,24 +149,24 @@ namespace UltraSonic
                 
                 String logFile = Path.Combine(appData, "ultrasonic.log");
 
-                FileLogger = new FileLogger(logFile, Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
-                FileLogger.Log("UltraSonic Started", Subsonic.Client.Common.Enums.LoggingLevel.Basic);
+                FileLogger = new FileLogger(logFile, Subsonic.Client.Enums.LoggingLevel.Verbose);
+                FileLogger.Log("UltraSonic Started", Subsonic.Client.Enums.LoggingLevel.Basic);
                 
                 WindowStartupLocation = WindowStartupLocation.Manual;
 
-                FileLogger.Log(string.Format("WindowLeft: {0}", Settings.Default.WindowLeft), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowLeft: {0}", Settings.Default.WindowLeft), Subsonic.Client.Enums.LoggingLevel.Verbose);
                 Left = Settings.Default.WindowLeft;
 
-                FileLogger.Log(string.Format("WindowTop: {0}", Settings.Default.WindowTop), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowTop: {0}", Settings.Default.WindowTop), Subsonic.Client.Enums.LoggingLevel.Verbose);
                 Top = Settings.Default.WindowTop;
                 
-                FileLogger.Log(string.Format("WindowHeight: {0}", Settings.Default.WindowHeight), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowHeight: {0}", Settings.Default.WindowHeight), Subsonic.Client.Enums.LoggingLevel.Verbose);
                 Height = Settings.Default.WindowHeight;
 
-                FileLogger.Log(string.Format("WindowWidth: {0}", Settings.Default.WindowWidth), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowWidth: {0}", Settings.Default.WindowWidth), Subsonic.Client.Enums.LoggingLevel.Verbose);
                 Width = Settings.Default.WindowWidth;
 
-                FileLogger.Log(string.Format("WindowMaximized: {0}", Settings.Default.WindowMaximized), Subsonic.Client.Common.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowMaximized: {0}", Settings.Default.WindowMaximized), Subsonic.Client.Enums.LoggingLevel.Verbose);
                 
                 if (Settings.Default.WindowMaximized)
                     WindowState = WindowState.Maximized;
@@ -184,12 +184,12 @@ namespace UltraSonic
 
                 if (StreamProxy == null)
                 {
-                    FileLogger.Log("Creating StreamProxy", Subsonic.Client.Common.Enums.LoggingLevel.Information);
+                    FileLogger.Log("Creating StreamProxy", Subsonic.Client.Enums.LoggingLevel.Information);
 
                     StreamProxy = new StreamProxy();
                     StreamProxy.Start();
 
-                    FileLogger.Log(string.Format("StreamProxy Port: {0}", StreamProxy.GetPort()), Subsonic.Client.Common.Enums.LoggingLevel.Information);
+                    FileLogger.Log(string.Format("StreamProxy Port: {0}", StreamProxy.GetPort()), Subsonic.Client.Enums.LoggingLevel.Information);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
@@ -265,7 +265,7 @@ namespace UltraSonic
             
             if (!ValidateCertificate(serverUri))
             {
-                FileLogger.Log("Unable to validate server certificate, this issue must be corrected before continuing.", Subsonic.Client.Common.Enums.LoggingLevel.Error);
+                FileLogger.Log("Unable to validate server certificate, this issue must be corrected before continuing.", Subsonic.Client.Enums.LoggingLevel.Error);
                 MessageBox.Show("Unable to validate server certificate, this issue must be corrected before continuing.", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 SubsonicClient = null;
             }
@@ -273,12 +273,12 @@ namespace UltraSonic
             {
                 SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, proxyUri, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
                 SubsonicClient.Ping();
-                ServerApiLabel.Text = SubsonicClient.SubsonicClient.ServerApiVersion.ToString();
+                ServerApiLabel.Text = SubsonicClient.ServerApiVersion.ToString();
                 SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
 
-                FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicClient.SubsonicClient.ServerApiVersion), Subsonic.Client.Common.Enums.LoggingLevel.Information);
+                FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicClient.ServerApiVersion), Subsonic.Client.Enums.LoggingLevel.Information);
 
-                if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
+                if (SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -289,9 +289,9 @@ namespace UltraSonic
                         UserShareLabel2.Visibility = Visibility.Hidden;
                     });
                 }
-                else if (SubsonicClient.SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
+                else if (SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
                 {
-                    FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), Subsonic.Client.Common.Enums.LoggingLevel.Error);
+                    FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), Subsonic.Client.Enums.LoggingLevel.Error);
                     MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                     SubsonicClient = null;
                 }

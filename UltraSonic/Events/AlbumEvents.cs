@@ -1,8 +1,6 @@
-﻿using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Enums;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

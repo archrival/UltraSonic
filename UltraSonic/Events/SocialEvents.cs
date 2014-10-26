@@ -1,7 +1,7 @@
-﻿using System.Windows;
+﻿using Subsonic.Client.Items;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Subsonic.Client.Common;
 
 namespace UltraSonic
 {

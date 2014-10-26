@@ -1,10 +1,10 @@
-﻿using System.Windows.Controls;
-using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Classes;
+using Subsonic.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Controls;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -42,10 +42,10 @@ namespace UltraSonic
                     _playlistItems.Add(playlistItem);
                 }
 
-                if (SubsonicClient.SubsonicClient.ServerApiVersion >= Version.Parse("1.8.0")) // Get starred tracks to create dynamic Starred playlist
+                if (SubsonicClient.ServerApiVersion >= Version.Parse("1.8.0")) // Get starred tracks to create dynamic Starred playlist
                     SubsonicClient.GetStarredAsync(GetCancellationToken("UpdateStarredPlaylists")).ContinueWith(AddStarredToPlaylists);
 
-                if (SubsonicClient.SubsonicClient.ServerApiVersion >= Version.Parse("1.2.0")) // Get starred tracks to create dynamic Highest Rated playlist
+                if (SubsonicClient.ServerApiVersion >= Version.Parse("1.2.0")) // Get starred tracks to create dynamic Highest Rated playlist
                     SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, GetCancellationToken("UpdateHighestRatedPlaylists")).ContinueWith(AddHighestRatedToPlaylists);
             });
         }

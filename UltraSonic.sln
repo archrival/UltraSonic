@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraSonic", "UltraSonic\UltraSonic.csproj", "{367828C2-6E33-4F95-96AC-9E1E9740B185}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsonic.Client.Common", "SubsonicSharp\Subsonic.Client.Common\Subsonic.Client.Common.csproj", "{CBB112D5-2507-4453-83BE-51232FB95CA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsonic.Common", "SubsonicSharp\Subsonic.Common\Subsonic.Common.csproj", "{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsonic.Client", "SubsonicSharp\Subsonic.Client.Common\Subsonic.Client.csproj", "{CBB112D5-2507-4453-83BE-51232FB95CA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsonic.Client.Windows", "SubsonicSharp\Subsonic.Client.Windows\Subsonic.Client.Windows.csproj", "{3B48CBDF-812E-4D3D-AFAD-D09FE6786F52}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsonic.Common", "SubsonicSharp\Subsonic.Common\Subsonic.Common.csproj", "{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +21,10 @@ Global
 		{367828C2-6E33-4F95-96AC-9E1E9740B185}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{367828C2-6E33-4F95-96AC-9E1E9740B185}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{367828C2-6E33-4F95-96AC-9E1E9740B185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBB112D5-2507-4453-83BE-51232FB95CA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBB112D5-2507-4453-83BE-51232FB95CA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBB112D5-2507-4453-83BE-51232FB95CA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,10 +33,6 @@ Global
 		{3B48CBDF-812E-4D3D-AFAD-D09FE6786F52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B48CBDF-812E-4D3D-AFAD-D09FE6786F52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B48CBDF-812E-4D3D-AFAD-D09FE6786F52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -66,11 +66,9 @@ namespace UltraSonic.Static
 
             //check if the parent matches the type we're looking for
             T parent = parentObject as T;
-            if (parent != null)
-                return parent;
 
             //use recursion to proceed with next level
-            return TryFindParent<T>(parentObject);
+            return parent ?? TryFindParent<T>(parentObject);
         }
 
         /// <summary>
@@ -87,17 +85,14 @@ namespace UltraSonic.Static
             if (child == null) return null;
             ContentElement contentElement = child as ContentElement;
 
-            if (contentElement != null)
-            {
-                DependencyObject parent = ContentOperations.GetParent(contentElement);
-                if (parent != null) return parent;
+            if (contentElement == null) return VisualTreeHelper.GetParent(child);
 
-                FrameworkContentElement fce = contentElement as FrameworkContentElement;
-                return fce != null ? fce.Parent : null;
-            }
+            DependencyObject parent = ContentOperations.GetParent(contentElement);
+            if (parent != null) return parent;
 
             //if it's not a ContentElement, rely on VisualTreeHelper
-            return VisualTreeHelper.GetParent(child);
+            FrameworkContentElement fce = contentElement as FrameworkContentElement;
+            return fce != null ? fce.Parent : null;
         }
 
         /// <summary>

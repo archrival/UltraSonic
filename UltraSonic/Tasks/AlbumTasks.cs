@@ -1,21 +1,22 @@
-﻿using System.Windows.Media;
-using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Classes;
+using Subsonic.Common.Interfaces;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UltraSonic.Static;
+using Directory = Subsonic.Common.Classes.Directory;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void UpdateAlbumGrid(Task<Subsonic.Common.Directory> task)
+        private void UpdateAlbumGrid(Task<Directory> task)
         {
             switch (task.Status)
             {

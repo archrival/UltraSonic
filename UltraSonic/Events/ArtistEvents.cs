@@ -1,6 +1,5 @@
-﻿using System.Windows;
-using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
+﻿using Subsonic.Client.Items;
+using System.Windows;
 using UltraSonic.Static;
 
 namespace UltraSonic

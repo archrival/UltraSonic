@@ -1,12 +1,12 @@
-﻿using System.Windows.Media;
-using Subsonic.Client.Common;
-using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Classes;
+using Subsonic.Common.Interfaces;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using UltraSonic.Static;
 
 namespace UltraSonic

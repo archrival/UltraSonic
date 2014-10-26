@@ -1,6 +1,5 @@
-﻿using System.Windows.Media;
-using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Classes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UltraSonic.Static;
 using Image = System.Drawing.Image;

@@ -1,5 +1,6 @@
-﻿using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Classes;
+using Subsonic.Common.Enums;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

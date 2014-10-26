@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using Subsonic.Client.Common.Items;
+﻿using Subsonic.Client.Items;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;

@@ -1,8 +1,8 @@
-﻿using System.Windows;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Enums;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Subsonic.Client.Common.Items;
-using Subsonic.Common;
 
 namespace UltraSonic
 {

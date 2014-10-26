@@ -1,10 +1,11 @@
-﻿using Subsonic.Client.Common.Items;
-using Subsonic.Common;
+﻿using Subsonic.Client.Items;
+using Subsonic.Common.Classes;
+using Subsonic.Common.Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Directory = Subsonic.Common.Directory;
+using Directory = Subsonic.Common.Classes.Directory;
 
 namespace UltraSonic
 {

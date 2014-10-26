@@ -1,8 +1,9 @@
-﻿using System.Windows.Media;
-using Subsonic.Common;
+﻿using Subsonic.Common.Classes;
+using Subsonic.Common.Interfaces;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using UltraSonic.Static;
 
 namespace UltraSonic

@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Subsonic.Common;
+﻿using Subsonic.Common.Classes;
+using System.Threading.Tasks;
 
 namespace UltraSonic
 {

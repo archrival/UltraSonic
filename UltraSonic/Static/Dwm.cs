@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing.Printing;
-using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows;
 using System.Windows.Interop;
@@ -18,9 +17,7 @@ namespace UltraSonic.Static
         public static void DropShadowToWindow(Window window)
         {
             if (!DropShadow(window))
-            {
                 window.SourceInitialized += WindowSourceInitialized;
-            }
         }
 
         private static void WindowSourceInitialized(object sender, EventArgs e)
@@ -42,21 +39,19 @@ namespace UltraSonic.Static
         {
             try
             {
-                 if (NativeMethods.DwmIsCompositionEnabled())
-                 {
-                     WindowInteropHelper helper = new WindowInteropHelper(window);
-                     int val = 2;
-                     int ret1 = NativeMethods.DwmSetWindowAttribute(helper.Handle, 2, ref val, 4);
+                if (!NativeMethods.DwmIsCompositionEnabled())
+                    return false;
 
-                     if (ret1 == 0)
-                     {
-                         Margins m = new Margins { Bottom = 0, Left = 0, Right = 0, Top = 0 };
-                         int ret2 = NativeMethods.DwmExtendFrameIntoClientArea(helper.Handle, ref m);
-                         return ret2 == 0;
-                     }
-                 }
+                WindowInteropHelper helper = new WindowInteropHelper(window);
+                int val = 2;
+                int ret1 = NativeMethods.DwmSetWindowAttribute(helper.Handle, 2, ref val, 4);
 
-                 return false;
+                if (ret1 != 0)
+                    return false;
+
+                Margins m = new Margins { Bottom = 0, Left = 0, Right = 0, Top = 0 };
+                int ret2 = NativeMethods.DwmExtendFrameIntoClientArea(helper.Handle, ref m);
+                return ret2 == 0;
             }
             catch (Exception)
             {

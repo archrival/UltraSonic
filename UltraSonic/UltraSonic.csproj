@@ -238,16 +238,16 @@
     <Resource Include="Images\filter.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Common\Subsonic.Client.Common.csproj">
-      <Project>{cbb112d5-2507-4453-83be-51232fb95ca6}</Project>
-      <Name>Subsonic.Client.Common</Name>
+    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Common\Subsonic.Client.csproj">
+      <Project>{CBB112D5-2507-4453-83BE-51232FB95CA6}</Project>
+      <Name>Subsonic.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Windows\Subsonic.Client.Windows.csproj">
-      <Project>{3b48cbdf-812e-4d3d-afad-d09fe6786f52}</Project>
+      <Project>{3B48CBDF-812E-4D3D-AFAD-D09FE6786F52}</Project>
       <Name>Subsonic.Client.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\SubsonicSharp\Subsonic.Common\Subsonic.Common.csproj">
-      <Project>{a533a041-6d2d-46b3-a3e7-4cc7e64a16f3}</Project>
+      <Project>{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}</Project>
       <Name>Subsonic.Common</Name>
     </ProjectReference>
   </ItemGroup>

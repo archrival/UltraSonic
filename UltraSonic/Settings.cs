@@ -1,4 +1,4 @@
-﻿using Subsonic.Client.Common.Items;
+﻿using Subsonic.Client.Items;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
