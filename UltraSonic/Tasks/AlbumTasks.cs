@@ -72,7 +72,7 @@ namespace UltraSonic
                         BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                         coverArtImage.Dispose();
                         GC.Collect();
-                        albumItem.Image = bitmapFrame;
+                        //TODO: albumItem.Image = bitmapFrame;
                     });
                     break;
             }
@@ -87,7 +87,7 @@ namespace UltraSonic
                     {
                         BitmapFrame coverArtImage = task.Result;
                         if (coverArtImage == null) return;
-                        albumItem.Image = coverArtImage;
+                        //TODO: albumItem.Image = coverArtImage;
                     });
                     break;
                 case TaskStatus.Faulted:

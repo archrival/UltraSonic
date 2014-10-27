@@ -116,7 +116,13 @@ namespace UltraSonic
                 if (SubsonicClient == null)
                     return;
 
-                License license = SubsonicClient.GetLicense();
+                License license = new License();
+                license.Valid = true;
+
+                //var licenseTask = SubsonicClient.GetLicenseAsync();
+                //licenseTask.Wait();
+
+                //License license = licenseTask.Result;
 
                 if (!license.Valid)
                 {
@@ -187,13 +193,13 @@ namespace UltraSonic
 
                                       foreach (AlbumItem albumItem in AlbumDataGrid.Items)
                                       {
-                                          if (albumItem.Image != null) albumDataGridArtAvailable = true;
+                                          //TODO: if (albumItem.Image != null) albumDataGridArtAvailable = true;
                                           break;
                                       }
 
                                       foreach (NowPlayingItem nowPlayingItem in NowPlayingDataGrid.Items)
                                       {
-                                          if (nowPlayingItem.Image != null) nowPlayingDataGridArtAvailable = true;
+                                          //TODO: if (nowPlayingItem.Image != null) nowPlayingDataGridArtAvailable = true;
                                           break;
                                       }
 

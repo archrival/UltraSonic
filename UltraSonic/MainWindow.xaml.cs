@@ -1,4 +1,6 @@
-﻿using Subsonic.Client;
+﻿using FileLoggerWindows;
+using StreamProxyWindows;
+using Subsonic.Client;
 using Subsonic.Client.Items;
 using Subsonic.Client.Windows;
 using Subsonic.Common.Classes;
@@ -198,7 +200,14 @@ namespace UltraSonic
 
                     if (SubsonicClient != null)
                     {
-                        License license = SubsonicClient.GetLicense();
+                        License license = new License();
+                        license.Valid = true;
+
+                        //var licenseTask = SubsonicClient.GetLicenseAsync();
+                        //licenseTask.Wait();
+
+                        //var license = licenseTask.Result;
+
                         UpdateLicenseInformation(license);
 
                         if (!license.Valid)
@@ -261,7 +270,7 @@ namespace UltraSonic
         private void InitSubsonicApi()
         {
             Uri serverUri = new Uri(ServerUrl);
-            Uri proxyUri = string.IsNullOrWhiteSpace(ProxyServer) ? null : new Uri(ProxyServer);
+            string proxyUri = string.IsNullOrWhiteSpace(ProxyServer) ? null : ProxyServer;
             
             if (!ValidateCertificate(serverUri))
             {
@@ -272,7 +281,8 @@ namespace UltraSonic
             else
             {
                 SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, proxyUri, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
-                SubsonicClient.Ping();
+                //SubsonicClient.PingAsync().Wait();
+                SubsonicClient.ServerApiVersion = new Version("1.10.2");
                 ServerApiLabel.Text = SubsonicClient.ServerApiVersion.ToString();
                 SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
 
