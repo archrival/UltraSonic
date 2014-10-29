@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using UltraSonic.Items;
 using UltraSonic.Static;
 using Directory = Subsonic.Common.Classes.Directory;
 
@@ -50,7 +51,7 @@ namespace UltraSonic
             }
         }
 
-        private void UpdateAlbumImageArt(Task<IImageFormat<Image>> task, AlbumItem albumItem)
+        private void UpdateAlbumImageArt(Task<IImageFormat<Image>> task, UltraSonicAlbumItem albumItem)
         {
             switch (task.Status)
             {
@@ -72,13 +73,13 @@ namespace UltraSonic
                         BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                         coverArtImage.Dispose();
                         GC.Collect();
-                        //TODO: albumItem.Image = bitmapFrame;
+                        albumItem.Image = bitmapFrame;
                     });
                     break;
             }
         }
 
-        private void UpdateAlbumImageArt(Task<BitmapFrame> task, AlbumItem albumItem)
+        private void UpdateAlbumImageArt(Task<BitmapFrame> task, UltraSonicAlbumItem albumItem)
         {
             switch (task.Status)
             {
@@ -87,7 +88,7 @@ namespace UltraSonic
                     {
                         BitmapFrame coverArtImage = task.Result;
                         if (coverArtImage == null) return;
-                        //TODO: albumItem.Image = coverArtImage;
+                        albumItem.Image = coverArtImage;
                     });
                     break;
                 case TaskStatus.Faulted:

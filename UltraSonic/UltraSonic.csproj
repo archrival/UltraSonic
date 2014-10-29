@@ -79,6 +79,8 @@
     <Compile Include="Enum\AlbumPlayButtonBehavior.cs" />
     <Compile Include="Enum\DoubleClickBehavior.cs" />
     <Compile Include="Events\AlbumEvents.cs" />
+    <Compile Include="Items\UltraSonicAlbumItem.cs" />
+    <Compile Include="Items\UltraSonicNowPlayingItem.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Rating.cs" />
     <Compile Include="Static\StaticMethods.cs" />
@@ -252,14 +254,6 @@
     <Resource Include="Images\filter.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SubsonicSharp\FileLoggerWindows\FileLoggerWindows.csproj">
-      <Project>{B8CF25F9-5FF3-475B-A335-74121F48D4ED}</Project>
-      <Name>FileLoggerWindows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SubsonicSharp\StreamProxyWindows\StreamProxyWindows.csproj">
-      <Project>{3057BC2C-D1A7-4DED-A367-971E3C2403F8}</Project>
-      <Name>StreamProxyWindows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Common\Subsonic.Client.csproj">
       <Project>{CBB112D5-2507-4453-83BE-51232FB95CA6}</Project>
       <Name>Subsonic.Client</Name>

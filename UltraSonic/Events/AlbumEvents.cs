@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -16,7 +17,7 @@ namespace UltraSonic
             if (image != null && image.Name == "PlayTrackImage") return;
             if (SubsonicClient == null) return;
 
-            var albumItem = AlbumDataGrid.SelectedItem as AlbumItem;
+            var albumItem = AlbumDataGrid.SelectedItem as UltraSonicAlbumItem;
 
             if (albumItem != null)
                 SubsonicClient.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("AlbumDataGridSelectionChanged")).ContinueWith(UpdateTrackListingGrid);
@@ -32,7 +33,7 @@ namespace UltraSonic
             var source = e.Source as DataGrid;
             if (source == null) return;
 
-            var selectedAlbum = source.CurrentItem as AlbumItem;
+            var selectedAlbum = source.CurrentItem as UltraSonicAlbumItem;
 
             if (selectedAlbum != null)
                 await SubsonicClient.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play, true));
@@ -44,7 +45,7 @@ namespace UltraSonic
         {
             if (SubsonicClient == null) return;
 
-            foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
+            foreach (UltraSonicAlbumItem item in AlbumDataGrid.SelectedItems)
                 Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id).ToString());
         }
 
@@ -98,14 +99,14 @@ namespace UltraSonic
         {
             if (SubsonicClient == null) return;
 
-            foreach (AlbumItem item in AlbumDataGrid.SelectedItems)
+            foreach (UltraSonicAlbumItem item in AlbumDataGrid.SelectedItems)
                 SubsonicClient.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
         }
 
         private void PlayAlbumImageMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var test = UiHelpers.GetVisualParent<DataGridRow>(sender);
-            var albumItem = test.Item as AlbumItem;
+            var albumItem = test.Item as UltraSonicAlbumItem;
 
             if (albumItem == null) return;
 

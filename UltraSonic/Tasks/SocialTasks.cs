@@ -7,13 +7,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void UpdateNowPlayingAlbumImageArt(Task<IImageFormat<Image>> task, NowPlayingItem nowPlayingItem)
+        private void UpdateNowPlayingAlbumImageArt(Task<IImageFormat<Image>> task, UltraSonicNowPlayingItem nowPlayingItem)
         {
             switch (task.Status)
             {
@@ -27,7 +28,7 @@ namespace UltraSonic
                         string localFileName = GetCoverArtFilename(nowPlayingItem.Child);
                         coverArtImage.Save(localFileName);
 
-                        //TODO: nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
+                        nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                     });
                     break;
             }
@@ -44,7 +45,7 @@ namespace UltraSonic
                         {
                             string fileName = GetMusicFilename(entry);
 
-                            NowPlayingItem nowPlayingItem = new NowPlayingItem
+                            UltraSonicNowPlayingItem nowPlayingItem = new UltraSonicNowPlayingItem
                             {
                                 BitRate = entry.BitRate,
                                 DiscNumber = entry.DiscNumber,
@@ -77,7 +78,7 @@ namespace UltraSonic
                             if (File.Exists(localFileName))
                             {
                                 Image thisImage = Image.FromFile(localFileName);
-                                //TODO: nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int) (_albumArtSize * ScalingFactor), (int) (_albumArtSize * ScalingFactor));
+                                nowPlayingItem.Image = thisImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int) (_albumArtSize * ScalingFactor), (int) (_albumArtSize * ScalingFactor));
                                 thisImage.Dispose();
                             }
                             else

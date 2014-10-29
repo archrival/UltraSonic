@@ -1,6 +1,4 @@
-﻿using FileLoggerWindows;
-using StreamProxyWindows;
-using Subsonic.Client;
+﻿using Subsonic.Client;
 using Subsonic.Client.Items;
 using Subsonic.Client.Windows;
 using Subsonic.Common.Classes;
@@ -19,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 using Image = System.Drawing.Image;
@@ -41,8 +40,8 @@ namespace UltraSonic
         private readonly DispatcherTimer _nowPlayingTimer = new DispatcherTimer();
         private readonly DispatcherTimer _chatMessagesTimer = new DispatcherTimer();
         private readonly SemaphoreSlim _cachingThrottle = new SemaphoreSlim(1);
-        private readonly ObservableCollection<NowPlayingItem> _nowPlayingItems = new ObservableCollection<NowPlayingItem>();
-        private readonly ObservableCollection<AlbumItem> _albumItems = new ObservableCollection<AlbumItem>();
+        private readonly ObservableCollection<UltraSonicNowPlayingItem> _nowPlayingItems = new ObservableCollection<UltraSonicNowPlayingItem>();
+        private readonly ObservableCollection<UltraSonicAlbumItem> _albumItems = new ObservableCollection<UltraSonicAlbumItem>();
         private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
         private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
         private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
@@ -465,7 +464,7 @@ namespace UltraSonic
             return fileName;
         }
 
-        private void DownloadCoverArt(AlbumItem albumItem)
+        private void DownloadCoverArt(UltraSonicAlbumItem albumItem)
         {
             SubsonicClient.GetCoverArtAsync(albumItem.Child.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
         }

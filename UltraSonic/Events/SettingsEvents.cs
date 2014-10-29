@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 using Directory = System.IO.Directory;
@@ -191,15 +192,15 @@ namespace UltraSonic
                                       bool albumDataGridArtAvailable = false;
                                       bool nowPlayingDataGridArtAvailable = false;
 
-                                      foreach (AlbumItem albumItem in AlbumDataGrid.Items)
+                                      foreach (UltraSonicAlbumItem albumItem in AlbumDataGrid.Items)
                                       {
-                                          //TODO: if (albumItem.Image != null) albumDataGridArtAvailable = true;
+                                        if (albumItem.Image != null) albumDataGridArtAvailable = true;
                                           break;
                                       }
 
-                                      foreach (NowPlayingItem nowPlayingItem in NowPlayingDataGrid.Items)
+                                      foreach (UltraSonicNowPlayingItem nowPlayingItem in NowPlayingDataGrid.Items)
                                       {
-                                          //TODO: if (nowPlayingItem.Image != null) nowPlayingDataGridArtAvailable = true;
+                                        if (nowPlayingItem.Image != null) nowPlayingDataGridArtAvailable = true;
                                           break;
                                       }
 

@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using UltraSonic.Items;
 using UltraSonic.Static;
 using Image = System.Drawing.Image;
 
@@ -64,10 +65,10 @@ namespace UltraSonic
                                           throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
 
                                       foreach (
-                                          AlbumItem albumItem in
+                                          UltraSonicAlbumItem albumItem in
                                               enumerable.Select(
                                                   child =>
-                                                  new AlbumItem
+                                                  new UltraSonicAlbumItem
                                                       {
                                                           AlbumArtSize = _albumArtSize,
                                                           Artist = child.Artist,
@@ -92,7 +93,7 @@ namespace UltraSonic
 
                                           try
                                           {
-                                              AlbumItem item = albumItem;
+                                              UltraSonicAlbumItem item = albumItem;
 
                                               Task.Run(async () =>
                                                                  {
