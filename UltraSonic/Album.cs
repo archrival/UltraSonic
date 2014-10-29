@@ -75,6 +75,8 @@ namespace UltraSonic
                                                           Name = child.Album,
                                                           Rating = child.UserRating,
                                                           Child = child,
+                                                          Year = child.Year,
+                                                          Parent = child.Parent,
                                                           Starred = (child.Starred != default(DateTime))
                                                       }).Where(a => a.Child.IsDir))
                                       {

@@ -254,7 +254,7 @@
     <Resource Include="Images\filter.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Common\Subsonic.Client.csproj">
+    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client\Subsonic.Client.csproj">
       <Project>{CBB112D5-2507-4453-83BE-51232FB95CA6}</Project>
       <Name>Subsonic.Client</Name>
     </ProjectReference>

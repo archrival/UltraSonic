@@ -435,6 +435,19 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Year"
+                                                        IsReadOnly="True"
+                                                        SortMemberPath="Year">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Year}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="Rating" SortMemberPath="Rating">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -450,7 +463,6 @@
                         </DataGrid>
                     </DockPanel>
                     <DockPanel Grid.Row="1"
-                               Grid.RowSpan="1"
                                Grid.Column="1"
                                Grid.ColumnSpan="2"
                                HorizontalAlignment="Stretch"

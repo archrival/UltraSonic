@@ -1,5 +1,4 @@
-﻿using Subsonic.Client;
-using Subsonic.Client.Items;
+﻿using Subsonic.Client.Items;
 using Subsonic.Client.Windows;
 using Subsonic.Common.Classes;
 using System;
