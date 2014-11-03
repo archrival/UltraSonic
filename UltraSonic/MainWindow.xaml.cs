@@ -1,4 +1,6 @@
-﻿using Subsonic.Client.Items;
+﻿using System.Threading.Tasks;
+using Subsonic.Client.Enums;
+using Subsonic.Client.Items;
 using Subsonic.Client.Windows;
 using Subsonic.Common.Classes;
 using System;
@@ -19,6 +21,7 @@ using System.Windows.Threading;
 using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
+using Directory = System.IO.Directory;
 using Image = System.Drawing.Image;
 
 namespace UltraSonic
@@ -145,28 +148,28 @@ namespace UltraSonic
                 var appDir = new DirectoryInfo(appData);
                 
                 if (!appDir.Exists)
-                    System.IO.Directory.CreateDirectory(appData);
+                    Directory.CreateDirectory(appData);
                 
                 String logFile = Path.Combine(appData, "ultrasonic.log");
 
-                FileLogger = new FileLogger(logFile, Subsonic.Client.Enums.LoggingLevel.Verbose);
-                FileLogger.Log("UltraSonic Started", Subsonic.Client.Enums.LoggingLevel.Basic);
+                FileLogger = new FileLogger(logFile, LoggingLevel.Verbose);
+                FileLogger.Log("UltraSonic Started", LoggingLevel.Basic);
                 
                 WindowStartupLocation = WindowStartupLocation.Manual;
 
-                FileLogger.Log(string.Format("WindowLeft: {0}", Settings.Default.WindowLeft), Subsonic.Client.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowLeft: {0}", Settings.Default.WindowLeft), LoggingLevel.Verbose);
                 Left = Settings.Default.WindowLeft;
 
-                FileLogger.Log(string.Format("WindowTop: {0}", Settings.Default.WindowTop), Subsonic.Client.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowTop: {0}", Settings.Default.WindowTop), LoggingLevel.Verbose);
                 Top = Settings.Default.WindowTop;
                 
-                FileLogger.Log(string.Format("WindowHeight: {0}", Settings.Default.WindowHeight), Subsonic.Client.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowHeight: {0}", Settings.Default.WindowHeight), LoggingLevel.Verbose);
                 Height = Settings.Default.WindowHeight;
 
-                FileLogger.Log(string.Format("WindowWidth: {0}", Settings.Default.WindowWidth), Subsonic.Client.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowWidth: {0}", Settings.Default.WindowWidth), LoggingLevel.Verbose);
                 Width = Settings.Default.WindowWidth;
 
-                FileLogger.Log(string.Format("WindowMaximized: {0}", Settings.Default.WindowMaximized), Subsonic.Client.Enums.LoggingLevel.Verbose);
+                FileLogger.Log(string.Format("WindowMaximized: {0}", Settings.Default.WindowMaximized), LoggingLevel.Verbose);
                 
                 if (Settings.Default.WindowMaximized)
                     WindowState = WindowState.Maximized;
@@ -184,12 +187,12 @@ namespace UltraSonic
 
                 if (StreamProxy == null)
                 {
-                    FileLogger.Log("Creating StreamProxy", Subsonic.Client.Enums.LoggingLevel.Information);
+                    FileLogger.Log("Creating StreamProxy", LoggingLevel.Information);
 
-                    StreamProxy = new StreamProxy();
+                    StreamProxy = StreamProxy.Instance;
                     StreamProxy.Start();
 
-                    FileLogger.Log(string.Format("StreamProxy Port: {0}", StreamProxy.GetPort()), Subsonic.Client.Enums.LoggingLevel.Information);
+                    FileLogger.Log(string.Format("StreamProxy Port: {0}", StreamProxy.GetPort()), LoggingLevel.Information);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
@@ -197,29 +200,7 @@ namespace UltraSonic
                     InitSubsonicApi();
 
                     if (SubsonicClient != null)
-                    {
-                        License license = new License();
-                        license.Valid = true;
-
-                        //var licenseTask = SubsonicClient.GetLicenseAsync();
-                        //licenseTask.Wait();
-
-                        //var license = licenseTask.Result;
-
-                        UpdateLicenseInformation(license);
-
-                        if (!license.Valid)
-                        {
-                            MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
-                        }
-                        else
-                        {
-                            UpdateArtists();
-                            PopulatePlaylist();
-                            PopulatePlaybackList();
-                            UpdatePlaylists();
-                        }
-                    }
+                        SubsonicClient.GetLicenseAsync(GetCancellationToken("MainWindow")).ContinueWith(CheckLicense);
                 }
                 else
                 {
@@ -272,38 +253,56 @@ namespace UltraSonic
             
             if (!ValidateCertificate(serverUri))
             {
-                FileLogger.Log("Unable to validate server certificate, this issue must be corrected before continuing.", Subsonic.Client.Enums.LoggingLevel.Error);
+                FileLogger.Log("Unable to validate server certificate, this issue must be corrected before continuing.", LoggingLevel.Error);
                 MessageBox.Show("Unable to validate server certificate, this issue must be corrected before continuing.", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 SubsonicClient = null;
             }
             else
             {
                 SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, proxyUri, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
-                //SubsonicClient.PingAsync().Wait();
-                SubsonicClient.ServerApiVersion = new Version("1.10.2");
-                ServerApiLabel.Text = SubsonicClient.ServerApiVersion.ToString();
-                SubsonicClient.GetUserAsync(Username, GetCancellationToken("InitSubsonicApi")).ContinueWith(UpdateCurrentUser);
-
-                FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicClient.ServerApiVersion), Subsonic.Client.Enums.LoggingLevel.Information);
-
-                if (SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        PlaylistGridStarred.Visibility = Visibility.Collapsed;
-                        TrackDataGridStarred.Visibility = Visibility.Collapsed;
-                        AlbumDataGridStarred.Visibility = Visibility.Collapsed;
-                        UserShareLabel.Visibility = Visibility.Hidden;
-                        UserShareLabel2.Visibility = Visibility.Hidden;
-                    });
-                }
-                else if (SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
-                {
-                    FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), Subsonic.Client.Enums.LoggingLevel.Error);
-                    MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
-                    SubsonicClient = null;
-                }
+                SubsonicClient.PingAsync(GetCancellationToken("InitSubsonicApi")).ContinueWith(ValidateServerVersion);
             }
+        }
+
+        private void ValidateServerVersion(Task<bool> task)
+        {
+            if (!task.Result)
+            {
+                FileLogger.Log(string.Format("Error communicating with server"), LoggingLevel.Error);
+                MessageBox.Show(string.Format("Error communicating with server"), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                SubsonicClient = null;
+                return;
+            }
+
+            FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicClient.ServerApiVersion), LoggingLevel.Information);
+            
+            if (SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    PlaylistGridStarred.Visibility = Visibility.Collapsed;
+                    TrackDataGridStarred.Visibility = Visibility.Collapsed;
+                    AlbumDataGridStarred.Visibility = Visibility.Collapsed;
+                    UserShareLabel.Visibility = Visibility.Hidden;
+                    UserShareLabel2.Visibility = Visibility.Hidden;
+                });
+            }
+            else if (SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
+            {
+                FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), LoggingLevel.Error);
+                MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                SubsonicClient = null;
+            }
+
+            if (SubsonicClient == null)
+                return;
+
+            Dispatcher.Invoke(() =>
+            {
+                ServerApiLabel.Text = SubsonicClient.ServerApiVersion.ToString();
+            });
+
+            SubsonicClient.GetUserAsync(Username, GetCancellationToken("ValidateServerVersion")).ContinueWith(UpdateCurrentUser);
         }
 
         private static bool ValidateCertificate(Uri serverUri)

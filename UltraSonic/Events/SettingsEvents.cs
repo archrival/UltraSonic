@@ -1,9 +1,9 @@
-﻿using Subsonic.Client.Items;
-using Subsonic.Common.Classes;
+﻿using Subsonic.Common.Classes;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using UltraSonic.Items;
@@ -117,19 +117,25 @@ namespace UltraSonic
                 if (SubsonicClient == null)
                     return;
 
-                License license = new License();
-                license.Valid = true;
+                SubsonicClient.GetLicenseAsync().ContinueWith(CheckLicense);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
-                //var licenseTask = SubsonicClient.GetLicenseAsync();
-                //licenseTask.Wait();
+        private void CheckLicense(Task<License> task)
+        {
+            License license = task.Result;
 
-                //License license = licenseTask.Result;
-
-                if (!license.Valid)
-                {
-                    MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
-                }
-                else
+            if (!license.Valid)
+            {
+                MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
+            }
+            else
+            {
+                Dispatcher.Invoke(() =>
                 {
                     UpdateLicenseInformation(license);
                     UpdateArtists();
@@ -137,11 +143,7 @@ namespace UltraSonic
                     UpdateNowPlaying();
                     UpdateChatMessages();
                     MusicTab.Focus();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
         }
 
