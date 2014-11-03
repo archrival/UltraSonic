@@ -133,7 +133,7 @@ namespace UltraSonic
             {
                 case TaskStatus.RanToCompletion:
                     if (task.Result && isTrack)
-                        SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, GetCancellationToken("UpdatePlaylists")).ContinueWith(AddHighestRatedToPlaylists);
+                        SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, null, null, null, GetCancellationToken("UpdatePlaylists")).ContinueWith(AddHighestRatedToPlaylists);
 
                     break;
             }
