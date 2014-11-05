@@ -119,7 +119,7 @@ namespace UltraSonic
 
                 _caching = true;
                 DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
-                var streamTask = SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"));
+                var streamTask = SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _streamParameters, null, null, null, GetCancellationToken("QueueTrack"));
                 QueueTrackItemForPlayback(trackItem, true);
                 streamTask.ContinueWith(t => QueueTrack(t, trackItem));
 

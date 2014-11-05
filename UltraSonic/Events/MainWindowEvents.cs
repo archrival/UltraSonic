@@ -90,7 +90,7 @@ namespace UltraSonic
 
                     DownloadStatusLabel.Content = string.Format("Caching: {0}", trackItem.Child.Title);
                     TrackItem item = trackItem;
-                    await SubsonicClient.StreamAsync(trackItem.Child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, token).ContinueWith(t => FinalizeCache(t, item), token);
+                    await SubsonicClient.StreamAsync(trackItem.Child.Id, trackItem.FileName, _streamParameters, null, null, null, token).ContinueWith(t => FinalizeCache(t, item), token);
                 }
                 finally
                 {

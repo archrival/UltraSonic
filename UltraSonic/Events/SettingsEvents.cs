@@ -55,7 +55,10 @@ namespace UltraSonic
                 int? albumArtSize = ValidateInt(1, int.MaxValue, AlbumArtSizeTextBox.Text);
                 _albumArtSize = albumArtSize.HasValue ? albumArtSize.Value : 50;
 
-                _maxBitrate = (int)MaxBitrateComboBox.SelectedValue;
+                _streamParameters = new Subsonic.Common.StreamParameters
+                {
+                    BitRate = (int) MaxBitrateComboBox.SelectedValue
+                };
 
                 _cacheDirectory = CacheDirectoryTextBox.Text;
                 _serverHash = StaticMethods.CalculateSha256(ServerUrl, Encoding.Unicode);
@@ -95,7 +98,7 @@ namespace UltraSonic
                 Settings.Default.ProxyUsername = ProxyUsername;
                 Settings.Default.ProxyPassword = ProxyPassword;
                 Settings.Default.MaxSearchResults = _maxSearchResults;
-                Settings.Default.MaxBitrate = _maxBitrate;
+                Settings.Default.MaxBitrate = _streamParameters.BitRate;
                 Settings.Default.AlbumListMax = _albumListMax;
                 Settings.Default.CacheDirectory = _cacheDirectory;
                 Settings.Default.NowPlayingInterval = _nowPlayingInterval;

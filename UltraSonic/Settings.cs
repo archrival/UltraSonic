@@ -43,6 +43,7 @@ namespace UltraSonic
             _currentPlaylist = Settings.Default.CurrentPlaylist ?? string.Empty;
             _currentPlaybackList = Settings.Default.CurrentPlaybackList ?? string.Empty;
             _albumArtSize = Settings.Default.AlbumArtSize;
+            _streamParameters.BitRate = Settings.Default.MaxBitrate;
             _saveWorkingPlaylist = Settings.Default.SaveWorkingPlaylist;
             _savePlaybackList = Settings.Default.SavePlaybackList;
             _showAlbumArt = Settings.Default.ShowAlbumArt;
@@ -140,7 +141,7 @@ namespace UltraSonic
             var listData = new List<int> { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
 
             MaxBitrateComboBox.ItemsSource = listData;
-            MaxBitrateComboBox.SelectedItem = _maxBitrate;
+            MaxBitrateComboBox.SelectedItem = _streamParameters.BitRate;
         }
 
         private void PopulateDoubleClickComboBox()

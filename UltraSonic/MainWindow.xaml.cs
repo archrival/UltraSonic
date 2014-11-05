@@ -2,6 +2,7 @@
 using Subsonic.Client.Enums;
 using Subsonic.Client.Items;
 using Subsonic.Client.Windows;
+using Subsonic.Common;
 using Subsonic.Common.Classes;
 using System;
 using System.Collections.Concurrent;
@@ -57,7 +58,7 @@ namespace UltraSonic
         private Image _currentAlbumArt;
         private TimeSpan _position;
         private int _maxSearchResults = 25;
-        private int _maxBitrate;
+        private StreamParameters _streamParameters = new StreamParameters();
         private int _albumListMax = 10;
         private int _nowPlayingInterval = 30;
         private int _chatMessagesInterval = 5;
