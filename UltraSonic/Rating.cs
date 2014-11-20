@@ -18,7 +18,7 @@ namespace UltraSonic
             ChildItem childItem = dataGrid.SelectedItem as ChildItem;
             if (childItem == null) return;
 
-            SubsonicClient.SetRatingAsync(childItem.Child.Id, ratingControl.RatingValue);
+            SubsonicClient.SetRatingAsync(childItem.Child.Id, ratingControl.RatingValue).ConfigureAwait(false);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace UltraSonic
                         UserScrobblingLabel.Text = CurrentUser.ScrobblingEnabled.ToString();
                         UserAdminLabel.Text = CurrentUser.AdminRole.ToString();
                         UserSettingsLabel.Text = CurrentUser.SettingsRole.ToString();
-                        UserStreamLabel.Text = CurrentUser.StreamRole.ToString(); ;
+                        UserStreamLabel.Text = CurrentUser.StreamRole.ToString();
                         UserJukeboxLabel.Text = CurrentUser.JukeboxRole.ToString();
                         UserDownloadLabel.Text = CurrentUser.DownloadRole.ToString();
                         UserUploadLabel.Text = CurrentUser.UploadRole.ToString();

@@ -27,7 +27,7 @@ namespace UltraSonic
 
                         if (string.IsNullOrWhiteSpace(chatMessage)) return;
 
-                        SubsonicClient.AddChatMessageAsync(chatMessage);
+                        SubsonicClient.AddChatMessageAsync(chatMessage).ConfigureAwait(false);
                         ChatListInput.Text = string.Empty;
                     }
                     break;

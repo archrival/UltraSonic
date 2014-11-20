@@ -101,7 +101,7 @@ namespace UltraSonic
             if (_streamItems == null) return;
 
             Child child = trackItem.Child;             
-            Uri fileNameUri = new Uri(trackItem.FileName);
+            var fileNameUri = new Uri(trackItem.FileName);
 
             if (_streamItems.All(s => s.OriginalString == trackItem.FileName) && trackItem.Cached)
             {
