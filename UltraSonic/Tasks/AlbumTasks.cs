@@ -21,8 +21,8 @@ namespace UltraSonic
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
-                    UpdateAlbumGrid(task.Result.Child.Where(child => child.IsDir));
-                    UpdateTrackListingGrid(task.Result.Child.Where(child => !child.IsDir));
+                    UpdateAlbumGrid(task.Result.Children.Where(child => child.IsDir));
+                    UpdateTrackListingGrid(task.Result.Children.Where(child => !child.IsDir));
                     break;
             }
         }
@@ -32,7 +32,7 @@ namespace UltraSonic
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
-                    if (task.Result.Album.Any())
+                    if (task.Result.Albums.Any())
                     {
                         Dispatcher.Invoke(() =>
                                               {
@@ -45,7 +45,7 @@ namespace UltraSonic
                         Dispatcher.Invoke(() => { AlbumDataGridNext.Visibility = Visibility.Collapsed; });
                     }
 
-                    UpdateAlbumGrid(task.Result.Album);
+                    UpdateAlbumGrid(task.Result.Albums);
                     break;
             }
         }

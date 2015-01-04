@@ -1,6 +1,7 @@
-﻿using Subsonic.Client.Items;
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics;
+using Subsonic.Client;
+using Subsonic.Client.Items;
 
 namespace UltraSonic
 {

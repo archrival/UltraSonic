@@ -1,11 +1,12 @@
-﻿using Subsonic.Client.Items;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
+using Subsonic.Client;
+using Subsonic.Client.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 

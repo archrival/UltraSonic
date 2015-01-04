@@ -1,4 +1,5 @@
-﻿using Subsonic.Client.Items;
+﻿using Subsonic.Client;
+using Subsonic.Client.Items;
 using Subsonic.Common.Enums;
 using System.Windows;
 using System.Windows.Controls;

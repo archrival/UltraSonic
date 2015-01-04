@@ -120,6 +120,8 @@ namespace UltraSonic
                 if (SubsonicClient == null)
                     return;
 
+                ConfigureChat(_chatMessagesInterval);
+
                 SubsonicClient.GetLicenseAsync().ContinueWith(CheckLicense);
             }
             catch (Exception ex)
@@ -144,7 +146,7 @@ namespace UltraSonic
                     UpdateArtists();
                     UpdatePlaylists();
                     UpdateNowPlaying();
-                    UpdateChatMessages();
+                    //UpdateChatMessages();
                     MusicTab.Focus();
                 });
             }

@@ -1,4 +1,5 @@
-﻿using Subsonic.Client.Items;
+﻿using Subsonic.Client;
+using Subsonic.Client.Items;
 using Subsonic.Common.Classes;
 using Subsonic.Common.Enums;
 using System;
@@ -15,7 +16,7 @@ namespace UltraSonic
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
-                    UpdatePlaylists(task.Result.Playlist);
+                    UpdatePlaylists(task.Result.Items);
                     break;
             }
         }
@@ -61,7 +62,7 @@ namespace UltraSonic
                                                   column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                               }
 
-                                              foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Entry))
+                                              foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Entries))
                                                   AddTrackItemToPlaylist(trackItem);
                                           });
                     break;
@@ -83,7 +84,7 @@ namespace UltraSonic
                                                   column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                               }
 
-                                              foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Song))
+                                              foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Songs))
                                                   AddTrackItemToPlaylist(trackItem);
                                           });
                     break;
@@ -106,7 +107,7 @@ namespace UltraSonic
                             column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                         }
 
-                        var tracks = task.Result.Album.Where(a => !a.IsDir).ToList();
+                        var tracks = task.Result.Albums.Where(a => !a.IsDir).ToList();
 
                         foreach (TrackItem trackItem in GetTrackItemCollection(tracks))
                             AddTrackItemToPlaylist(trackItem);
@@ -147,13 +148,13 @@ namespace UltraSonic
                     Dispatcher.Invoke(() =>
                                           {
                                               Starred starred = task.Result;
-                                              int starDuration = starred.Song.Sum(child => child.Duration);
+                                              int starDuration = starred.Songs.Sum(child => child.Duration);
 
                                               PlaylistItem newStarredPlaylist = new PlaylistItem
                                                                              {
                                                                                  Duration = TimeSpan.FromSeconds(starDuration),
                                                                                  Name = "Starred",
-                                                                                 Tracks = starred.Song.Count,
+                                                                                 Tracks = starred.Songs.Count,
                                                                                  Playlist = null
                                                                              };
 
@@ -179,7 +180,7 @@ namespace UltraSonic
                     Dispatcher.Invoke(() =>
                     {
                         AlbumList albumList = task.Result;
-                        var tracks = albumList.Album.Where(a => !a.IsDir).ToList();
+                        var tracks = albumList.Albums.Where(a => !a.IsDir).ToList();
                         int duration = tracks.Sum(child => child.Duration);
 
                         PlaylistItem newHighestRatedPlaylist = new PlaylistItem

@@ -13,11 +13,5 @@ namespace UltraSonic.Static
             using (var cryptoTransformSha1 = new SHA256CryptoServiceProvider())
                 return BitConverter.ToString(cryptoTransformSha1.ComputeHash(buffer)).Replace("-", "");
         }
-
-        public static DateTime DateTimeFromUnixTimestamp(long timestamp)
-        {
-            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return dtDateTime.AddMilliseconds(timestamp);
-        }
     }
 }

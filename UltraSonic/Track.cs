@@ -1,4 +1,5 @@
-﻿using Subsonic.Client.Items;
+﻿using Subsonic.Client;
+using Subsonic.Client.Items;
 using Subsonic.Common.Classes;
 using Subsonic.Common.Enums;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace UltraSonic
 
         private IEnumerable<TrackItem> GetTrackItemCollection(Directory directory)
         {
-            return GetTrackItemCollection(directory.Child);
+            return GetTrackItemCollection(directory.Children);
         }
     }
 }

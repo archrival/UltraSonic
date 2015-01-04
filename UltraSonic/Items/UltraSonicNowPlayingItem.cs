@@ -1,4 +1,5 @@
 ﻿using System.Windows.Media.Imaging;
+using Subsonic.Client;
 using Subsonic.Client.Items;
 
 namespace UltraSonic.Items

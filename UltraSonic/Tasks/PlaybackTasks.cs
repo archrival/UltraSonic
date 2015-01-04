@@ -1,6 +1,7 @@
-﻿using Subsonic.Client.Items;
+﻿using Subsonic.Client;
 using System;
 using System.Threading.Tasks;
+using Subsonic.Client.Items;
 
 namespace UltraSonic
 {

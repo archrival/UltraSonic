@@ -1,7 +1,8 @@
-﻿using Subsonic.Client.Items;
+﻿using Subsonic.Client;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Subsonic.Client.Items;
 
 namespace UltraSonic
 {
@@ -55,17 +56,6 @@ namespace UltraSonic
         private void NowPlayingRefreshClick(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(UpdateNowPlaying);
-        }
-
-        private void ChatListRefreshClick(object sender, RoutedEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-                                  {
-                                      _chatMessageSince = 0;
-                                      _chatMessages.Clear();
-                                      
-                                      UpdateChatMessages();
-                                  });
         }
     }
 }

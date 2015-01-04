@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Subsonic.Client;
 using Subsonic.Client.Enums;
+using Subsonic.Client.Handlers;
 using Subsonic.Client.Items;
+using Subsonic.Client.Monitors;
 using Subsonic.Client.Windows;
 using Subsonic.Common;
 using Subsonic.Common.Classes;
@@ -92,6 +95,7 @@ namespace UltraSonic
         private Playlist CurrentPlaylist { get; set; }
         private User CurrentUser { get; set; }
         private SubsonicClientWindows SubsonicClient { get; set; }
+        private SubsonicServerWindows SubsonicServer { get; set; }
         private string Username { get; set; }
         private string Password { get; set; }
         private string ServerUrl { get; set; }
@@ -102,6 +106,8 @@ namespace UltraSonic
         private bool UseProxy { get; set; }
         private StreamProxy StreamProxy { get; set; }
         private FileLogger FileLogger { get; set; }
+        private ChatMonitor<Image> ChatMonitor { get; set; }
+        
         public static RoutedCommand NextCommand = new RoutedCommand();
         public static RoutedCommand PreviousCommand = new RoutedCommand();
         public static RoutedCommand PlayPauseCommand = new RoutedCommand();
@@ -221,12 +227,7 @@ namespace UltraSonic
                 _nowPlayingTimer.Tick += (o, s) => UpdateNowPlaying();
                 _nowPlayingTimer.Start();
 
-                if (_chatMessagesInterval > 0)
-                    UpdateChatMessages();
-
-                _chatMessagesTimer.Interval = TimeSpan.FromSeconds(_chatMessagesInterval);
-                _chatMessagesTimer.Tick += (o, s) => UpdateChatMessages();
-                _chatMessagesTimer.Start();
+                ConfigureChat(_chatMessagesInterval);
 
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
                 MediaPlayer.Volume = Settings.Default.Volume;
@@ -247,6 +248,55 @@ namespace UltraSonic
             }
         }
 
+        private void DisableChat()
+        {
+            if (ChatMonitor == null) return;
+
+            ChatMonitor.Unsubscribe();
+            ChatMonitor = null;
+        }
+
+        private void ConfigureChat(int interval)
+        {
+            if (interval <= 0)
+            {
+                DisableChat();
+                return;
+            }
+
+            if (ChatMonitor == null)
+            {
+                ChatMonitor = new ChatMonitor<Image>();
+
+                ChatMonitor.Subscribe(new ChatHandler<Image>
+                {
+                    Client = SubsonicClient,
+                    Interval = _chatMessagesInterval*1000,
+                    CancellationToken = GetCancellationToken("ConfigureChat")
+                });
+
+                ChatMonitor.PropertyChanged += ((e, o) =>
+                {
+                    if (e.Disposed)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            CancelTasks("ConfigureChat");
+                            _chatMessages.Clear();
+                        });
+                    }
+                    else if (_chatMessages != null && o.ChatItem != null)
+                    {
+                        Dispatcher.Invoke(() => _chatMessages.Insert(0, o.ChatItem));
+                    }
+                });
+            }
+            else
+            {
+                ChatMonitor.ChatHandler.Interval = _chatMessagesInterval*1000;
+            }
+        }
+
         private void InitSubsonicApi()
         {
             Uri serverUri = new Uri(ServerUrl);
@@ -260,7 +310,9 @@ namespace UltraSonic
             }
             else
             {
-                SubsonicClient = UseProxy ? new SubsonicClientWindows(serverUri, Username, Password, proxyUri, ProxyPort, ProxyUsername, ProxyPassword, ClientName) : new SubsonicClientWindows(serverUri, Username, Password, ClientName);
+                SubsonicServer = UseProxy ? new SubsonicServerWindows(serverUri, Username, Password, ClientName, proxyUri, ProxyPort, ProxyUsername, ProxyPassword) : new SubsonicServerWindows(serverUri, Username, Password, ClientName);
+
+                SubsonicClient = new SubsonicClientWindows(SubsonicServer);
                 SubsonicClient.PingAsync(GetCancellationToken("InitSubsonicApi")).ContinueWith(ValidateServerVersion);
             }
         }
@@ -275,9 +327,9 @@ namespace UltraSonic
                 return;
             }
 
-            FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicClient.ServerApiVersion), LoggingLevel.Information);
-            
-            if (SubsonicClient.ServerApiVersion < Version.Parse("1.8.0"))
+            FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicServer.GetApiVersion()), LoggingLevel.Information);
+
+            if (SubsonicServer.GetApiVersion() < SubsonicApiVersions.Version1_8_0)
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -288,7 +340,7 @@ namespace UltraSonic
                     UserShareLabel2.Visibility = Visibility.Hidden;
                 });
             }
-            else if (SubsonicClient.ServerApiVersion < Version.Parse("1.4.0"))
+            else if (SubsonicServer.GetApiVersion() < SubsonicApiVersions.Version1_4_0)
             {
                 FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), LoggingLevel.Error);
                 MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
@@ -300,7 +352,7 @@ namespace UltraSonic
 
             Dispatcher.Invoke(() =>
             {
-                ServerApiLabel.Text = SubsonicClient.ServerApiVersion.ToString();
+                ServerApiLabel.Text = SubsonicServer.GetApiVersion().ToString();
             });
 
             SubsonicClient.GetUserAsync(Username, GetCancellationToken("ValidateServerVersion")).ContinueWith(UpdateCurrentUser);
@@ -382,6 +434,7 @@ namespace UltraSonic
         private async void UpdateArtists()
         {
             if (SubsonicClient == null) return;
+
             ProgressIndicator.Visibility = Visibility.Visible;
             await SubsonicClient.GetIndexesAsync().ContinueWith(UpdateArtistsTreeView, GetCancellationToken("UpdateArtists"));
             ProgressIndicator.Visibility = Visibility.Hidden;
@@ -413,17 +466,17 @@ namespace UltraSonic
             _working = false;
         }
 
-        private async void UpdateChatMessages()
-        {
-            if (SubsonicClient == null) return;
-            if (_working) return;
+        //private async void UpdateChatMessages()
+        //{
+        //    if (SubsonicClient == null) return;
+        //    if (_working) return;
 
-            _working = true;
-            ProgressIndicator.Visibility = Visibility.Visible;
-            await SubsonicClient.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
-            ProgressIndicator.Visibility = Visibility.Hidden;
-            _working = false;
-        }
+        //    _working = true;
+        //    ProgressIndicator.Visibility = Visibility.Visible;
+        //    await SubsonicClient.GetChatMessagesAsync(_chatMessageSince, GetCancellationToken("UpdateNowPlaying")).ContinueWith(UpdateChatMessages);
+        //    ProgressIndicator.Visibility = Visibility.Hidden;
+        //    _working = false;
+        //}
 
         protected override void OnClosed(EventArgs e)
         {

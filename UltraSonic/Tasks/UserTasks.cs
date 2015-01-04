@@ -1,4 +1,5 @@
-﻿using Subsonic.Common.Classes;
+﻿using Subsonic.Common;
+using Subsonic.Common.Classes;
 using Subsonic.Common.Interfaces;
 using System;
 using System.Drawing;
@@ -43,7 +44,7 @@ namespace UltraSonic
                         UserPodcastLabel.Text = CurrentUser.PodcastRole.ToString();
                         UserShareLabel.Text = CurrentUser.ShareRole.ToString();
 
-                        if (SubsonicClient.ServerApiVersion >= Version.Parse("1.8.0"))
+                        if (SubsonicServer.GetApiVersion() >= SubsonicApiVersions.Version1_8_0)
                             SubsonicClient.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
                         else
                         {

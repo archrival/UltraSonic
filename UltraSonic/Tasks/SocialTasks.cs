@@ -1,5 +1,4 @@
-﻿using Subsonic.Client.Items;
-using Subsonic.Common.Classes;
+﻿using Subsonic.Common.Classes;
 using Subsonic.Common.Interfaces;
 using System;
 using System.Drawing;
@@ -41,7 +40,7 @@ namespace UltraSonic
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        foreach (NowPlayingEntry entry in task.Result.Entry)
+                        foreach (NowPlayingEntry entry in task.Result.Entries)
                         {
                             string fileName = GetMusicFilename(entry);
 
@@ -91,35 +90,33 @@ namespace UltraSonic
             }
         }
 
-        private void UpdateChatMessages(Task<ChatMessages> task)
-        {
-            switch (task.Status)
-            {
-                case TaskStatus.RanToCompletion:
-                    Dispatcher.Invoke(() =>
-                    {
-                        TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
-                        _chatMessageSince = t.TotalMilliseconds;
+        //private void UpdateChatMessages(Task<ChatMessages> task)
+        //{
+        //    switch (task.Status)
+        //    {
+        //        case TaskStatus.RanToCompletion:
+        //            Dispatcher.Invoke(() =>
+        //            {
+        //                TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
+        //                _chatMessageSince = t.TotalMilliseconds;
 
-                        // Order chat messages by time received
-                        foreach (ChatMessage chatMessage in task.Result.ChatMessage.OrderBy(c => c.Time))
-                        {
-                            DateTime timeStamp = StaticMethods.DateTimeFromUnixTimestamp(chatMessage.Time).ToLocalTime();
+        //                // Order chat messages by time received
+        //                foreach (ChatMessage chatMessage in task.Result.ChatMessage.OrderBy(c => c.Time))
+        //                {
+        //                    DateTime timeStamp = Subsonic.Client.DateTimeExtensions.DateTimeFromUnixTimestamp(chatMessage.Time).ToLocalTime();
 
-                            if (_chatMessages.Any(c => c.TimeStamp == timeStamp && c.Message == chatMessage.Message && c.User == chatMessage.Username)) continue;
+        //                    if (_chatMessages.Any(c => c.TimeStamp == timeStamp && c.Message == chatMessage.Message && c.User == chatMessage.Username)) continue;
 
-                            if (!SocialTab.IsSelected && _newChatNotify)
-                                SocialTab.SetValue(StyleProperty, Resources["FlashingHeader"]);
+        //                    if (!SocialTab.IsSelected && _newChatNotify)
+        //                        SocialTab.SetValue(StyleProperty, Resources["FlashingHeader"]);
 
-                            _chatMessages.Add(new ChatItem { User = chatMessage.Username, Message = chatMessage.Message, TimeStamp = timeStamp });
-                        }
+        //                    _chatMessages.Add(new ChatItem(chatMessage));
+        //                }
 
-                        _newChatNotify = true;
-                    });
-                    break;
-            }
-        }
-
-
+        //                _newChatNotify = true;
+        //            });
+        //            break;
+        //    }
+        //}
     }
 }

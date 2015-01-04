@@ -10,7 +10,7 @@ namespace UltraSonic
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
-                    UpdateTrackListingGrid(task.Result.Child);
+                    UpdateTrackListingGrid(task.Result.Children);
                     break;
             }
         }
