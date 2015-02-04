@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Subsonic.Common.Interfaces;
 using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
@@ -95,7 +96,7 @@ namespace UltraSonic
         private Playlist CurrentPlaylist { get; set; }
         private User CurrentUser { get; set; }
         private SubsonicClientWindows SubsonicClient { get; set; }
-        private SubsonicServerWindows SubsonicServer { get; set; }
+        private SubsonicServer SubsonicServer { get; set; }
         private string Username { get; set; }
         private string Password { get; set; }
         private string ServerUrl { get; set; }
@@ -310,7 +311,7 @@ namespace UltraSonic
             }
             else
             {
-                SubsonicServer = UseProxy ? new SubsonicServerWindows(serverUri, Username, Password, ClientName, proxyUri, ProxyPort, ProxyUsername, ProxyPassword) : new SubsonicServerWindows(serverUri, Username, Password, ClientName);
+                SubsonicServer = UseProxy ? new SubsonicServer(serverUri, Username, Password, ClientName, proxyUri, ProxyPort, ProxyUsername, ProxyPassword) : new SubsonicServer(serverUri, Username, Password, ClientName);
 
                 SubsonicClient = new SubsonicClientWindows(SubsonicServer);
                 SubsonicClient.PingAsync(GetCancellationToken("InitSubsonicApi")).ContinueWith(ValidateServerVersion);

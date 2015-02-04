@@ -87,7 +87,7 @@ namespace UltraSonic
                 }
                 else if (playlistItem.Playlist == null && playlistItem.Name == "Highest Rated")
                 {
-                    await SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, null, null, null, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
+                    await SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, null, null, null, null, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
                 else
                 {
