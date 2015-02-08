@@ -313,7 +313,7 @@ namespace UltraSonic
             {
                 SubsonicServer = UseProxy ? new SubsonicServer(serverUri, Username, Password, ClientName, proxyUri, ProxyPort, ProxyUsername, ProxyPassword) : new SubsonicServer(serverUri, Username, Password, ClientName);
 
-                SubsonicClient = new SubsonicClientWindows(SubsonicServer);
+                SubsonicClient = new SubsonicClientWindows(SubsonicServer, new ImageFormatFactoryWindows());
                 SubsonicClient.PingAsync(GetCancellationToken("InitSubsonicApi")).ContinueWith(ValidateServerVersion);
             }
         }
