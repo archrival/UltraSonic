@@ -64,23 +64,27 @@ namespace UltraSonic
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        Image avatarImage = task.Result == null ? null : task.Result.GetImage();
+                        using (Image avatarImage = task.Result == null ? null : task.Result.GetImage())
+                        {
+                            if (avatarImage != null)
+                            {
+                                AvatarImage.Visibility = Visibility.Visible;
+                                AvatarLabel.Visibility = Visibility.Visible;
+                                AvatarBorder.Visibility = Visibility.Visible;
+                                AvatarBorder.Height = avatarImage.Height;
+                                AvatarBorder.Width = avatarImage.Width;
+                                AvatarImage.Source = avatarImage.ToBitmapSource();
+                            }
+                            else
+                            {
+                                AvatarImage.Visibility = Visibility.Collapsed;
+                                AvatarLabel.Visibility = Visibility.Collapsed;
+                                AvatarBorder.Visibility = Visibility.Collapsed;
+                            }
+                        }
 
-                        if (avatarImage != null)
-                        {
-                            AvatarImage.Visibility = Visibility.Visible;
-                            AvatarLabel.Visibility = Visibility.Visible;
-                            AvatarBorder.Visibility = Visibility.Visible;
-                            AvatarBorder.Height = avatarImage.Height;
-                            AvatarBorder.Width = avatarImage.Width;
-                            AvatarImage.Source = avatarImage.ToBitmapSource();
-                        }
-                        else
-                        {
-                            AvatarImage.Visibility = Visibility.Collapsed;
-                            AvatarLabel.Visibility = Visibility.Collapsed;
-                            AvatarBorder.Visibility = Visibility.Collapsed;
-                        }
+                        if (task.Result != null) 
+                            task.Result.Dispose();
                     });
                     break;
             }

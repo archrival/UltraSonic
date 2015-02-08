@@ -20,14 +20,18 @@ namespace UltraSonic
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        Image coverArtImage = task.Result.GetImage();
+                        using (Image coverArtImage = task.Result.GetImage())
+                        {
 
-                        if (coverArtImage == null) return;
+                            if (coverArtImage == null) return;
 
-                        string localFileName = GetCoverArtFilename(nowPlayingItem.Child);
-                        coverArtImage.Save(localFileName);
+                            string localFileName = GetCoverArtFilename(nowPlayingItem.Child);
+                            coverArtImage.Save(localFileName);
 
-                        nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
+                            nowPlayingItem.Image = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int) (_albumArtSize*ScalingFactor), (int) (_albumArtSize*ScalingFactor));
+                        }
+
+                        task.Result.Dispose();
                     });
                     break;
             }

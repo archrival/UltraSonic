@@ -60,19 +60,24 @@ namespace UltraSonic
                         if (task.Result == null)
                             return;
 
-                        Image coverArtImage = task.Result.GetImage();
+                        using (Image coverArtImage = task.Result.GetImage())
+                        {
+                            if (coverArtImage == null) return;
 
-                        if (coverArtImage == null) return;
+                            string localFileName = GetCoverArtFilename(albumItem.Child);
 
-                        string localFileName = GetCoverArtFilename(albumItem.Child);
+                            if (!File.Exists(localFileName))
+                                coverArtImage.Save(localFileName);
 
-                        if (!File.Exists(localFileName))
-                            coverArtImage.Save(localFileName);
+                            BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int) (_albumArtSize*ScalingFactor), (int) (_albumArtSize*ScalingFactor));
 
-                        BitmapFrame bitmapFrame = coverArtImage.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
-                        coverArtImage.Dispose();
+                            albumItem.Image = bitmapFrame;
+                        }
+
+                        task.Result.Dispose();
+
                         GC.Collect();
-                        albumItem.Image = bitmapFrame;
+
                     });
                     break;
             }
