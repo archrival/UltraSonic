@@ -83,7 +83,7 @@ namespace UltraSonic
                 ProgressIndicator.Visibility = Visibility.Visible;
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {
-                    await SubsonicClient.GetStarredAsync(GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
+                    await SubsonicClient.GetStarredAsync(null, GetCancellationToken("PlaylistsDataGridSelectionChanged")).ContinueWith(UpdatePlaylistGrid);
                 }
                 else if (playlistItem.Playlist == null && playlistItem.Name == "Highest Rated")
                 {

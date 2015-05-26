@@ -122,7 +122,7 @@ namespace UltraSonic
             {
                 case TaskStatus.RanToCompletion:
                     if (task.Result && isTrack)
-                        SubsonicClient.GetStarredAsync(GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
+                        SubsonicClient.GetStarredAsync(null, GetCancellationToken("UpdatePlaylists")).ContinueWith(AddStarredToPlaylists);
 
                     break;
             } 

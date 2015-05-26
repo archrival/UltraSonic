@@ -45,7 +45,7 @@ namespace UltraSonic
                 }
 
                 if (SubsonicServer.GetApiVersion() >= SubsonicApiVersions.Version1_8_0) // Get starred tracks to create dynamic Starred playlist
-                    SubsonicClient.GetStarredAsync(GetCancellationToken("UpdateStarredPlaylists")).ContinueWith(AddStarredToPlaylists);
+                    SubsonicClient.GetStarredAsync(null, GetCancellationToken("UpdateStarredPlaylists")).ContinueWith(AddStarredToPlaylists);
 
                 if (SubsonicServer.GetApiVersion() >= SubsonicApiVersions.Version1_2_0) // Get starred tracks to create dynamic Highest Rated playlist
                     SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, null, null, null, null, GetCancellationToken("UpdateHighestRatedPlaylists")).ContinueWith(AddHighestRatedToPlaylists);

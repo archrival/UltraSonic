@@ -13,7 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
 using Subsonic.Client;
+using Subsonic.Client.Activities;
 using Subsonic.Client.Items;
+using Subsonic.Common.Classes;
+using Subsonic.Common.Interfaces;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 
@@ -319,7 +322,9 @@ namespace UltraSonic
                 }
 
                 SearchStatusLabel.Content = "Searching...";
-                SubsonicClient.Search2Async(searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
+
+                Search2Activity<System.Drawing.Image> search2Activity = new Search2Activity<System.Drawing.Image>(SubsonicClient, searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, null);
+                search2Activity.GetResult(GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
             }
         }
 

@@ -95,7 +95,7 @@ namespace UltraSonic
 
         private Playlist CurrentPlaylist { get; set; }
         private User CurrentUser { get; set; }
-        private SubsonicClientWindows SubsonicClient { get; set; }
+        private ISubsonicClient<Image> SubsonicClient { get; set; }
         private SubsonicServer SubsonicServer { get; set; }
         private string Username { get; set; }
         private string Password { get; set; }
