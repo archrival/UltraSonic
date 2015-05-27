@@ -298,7 +298,7 @@ namespace UltraSonic
             StreamProxy = null;
         }
 
-        private void GlobalSearchTextBoxKeyDown(object sender, KeyEventArgs e)
+        private async void GlobalSearchTextBoxKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Return) return;
 
@@ -324,7 +324,7 @@ namespace UltraSonic
                 SearchStatusLabel.Content = "Searching...";
 
                 Search2Activity<System.Drawing.Image> search2Activity = new Search2Activity<System.Drawing.Image>(SubsonicClient, searchQuery, _maxSearchResults, 0, _maxSearchResults, 0, _maxSearchResults, 0, null);
-                search2Activity.GetResult(GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
+                await search2Activity.GetResult(GetCancellationToken("GlobalSearchTextBoxKeyDown")).ContinueWith(PopulateSearchResults);
             }
         }
 
