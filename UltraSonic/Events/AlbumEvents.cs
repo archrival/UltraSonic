@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿using Subsonic.Client;
+using Subsonic.Client.Items;
+using Subsonic.Common.Enums;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Subsonic.Client.Activities;
-using Subsonic.Client.Items;
-using Subsonic.Common.Enums;
 using UltraSonic.Items;
 using UltraSonic.Static;
 
@@ -12,7 +12,7 @@ namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private async void AlbumDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
+        private void AlbumDataGridSelectionChanged(object sender, MouseButtonEventArgs e)
         {
             var image = e.OriginalSource as Image;
             if (image != null && image.Name == "PlayTrackImage") return;
@@ -21,10 +21,7 @@ namespace UltraSonic
             var albumItem = AlbumDataGrid.SelectedItem as UltraSonicAlbumItem;
 
             if (albumItem != null)
-            {
-                MusicDirectoryActivity<System.Drawing.Image> activity = new MusicDirectoryActivity<System.Drawing.Image>(SubsonicClient, albumItem.Child.Id);
-                await activity.GetResult(GetCancellationToken("AlbumDataGridSelectionChanged")).ContinueWith(UpdateTrackListingGrid);
-            }
+                SubsonicClient.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("AlbumDataGridSelectionChanged")).ContinueWith(UpdateTrackListingGrid);
         }
 
         private async void AlbumDataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -40,10 +37,7 @@ namespace UltraSonic
             var selectedAlbum = source.CurrentItem as UltraSonicAlbumItem;
 
             if (selectedAlbum != null)
-            {
-                MusicDirectoryActivity<System.Drawing.Image> activity = new MusicDirectoryActivity<System.Drawing.Image>(SubsonicClient, selectedAlbum.Child.Id);
-                await activity.GetResult(GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play, true));
-            }
+                await SubsonicClient.GetMusicDirectoryAsync(selectedAlbum.Child.Id, GetCancellationToken("AlbumDataGridMouseDoubleClick")).ContinueWith(t => AddAlbumToPlaylist(t, _doubleClickBehavior == DoubleClickBehavior.Play, true));
 
             _working = false;
         }
@@ -94,23 +88,20 @@ namespace UltraSonic
             SubsonicClient.GetAlbumListAsync(albumListType, _albumListMax, null, null, null, null, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListMax + 1, _albumListMax + _albumListMax));
         }
 
-        private async void AlbumDataGridNextClick(object sender, RoutedEventArgs e)
+        private void AlbumDataGridNextClick(object sender, RoutedEventArgs e)
         {
             if (SubsonicClient == null || _albumListItem == null) return;
 
             _albumListItem.Current += _albumListMax;
-            await SubsonicClient.GetAlbumListAsync(_albumListItem.AlbumListType, _albumListMax, _albumListItem.Current, null, null, null, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax));
+            SubsonicClient.GetAlbumListAsync(_albumListItem.AlbumListType, _albumListMax, _albumListItem.Current, null, null, null, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListItem.Current + _albumListMax + 1, _albumListItem.Current + _albumListMax + _albumListMax));
         }
 
-        private async void AlbumDataGridAddClick(object sender, RoutedEventArgs e)
+        private void AlbumDataGridAddClick(object sender, RoutedEventArgs e)
         {
             if (SubsonicClient == null) return;
 
             foreach (UltraSonicAlbumItem item in AlbumDataGrid.SelectedItems)
-            {
-                MusicDirectoryActivity<System.Drawing.Image> activity = new MusicDirectoryActivity<System.Drawing.Image>(SubsonicClient, item.Child.Id);
-                await activity.GetResult(GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
-            }
+                SubsonicClient.GetMusicDirectoryAsync(item.Child.Id, GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
         }
 
         private void PlayAlbumImageMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -120,7 +111,7 @@ namespace UltraSonic
 
             if (albumItem == null) return;
 
-            Dispatcher.InvokeAsync(() =>
+            Dispatcher.Invoke(() =>
                                   {
                                       StopMusic();
 
@@ -132,8 +123,7 @@ namespace UltraSonic
                                           column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                       }
 
-                                      MusicDirectoryActivity<System.Drawing.Image> activity = new MusicDirectoryActivity<System.Drawing.Image>(SubsonicClient, albumItem.Child.Id);
-                                      activity.GetResult(GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true, true));
+                                      SubsonicClient.GetMusicDirectoryAsync(albumItem.Child.Id, GetCancellationToken("PlayAlbumImageMouseLeftButtonDown")).ContinueWith(t => AddAlbumToPlaylist(t, true, true));
                                   });
         }
     }

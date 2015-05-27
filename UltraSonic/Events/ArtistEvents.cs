@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Subsonic.Client;
-using Subsonic.Client.Activities;
 using Subsonic.Client.Items;
 using UltraSonic.Static;
 
@@ -38,10 +37,7 @@ namespace UltraSonic
             if (artistItem == null || artistItem.Artist == null) return;
 
             ProgressIndicator.Visibility = Visibility.Visible;
-
-            MusicDirectoryActivity<System.Drawing.Image> activity = new MusicDirectoryActivity<System.Drawing.Image>(SubsonicClient, artistItem.Artist.Id);
-            await activity.GetResult(GetCancellationToken("ArtistTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid);
-
+            await SubsonicClient.GetMusicDirectoryAsync(artistItem.Artist.Id, GetCancellationToken("ArtistTreeViewSelectionItemChanged")).ContinueWith(UpdateAlbumGrid);
             ProgressIndicator.Visibility = Visibility.Hidden;
         }
     }
