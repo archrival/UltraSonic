@@ -55,7 +55,7 @@ namespace UltraSonic.Annotations
     /// Gets a value indicating whether a element should be localized.
     /// <value><c>true</c> if a element should be localized; otherwise, <c>false</c>.</value>
     /// </summary>
-    [UsedImplicitly] public bool Required { get; private set; }
+    [UsedImplicitly] public bool Required { get; }
 
     /// <summary>
     /// Returns whether the value of the given object is equal to the current <see cref="LocalizationRequiredAttribute"/>.

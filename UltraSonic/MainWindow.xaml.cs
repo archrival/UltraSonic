@@ -106,7 +106,7 @@ namespace UltraSonic
         private string ProxyPassword { get; set; }
         private bool UseProxy { get; set; }
         private StreamProxy StreamProxy { get; set; }
-        private FileLogger FileLogger { get; set; }
+        private FileLogger FileLogger { get; }
         private ChatMonitor<Image> ChatMonitor { get; set; }
         
         public static RoutedCommand NextCommand = new RoutedCommand();

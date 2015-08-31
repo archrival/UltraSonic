@@ -347,27 +347,32 @@ namespace UltraSonic
 
             BitmapSource bitmap;
 
-            if (_currentAlbumArt.Height > ActualHeight * 0.9)
+            try
             {
-                var newHeight = (int)(ActualHeight * 0.9);
-                bitmap = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, 0, newHeight);
-            }
-            else
-            {
-                bitmap = _currentAlbumArt.ToBitmapSource();
-            }
+                if (_currentAlbumArt.Height > ActualHeight * 0.9)
+                {
+                    var newHeight = (int)(ActualHeight * 0.9);
+                    bitmap = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, 0, newHeight);
+                }
+                else
+                {
+                    bitmap = _currentAlbumArt.ToBitmapSource();
+                }
 
-            AlbumArt albumArtWindow = new AlbumArt
-                                          {
-                                              Height = bitmap.Height,
-                                              Width = bitmap.Width,
-                                              PopupAlbumArtImage = { Source = bitmap },
-                                              Owner = this,
-                                          };
+                AlbumArt albumArtWindow = new AlbumArt
+                {
+                    Height = bitmap.Height,
+                    Width = bitmap.Width,
+                    PopupAlbumArtImage = { Source = bitmap },
+                    Owner = this,
+                };
 
-            AlbumArtWindow = albumArtWindow;
-            albumArtWindow.Show();
-            Dwm.DropShadowToWindow(albumArtWindow);
+                AlbumArtWindow = albumArtWindow;
+                albumArtWindow.Show();
+                Dwm.DropShadowToWindow(albumArtWindow);
+            }
+            catch
+            { }
         }
 
         private void ArtistFilterTextBoxTextChanged(object sender, TextChangedEventArgs e)
