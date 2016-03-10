@@ -44,7 +44,7 @@ namespace UltraSonic
                         UserPodcastLabel.Text = CurrentUser.PodcastRole.ToString();
                         UserShareLabel.Text = CurrentUser.ShareRole.ToString();
 
-                        if (SubsonicServer.GetApiVersion() >= SubsonicApiVersions.Version1_8_0)
+                        if (SubsonicServer.ApiVersion >= SubsonicApiVersions.Version1_8_0)
                             SubsonicClient.GetAvatarAsync(CurrentUser.Username, GetCancellationToken("UpdateCurrentUser")).ContinueWith(UpdateUserAvatar);
                         else
                         {
@@ -64,7 +64,7 @@ namespace UltraSonic
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        using (Image avatarImage = task.Result == null ? null : task.Result.GetImage())
+                        using (Image avatarImage = task.Result == null ? null : task.Result.Image)
                         {
                             if (avatarImage != null)
                             {

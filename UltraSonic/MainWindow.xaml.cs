@@ -328,9 +328,9 @@ namespace UltraSonic
                 return;
             }
 
-            FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicServer.GetApiVersion()), LoggingLevel.Information);
+            FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicServer.ApiVersion), LoggingLevel.Information);
 
-            if (SubsonicServer.GetApiVersion() < SubsonicApiVersions.Version1_8_0)
+            if (SubsonicServer.ApiVersion < SubsonicApiVersions.Version1_8_0)
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -341,7 +341,7 @@ namespace UltraSonic
                     UserShareLabel2.Visibility = Visibility.Hidden;
                 });
             }
-            else if (SubsonicServer.GetApiVersion() < SubsonicApiVersions.Version1_4_0)
+            else if (SubsonicServer.ApiVersion < SubsonicApiVersions.Version1_4_0)
             {
                 FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), LoggingLevel.Error);
                 MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
@@ -353,7 +353,7 @@ namespace UltraSonic
 
             Dispatcher.Invoke(() =>
             {
-                ServerApiLabel.Text = SubsonicServer.GetApiVersion().ToString();
+                ServerApiLabel.Text = SubsonicServer.ApiVersion.ToString();
             });
 
             SubsonicClient.GetUserAsync(Username, GetCancellationToken("ValidateServerVersion")).ContinueWith(UpdateCurrentUser);

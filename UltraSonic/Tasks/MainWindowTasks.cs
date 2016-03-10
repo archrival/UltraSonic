@@ -40,7 +40,7 @@ namespace UltraSonic
                     if (task.Result == null)
                         return;
 
-                    using (_currentAlbumArt = task.Result.GetImage())
+                    using (_currentAlbumArt = task.Result.Image)
                     {
                         if (_currentAlbumArt != null)
                         {

@@ -60,7 +60,7 @@ namespace UltraSonic
                         if (task.Result == null)
                             return;
 
-                        using (Image coverArtImage = task.Result.GetImage())
+                        using (Image coverArtImage = task.Result.Image)
                         {
                             if (coverArtImage == null) return;
 
