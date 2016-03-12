@@ -126,7 +126,7 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Exception:\n\n{ex.Message}\n{ex.StackTrace}", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -136,7 +136,7 @@ namespace UltraSonic
 
             if (!license.Valid)
             {
-                MessageBox.Show(string.Format("You must have a valid REST API license to use {0}", AppName));
+                MessageBox.Show($"You must have a valid REST API license to use {AppName}");
             }
             else
             {

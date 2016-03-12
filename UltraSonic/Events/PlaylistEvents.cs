@@ -129,7 +129,7 @@ namespace UltraSonic
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show(string.Format("Would you like to delete the selected playlist? '{0}'", playlistItem.Name), AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    MessageBoxResult result = MessageBox.Show($"Would you like to delete the selected playlist? '{playlistItem.Name}'", AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
 
                     if (result == MessageBoxResult.Yes && playlistItem.Playlist != null)
                     {

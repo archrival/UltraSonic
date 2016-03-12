@@ -36,7 +36,7 @@ namespace UltraSonic
                     {
                         Dispatcher.Invoke(() =>
                                               {
-                                                  AlbumDataGridNext.Header = string.Format("Albums {0} - {1}", albumListStart, albumListEnd);
+                                                  AlbumDataGridNext.Header = $"Albums {albumListStart} - {albumListEnd}";
                                                   AlbumDataGridNext.Visibility = Visibility.Visible;
                                               });
                     }

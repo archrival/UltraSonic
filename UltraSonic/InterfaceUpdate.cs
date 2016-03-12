@@ -6,7 +6,7 @@ namespace UltraSonic
     {
         private void SetVolumeMetadata()
         {
-            VolumeSlider.ToolTip = MediaPlayer.IsMuted ? "Volume: Muted" : string.Format("Volume: {0}%", Math.Round(MediaPlayer.Volume * 100, 0));
+            VolumeSlider.ToolTip = MediaPlayer.IsMuted ? "Volume: Muted" : $"Volume: {Math.Round(MediaPlayer.Volume*100, 0)}%";
             MuteButton.ToolTip = MediaPlayer.IsMuted ? "UnMute Volume" : "Mute Volume";
 
             if (MediaPlayer.IsMuted)
@@ -27,7 +27,7 @@ namespace UltraSonic
 
             if (MediaPlayer.Source != null)
             {
-                title = string.Format("{0} - {1} - {2} [{3}]", AppName, _nowPlayingTrack.Artist, _nowPlayingTrack.Title, MusicPlayStatusLabel.Content);
+                title = $"{AppName} - {_nowPlayingTrack.Artist} - {_nowPlayingTrack.Title} [{MusicPlayStatusLabel.Content}]";
                 MusicArtistLabel.Text = _nowPlayingTrack.Artist;
                 MusicTitleLabel.Text = _nowPlayingTrack.Title;
                 MusicAlbumLabel.Text = _nowPlayingTrack.Album;

@@ -644,7 +644,7 @@
                                 <DataGridTemplateColumn Header="Rating" SortMemberPath="Rating">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <local:RatingControl Name="RatingControl"
+                                            <local:RatingControl x:Name="RatingControl"
                                                                  Width="87"
                                                                  Height="16"
                                                                  Click="RatingClick"
@@ -827,7 +827,7 @@
                                 <DataGridTemplateColumn Header="Rating" SortMemberPath="Rating">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <local:RatingControl Name="RatingControl"
+                                            <local:RatingControl x:Name="RatingControl"
                                                                  Width="87"
                                                                  Height="16"
                                                                  Click="RatingClick"
@@ -930,7 +930,7 @@
                                 <DataGridTemplateColumn Header="Rating" SortMemberPath="Rating">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <local:RatingControl Name="RatingControl"
+                                            <local:RatingControl x:Name="RatingControl"
                                                                  Width="87"
                                                                  Height="16"
                                                                  Click="RatingClick"
@@ -1074,7 +1074,7 @@
                                 <DataGridTemplateColumn Header="Rating" SortMemberPath="Rating">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <local:RatingControl Name="RatingControl"
+                                            <local:RatingControl x:Name="RatingControl"
                                                                  Width="87"
                                                                  Height="16"
                                                                  Click="RatingClick"

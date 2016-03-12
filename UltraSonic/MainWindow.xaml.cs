@@ -62,7 +62,7 @@ namespace UltraSonic
         private Image _currentAlbumArt;
         private TimeSpan _position;
         private int _maxSearchResults = 25;
-        private StreamParameters _streamParameters = new StreamParameters();
+        private StreamParameters _streamParameters;
         private int _albumListMax = 10;
         private int _nowPlayingInterval = 30;
         private int _chatMessagesInterval = 5;
@@ -74,7 +74,7 @@ namespace UltraSonic
         private DoubleClickBehavior _doubleClickBehavior = DoubleClickBehavior.Add;
         private AlbumPlayButtonBehavior _albumPlayButtonBehavior = AlbumPlayButtonBehavior.Ask;
 
-        private double _chatMessageSince;
+        //private double _chatMessageSince;
         private AlbumListItem _albumListItem;
         private string _currentPlaylist = string.Empty;
         private string _currentPlaybackList = string.Empty;
@@ -83,7 +83,7 @@ namespace UltraSonic
         private bool _saveWorkingPlaylist;
         private bool _savePlaybackList;
         private bool _showAlbumArt;
-        private bool _newChatNotify;
+        //private bool _newChatNotify;
         private bool _playbackFollowsCursor;
         private bool _shouldCachePlaylist;
         private bool _caching;
@@ -165,19 +165,19 @@ namespace UltraSonic
                 
                 WindowStartupLocation = WindowStartupLocation.Manual;
 
-                FileLogger.Log(string.Format("WindowLeft: {0}", Settings.Default.WindowLeft), LoggingLevel.Verbose);
+                FileLogger.Log($"WindowLeft: {Settings.Default.WindowLeft}", LoggingLevel.Verbose);
                 Left = Settings.Default.WindowLeft;
 
-                FileLogger.Log(string.Format("WindowTop: {0}", Settings.Default.WindowTop), LoggingLevel.Verbose);
+                FileLogger.Log($"WindowTop: {Settings.Default.WindowTop}", LoggingLevel.Verbose);
                 Top = Settings.Default.WindowTop;
                 
-                FileLogger.Log(string.Format("WindowHeight: {0}", Settings.Default.WindowHeight), LoggingLevel.Verbose);
+                FileLogger.Log($"WindowHeight: {Settings.Default.WindowHeight}", LoggingLevel.Verbose);
                 Height = Settings.Default.WindowHeight;
 
-                FileLogger.Log(string.Format("WindowWidth: {0}", Settings.Default.WindowWidth), LoggingLevel.Verbose);
+                FileLogger.Log($"WindowWidth: {Settings.Default.WindowWidth}", LoggingLevel.Verbose);
                 Width = Settings.Default.WindowWidth;
 
-                FileLogger.Log(string.Format("WindowMaximized: {0}", Settings.Default.WindowMaximized), LoggingLevel.Verbose);
+                FileLogger.Log($"WindowMaximized: {Settings.Default.WindowMaximized}", LoggingLevel.Verbose);
                 
                 if (Settings.Default.WindowMaximized)
                     WindowState = WindowState.Maximized;
@@ -200,15 +200,14 @@ namespace UltraSonic
                     StreamProxy = StreamProxy.Instance;
                     StreamProxy.Start();
 
-                    FileLogger.Log(string.Format("StreamProxy Port: {0}", StreamProxy.GetPort()), LoggingLevel.Information);
+                    FileLogger.Log($"StreamProxy Port: {StreamProxy.GetPort()}", LoggingLevel.Information);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ServerUrl))
                 {
                     InitSubsonicApi();
 
-                    if (SubsonicClient != null)
-                        SubsonicClient.GetLicenseAsync(GetCancellationToken("MainWindow")).ContinueWith(CheckLicense);
+                    SubsonicClient?.GetLicenseAsync(GetCancellationToken("MainWindow")).ContinueWith(CheckLicense);
                 }
                 else
                 {
@@ -245,7 +244,7 @@ namespace UltraSonic
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Exception:\n\n{ex.Message}\n{ex.StackTrace}", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -313,7 +312,7 @@ namespace UltraSonic
             {
                 SubsonicServer = UseProxy ? new SubsonicServer(serverUri, Username, Password, ClientName, proxyUri, ProxyPort, ProxyUsername, ProxyPassword) : new SubsonicServer(serverUri, Username, Password, ClientName);
 
-                SubsonicClient = new SubsonicClientWindows(SubsonicServer, new ImageFormatFactoryWindows());
+                SubsonicClient = new SubsonicClient(SubsonicServer, new ImageFormatFactory());
                 SubsonicClient.PingAsync(GetCancellationToken("InitSubsonicApi")).ContinueWith(ValidateServerVersion);
             }
         }
@@ -322,13 +321,13 @@ namespace UltraSonic
         {
             if (!task.Result)
             {
-                FileLogger.Log(string.Format("Error communicating with server"), LoggingLevel.Error);
-                MessageBox.Show(string.Format("Error communicating with server"), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                FileLogger.Log("Error communicating with server", LoggingLevel.Error);
+                MessageBox.Show("Error communicating with server", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 SubsonicClient = null;
                 return;
             }
 
-            FileLogger.Log(string.Format("Subsonic Server API Version: {0}", SubsonicServer.ApiVersion), LoggingLevel.Information);
+            FileLogger.Log($"Subsonic Server API Version: {SubsonicServer.ApiVersion}", LoggingLevel.Information);
 
             if (SubsonicServer.ApiVersion < SubsonicApiVersions.Version1_8_0)
             {
@@ -343,8 +342,8 @@ namespace UltraSonic
             }
             else if (SubsonicServer.ApiVersion < SubsonicApiVersions.Version1_4_0)
             {
-                FileLogger.Log(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), LoggingLevel.Error);
-                MessageBox.Show(string.Format("{0} requires a Subsonic server with a REST API version of at least 1.4.0", AppName), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                FileLogger.Log($"{AppName} requires a Subsonic server with a REST API version of at least 1.4.0", LoggingLevel.Error);
+                MessageBox.Show($"{AppName} requires a Subsonic server with a REST API version of at least 1.4.0", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 SubsonicClient = null;
             }
 
@@ -369,15 +368,15 @@ namespace UltraSonic
 
                 if (!cert.Verify())
                 {
-                    MessageBoxResult result = MessageBox.Show(string.Format("Server certificate is not trusted, would you like to add it to trusted root certificate authorities (CAs)?\n\n\tName: {0}\n\tIssuer: {1}\n\tSerial: {2}\n\tThumbprint: {3}\n\tExpiration: {4}", cert.Subject, cert.Issuer, cert.GetSerialNumberString(), cert.Thumbprint, cert.GetExpirationDateString()), AppName, MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
+                    MessageBoxResult result = MessageBox.Show($"Server certificate is not trusted, would you like to add it to trusted root certificate authorities (CAs)?\n\n\tName: {cert.Subject}\n\tIssuer: {cert.Issuer}\n\tSerial: {cert.GetSerialNumberString()}\n\tThumbprint: {cert.Thumbprint}\n\tExpiration: {cert.GetExpirationDateString()}", AppName, MessageBoxButton.YesNo, MessageBoxImage.Error, MessageBoxResult.No);
 
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        X509Store store = new X509Store(StoreName.Root);
-                        store.Open(OpenFlags.ReadWrite);
-                        store.Add(cert);
-                        store.Close();
-                    }
+                    if (result != MessageBoxResult.Yes)
+                        return cert.Verify();
+
+                    X509Store store = new X509Store(StoreName.Root);
+                    store.Open(OpenFlags.ReadWrite);
+                    store.Add(cert);
+                    store.Close();
                 }
 
                 return cert.Verify();
@@ -448,7 +447,7 @@ namespace UltraSonic
             if (!_movingSlider)
                 ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
         
-            MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
+            MusicTimeRemainingLabel.Content = $"{TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds):mm\\:ss} / {TimeSpan.FromMilliseconds(_position.TotalMilliseconds):mm\\:ss}";
             UpdateTitle();
 
             if (_cachePlaylistTracks && _shouldCachePlaylist)
@@ -493,11 +492,9 @@ namespace UltraSonic
 
         private void Dispose(bool managed)
         {
-            if (_cachingThrottle != null)
-                _cachingThrottle.Dispose();
+            _cachingThrottle?.Dispose();
 
-            if (FileLogger != null)
-                FileLogger.Dispose();
+            FileLogger?.Dispose();
         }
 
         private string GetMusicFilename(Child child)

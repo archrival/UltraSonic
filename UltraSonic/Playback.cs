@@ -89,7 +89,7 @@ namespace UltraSonic
                 MusicAlbumLabel.Text = null;
                 MusicTitleLabel.Text = null;
                 ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
-                MusicTimeRemainingLabel.Content = string.Format("{0:mm\\:ss} / {1:mm\\:ss}", TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds), TimeSpan.FromMilliseconds(_position.TotalMilliseconds));
+                MusicTimeRemainingLabel.Content = $"{TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds):mm\\:ss} / {TimeSpan.FromMilliseconds(_position.TotalMilliseconds):mm\\:ss}";
                 UpdateTitle();
 
             }
@@ -119,7 +119,7 @@ namespace UltraSonic
                 UpdateAlbumArt(child);
 
                 _caching = true;
-                DownloadStatusLabel.Content = string.Format("Caching: {0}", child.Title);
+                DownloadStatusLabel.Content = $"Caching: {child.Title}";
                 var streamTask = SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _streamParameters, null, null, null, GetCancellationToken("QueueTrack"));
                 QueueTrackItemForPlayback(trackItem, true);
                 streamTask.ContinueWith(t => QueueTrack(t, trackItem));
@@ -147,7 +147,7 @@ namespace UltraSonic
 
                     StreamProxy.SetTrackItem(trackItem);
 
-                    string dataSource = stream ? string.Format("http://127.0.0.1:{0}/{1}", StreamProxy.GetPort(), HttpUtility.UrlEncode(trackItem.FileName, Encoding.UTF8)) : trackItem.FileName;
+                    string dataSource = stream ? $"http://127.0.0.1:{StreamProxy.GetPort()}/{HttpUtility.UrlEncode(trackItem.FileName, Encoding.UTF8)}" : trackItem.FileName;
 
                     if (stream)
                     {
@@ -163,7 +163,7 @@ namespace UltraSonic
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("Exception:\n\n{0}\n{1}", ex.Message, ex.StackTrace), AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Exception:\n\n{ex.Message}\n{ex.StackTrace}", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             });
         }

@@ -92,7 +92,7 @@ namespace UltraSonic
 
                     _caching = true;
 
-                    DownloadStatusLabel.Content = string.Format("Caching: {0}", trackItem.Child.Title);
+                    DownloadStatusLabel.Content = $"Caching: {trackItem.Child.Title}";
                     TrackItem item = trackItem;
                     await SubsonicClient.StreamAsync(trackItem.Child.Id, trackItem.FileName, _streamParameters, null, null, null, token).ContinueWith(t => FinalizeCache(t, item), token);
                 }
@@ -179,7 +179,7 @@ namespace UltraSonic
 
             if (CurrentPlaylist != null)
             {
-                MessageBoxResult result = MessageBox.Show(string.Format("Would you like to update the previously loaded playlist? '{0}'", CurrentPlaylist.Name), AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                MessageBoxResult result = MessageBox.Show($"Would you like to update the previously loaded playlist? '{CurrentPlaylist.Name}'", AppName, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                 updatePlaylist = (result == MessageBoxResult.Yes);
             }
 
