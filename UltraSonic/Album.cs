@@ -103,7 +103,7 @@ namespace UltraSonic
                                                                          var bitmapFrame = image.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                                                                          image.Dispose();
                                                                          bitmapFrame.Freeze();
-                                                                         GC.Collect();
+
                                                                          return bitmapFrame;
                                                                      }
                                                                      finally

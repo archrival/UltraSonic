@@ -1,6 +1,5 @@
 ﻿using Subsonic.Common.Classes;
 using Subsonic.Common.Interfaces;
-using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -76,7 +75,7 @@ namespace UltraSonic
 
                         task.Result.Dispose();
 
-                        GC.Collect();
+                        //GC.Collect();
 
                     });
                     break;
@@ -90,9 +89,13 @@ namespace UltraSonic
                 case TaskStatus.RanToCompletion:
                     Dispatcher.Invoke(() =>
                     {
-                        BitmapFrame coverArtImage = task.Result;
-                        if (coverArtImage == null) return;
-                        albumItem.Image = coverArtImage;
+                        if (!task.IsCanceled)
+                        {
+                            BitmapFrame coverArtImage = task.Result;
+                            if (coverArtImage == null) return;
+
+                            albumItem.Image = coverArtImage;
+                        }
                     });
                     break;
                 case TaskStatus.Faulted:
