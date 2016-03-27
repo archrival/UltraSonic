@@ -4,8 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:UltraSonic"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:client="clr-namespace:Subsonic.Client;assembly=Subsonic.Client"
-        xmlns:items="clr-namespace:Subsonic.Client.Items;assembly=Subsonic.Client"
+        xmlns:models="clr-namespace:Subsonic.Client.Models;assembly=Subsonic.Client"
         Title="UltraSonic"
         Width="1030"
         Height="700"
@@ -291,7 +290,7 @@
                                 </ContextMenu>
                             </TreeView.ContextMenu>
                             <TreeView.Resources>
-                                <HierarchicalDataTemplate DataType="{x:Type items:ArtistItem}" ItemsSource="{Binding Path=Children}">
+                                <HierarchicalDataTemplate DataType="{x:Type models:ArtistModel}" ItemsSource="{Binding Path=Children}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Path=Name}" />
                                     </StackPanel>

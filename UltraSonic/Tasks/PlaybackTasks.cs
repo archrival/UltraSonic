@@ -1,13 +1,12 @@
-﻿using Subsonic.Client;
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void QueueTrack(Task task, TrackItem trackItem)
+        private void QueueTrack(Task task, TrackModel trackItem)
         {
             switch (task.Status)
             {

@@ -1,5 +1,4 @@
-﻿using Subsonic.Client;
-using Subsonic.Client.Items;
+﻿using Subsonic.Client.Models;
 using Subsonic.Common;
 using Subsonic.Common.Classes;
 using Subsonic.Common.Enums;
@@ -15,8 +14,7 @@ namespace UltraSonic
     {
         private void UpdatePlaylists()
         {
-            if (SubsonicClient == null) return;
-            SubsonicClient.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
+            SubsonicClient?.GetPlaylistsAsync().ContinueWith(UpdatePlaylists, GetCancellationToken("UpdatePlaylists"));
         }
 
         private void UpdatePlaylists(IEnumerable<Playlist> playlists)
@@ -33,7 +31,7 @@ namespace UltraSonic
                     column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                 }
 
-                foreach (PlaylistItem playlistItem in playlists.Select(playlist => new PlaylistItem
+                foreach (PlaylistModel playlistItem in playlists.Select(playlist => new PlaylistModel
                 {
                     Duration = TimeSpan.FromSeconds(playlist.Duration),
                     Name = playlist.Name,
@@ -44,17 +42,17 @@ namespace UltraSonic
                     _playlistItems.Add(playlistItem);
                 }
             
-                if (SubsonicServer.ApiVersion >= SubsonicApiVersions.Version1_8_0) // Get starred tracks to create dynamic Starred playlist
+                if (SubsonicServer.ApiVersion >= SubsonicApiVersion.Version1_8_0) // Get starred tracks to create dynamic Starred playlist
                     SubsonicClient.GetStarredAsync(null, GetCancellationToken("UpdateStarredPlaylists")).ContinueWith(AddStarredToPlaylists);
 
-                if (SubsonicServer.ApiVersion >= SubsonicApiVersions.Version1_2_0) // Get starred tracks to create dynamic Highest Rated playlist
+                if (SubsonicServer.ApiVersion >= SubsonicApiVersion.Version1_2_0) // Get starred tracks to create dynamic Highest Rated playlist
                     SubsonicClient.GetAlbumListAsync(AlbumListType.Highest, 500, null, null, null, null, null, GetCancellationToken("UpdateHighestRatedPlaylists")).ContinueWith(AddHighestRatedToPlaylists);
             });
         }
 
-        private TrackItem AddTrackItemToPlaylist(TrackItem trackItem, bool playback = false, bool clear = true)
+        private TrackModel AddTrackItemToPlaylist(TrackModel trackItem, bool playback = false, bool clear = true)
         {
-            var playlistTrackItem = new TrackItem();
+            var playlistTrackItem = new TrackModel();
             trackItem.CopyTo(playlistTrackItem);
             playlistTrackItem.Source = trackItem;
             playlistTrackItem.Duration = TimeSpan.FromSeconds(playlistTrackItem.Child.Duration);

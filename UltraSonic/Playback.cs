@@ -1,5 +1,4 @@
-﻿using Subsonic.Client;
-using Subsonic.Client.Items;
+﻿using Subsonic.Client.Models;
 using Subsonic.Common.Classes;
 using System;
 using System.Linq;
@@ -15,8 +14,8 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
             {
-                bool playNextTrack = false;
-                int playlistTrack = _nowPlayingTrack != null ? _playbackTrackItems.IndexOf(_nowPlayingTrack) : PlaybackTrackGrid.SelectedIndex;
+                var playNextTrack = false;
+                var playlistTrack = _nowPlayingTrack != null ? _playbackTrackItems.IndexOf(_nowPlayingTrack) : PlaybackTrackGrid.SelectedIndex;
 
                 if (playlistTrack == _playbackTrackItems.Count - 1)
                 {
@@ -47,7 +46,7 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
             {
-                int playlistTrack = _nowPlayingTrack != null ? _playbackTrackItems.IndexOf(_nowPlayingTrack) : PlaybackTrackGrid.SelectedIndex;
+                var playlistTrack = _nowPlayingTrack != null ? _playbackTrackItems.IndexOf(_nowPlayingTrack) : PlaybackTrackGrid.SelectedIndex;
 
                 if (_playbackFollowsCursor)
                     PlaybackTrackGrid.SelectedIndex--;
@@ -97,11 +96,11 @@ namespace UltraSonic
             MusicPlayStatusLabel.Content = "Stopped";
         }
 
-        private void QueueTrack(TrackItem trackItem)
+        private void QueueTrack(TrackModel trackItem)
         {
             if (_streamItems == null) return;
 
-            Child child = trackItem.Child;             
+            var child = trackItem.Child;             
             var fileNameUri = new Uri(trackItem.FileName);
 
             if (_streamItems.All(s => s.OriginalString == trackItem.FileName) && trackItem.Cached)
@@ -109,18 +108,21 @@ namespace UltraSonic
                 // Use this to tell Subsonic we're playing back the track, this will result in the server indicating we have cancelled the data transfer, it isn't very nice.
                 //SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _maxBitrate == 0 ? null : (int?) _maxBitrate, null, null, null, null, GetCancellationToken("QueueTrack"), true);
                 QueueTrackItemForPlayback(trackItem, false);
-                UpdateAlbumArt(child);
+
+                if (_showAlbumArt)
+                    UpdateAlbumArt(child);
             }
             else
             {
                 if (!_streamItems.Contains(fileNameUri))
                     _streamItems.Enqueue(fileNameUri);
 
-                UpdateAlbumArt(child);
+                if (_showAlbumArt)
+                    UpdateAlbumArt(child);
 
                 _caching = true;
                 DownloadStatusLabel.Content = $"Caching: {child.Title}";
-                var streamTask = SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _streamParameters, null, null, null, GetCancellationToken("QueueTrack"));
+                var streamTask = SubsonicClient.StreamAsync(child.Id, trackItem.FileName, _streamParameters, null, null, null, null, GetCancellationToken("QueueTrack"));
                 QueueTrackItemForPlayback(trackItem, true);
                 streamTask.ContinueWith(t => QueueTrack(t, trackItem));
 
@@ -137,7 +139,7 @@ namespace UltraSonic
             }
         }
 
-        private void QueueTrackItemForPlayback(TrackItem trackItem, bool stream)
+        private void QueueTrackItemForPlayback(TrackModel trackItem, bool stream)
         {
             Dispatcher.Invoke(() =>
             {
@@ -168,9 +170,11 @@ namespace UltraSonic
             });
         }
 
-        private void PlayTrack(TrackItem trackItem)
+        private void PlayTrack(TrackModel trackItem)
         {
-            UpdateAlbumArt(trackItem.Child);
+            if (_showAlbumArt)
+                UpdateAlbumArt(trackItem.Child);
+
             QueueTrack(trackItem);
         }
     }

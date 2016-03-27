@@ -23,7 +23,7 @@ namespace UltraSonic
 
         private void UpdateTitle()
         {
-            string title = AppName;
+            var title = AppName;
 
             if (MediaPlayer.Source != null)
             {

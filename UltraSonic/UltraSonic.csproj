@@ -13,8 +13,6 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <NuGetPackageImportStamp>d40280f3</NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -44,29 +42,10 @@
     <StartupObject>UltraSonic.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
@@ -93,8 +72,8 @@
     <Compile Include="Enum\AlbumPlayButtonBehavior.cs" />
     <Compile Include="Enum\DoubleClickBehavior.cs" />
     <Compile Include="Events\AlbumEvents.cs" />
-    <Compile Include="Items\UltraSonicAlbumItem.cs" />
-    <Compile Include="Items\UltraSonicNowPlayingItem.cs" />
+    <Compile Include="Models\AlbumModel.cs" />
+    <Compile Include="Models\NowPlayingModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Rating.cs" />
     <Compile Include="Static\StaticMethods.cs" />
@@ -270,27 +249,20 @@
     <Resource Include="Images\filter.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client\Subsonic.Client.csproj">
-      <Project>{CBB112D5-2507-4453-83BE-51232FB95CA6}</Project>
-      <Name>Subsonic.Client</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SubsonicSharp\Subsonic.Client.Windows\Subsonic.Client.Windows.csproj">
-      <Project>{3B48CBDF-812E-4D3D-AFAD-D09FE6786F52}</Project>
+      <Project>{3b48cbdf-812e-4d3d-afad-d09fe6786f52}</Project>
       <Name>Subsonic.Client.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SubsonicSharp\Subsonic.Client\Subsonic.Client.csproj">
+      <Project>{cbb112d5-2507-4453-83be-51232fb95ca6}</Project>
+      <Name>Subsonic.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SubsonicSharp\Subsonic.Common\Subsonic.Common.csproj">
-      <Project>{A533A041-6D2D-46B3-A3E7-4CC7E64A16F3}</Project>
+      <Project>{a533a041-6d2d-46b3-a3e7-4cc7e64a16f3}</Project>
       <Name>Subsonic.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

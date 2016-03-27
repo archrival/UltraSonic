@@ -1,5 +1,4 @@
-﻿using Subsonic.Client;
-using Subsonic.Client.Items;
+﻿using Subsonic.Client.Models;
 using Subsonic.Common.Classes;
 using Subsonic.Common.Enums;
 using System.Collections.Generic;
@@ -18,15 +17,15 @@ namespace UltraSonic
             return fi.Exists && fi.Length == child.Size;
         }
 
-        private IEnumerable<TrackItem> GetTrackItemCollection(IEnumerable<Child> children)
+        private IEnumerable<TrackModel> GetTrackItemCollection(IEnumerable<Child> children)
         {
-            var trackItems = new ObservableCollection<TrackItem>();
+            var trackItems = new ObservableCollection<TrackModel>();
 
             foreach (Child child in children.Where(child => child.IsDir == false && child.Type == MediaType.Music))
             {
                 string fileName = GetMusicFilename(child, _musicCacheDirectoryName);
                 bool isCached = IsTrackCached(fileName, child);
-                trackItems.Add(TrackItem.Create(child, fileName, isCached));
+                trackItems.Add(TrackModel.Create(child, fileName, isCached));
             }
 
             return trackItems;
@@ -38,11 +37,11 @@ namespace UltraSonic
             {
                 string fileName = GetMusicFilename(child, _musicCacheDirectoryName);
                 bool isCached = IsTrackCached(fileName, child);
-                _trackItems.Add(TrackItem.Create(child, fileName, isCached));
+                _trackItems.Add(TrackModel.Create(child, fileName, isCached));
             }
         }
 
-        private IEnumerable<TrackItem> GetTrackItemCollection(Directory directory)
+        private IEnumerable<TrackModel> GetTrackItemCollection(Directory directory)
         {
             return GetTrackItemCollection(directory.Children);
         }

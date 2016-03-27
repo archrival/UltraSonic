@@ -1,13 +1,11 @@
 ﻿using System.Windows.Media.Imaging;
-using Subsonic.Client;
-using Subsonic.Client.Items;
 
-namespace UltraSonic.Items
+namespace UltraSonic.Models
 {
-    public class UltraSonicNowPlayingItem : NowPlayingItem
+    public class AlbumModel : Subsonic.Client.Models.AlbumModel
     {
         private BitmapSource _image;
-        
+
         public BitmapSource Image
         {
             get

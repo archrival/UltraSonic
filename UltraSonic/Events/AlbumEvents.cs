@@ -3,9 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Subsonic.Client.Activities;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 using Subsonic.Common.Enums;
-using UltraSonic.Items;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -18,7 +17,7 @@ namespace UltraSonic
             if (image != null && image.Name == "PlayTrackImage") return;
             if (SubsonicClient == null) return;
 
-            var albumItem = AlbumDataGrid.SelectedItem as UltraSonicAlbumItem;
+            var albumItem = AlbumDataGrid.SelectedItem as Models.AlbumModel;
 
             if (albumItem != null)
             {
@@ -37,7 +36,7 @@ namespace UltraSonic
             var source = e.Source as DataGrid;
             if (source == null) return;
 
-            var selectedAlbum = source.CurrentItem as UltraSonicAlbumItem;
+            var selectedAlbum = source.CurrentItem as Models.AlbumModel;
 
             if (selectedAlbum != null)
             {
@@ -52,7 +51,7 @@ namespace UltraSonic
         {
             if (SubsonicClient == null) return;
 
-            foreach (UltraSonicAlbumItem item in AlbumDataGrid.SelectedItems)
+            foreach (Models.AlbumModel item in AlbumDataGrid.SelectedItems)
                 Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id).ToString());
         }
 
@@ -90,7 +89,7 @@ namespace UltraSonic
                     break;
             }
 
-            _albumListItem = new AlbumListItem {AlbumListType = albumListType, Current = 0};
+            _albumListItem = new AlbumListModel {AlbumListType = albumListType, Current = 0};
             SubsonicClient.GetAlbumListAsync(albumListType, _albumListMax, null, null, null, null, null, GetCancellationToken("AlbumDataGridAlbumListClick")).ContinueWith(t => UpdateAlbumGrid(t, _albumListMax + 1, _albumListMax + _albumListMax));
         }
 
@@ -106,17 +105,17 @@ namespace UltraSonic
         {
             if (SubsonicClient == null) return;
 
-            foreach (UltraSonicAlbumItem item in AlbumDataGrid.SelectedItems)
+            foreach (Models.AlbumModel item in AlbumDataGrid.SelectedItems)
             {
                 MusicDirectoryActivity<System.Drawing.Image> activity = new MusicDirectoryActivity<System.Drawing.Image>(SubsonicClient, item.Child.Id);
-                await activity.GetResult(GetCancellationToken("AlbumDataGridAddClick")).ContinueWith(t => AddAlbumToPlaylist(t));
+                await activity.GetResult(GetCancellationToken("AlbumDataGridAddClick")).ContinueWith((System.Threading.Tasks.Task<Subsonic.Common.Classes.Directory> t) => AddAlbumToPlaylist(t));
             }
         }
 
         private void PlayAlbumImageMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var test = UiHelpers.GetVisualParent<DataGridRow>(sender);
-            var albumItem = test.Item as UltraSonicAlbumItem;
+            var albumItem = test.Item as Models.AlbumModel;
 
             if (albumItem == null) return;
 

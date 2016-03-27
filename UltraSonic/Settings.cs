@@ -1,4 +1,4 @@
-﻿using Subsonic.Client.Items;
+﻿using Subsonic.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -104,14 +104,14 @@ namespace UltraSonic
                                   {
                                       if (!string.IsNullOrWhiteSpace(_currentPlaylist))
                                       {
-                                          ObservableCollection<TrackItem> playlistTrackItems;
+                                          ObservableCollection<TrackModel> playlistTrackItems;
                                           var xmlSerializer = new XmlSerializer(_playlistTrackItems.GetType());
 
                                           using (TextReader reader = new StringReader(_currentPlaylist))
-                                              playlistTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackItem>;
+                                              playlistTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackModel>;
 
                                           if (playlistTrackItems != null)
-                                              foreach (TrackItem trackItem in playlistTrackItems)
+                                              foreach (TrackModel trackItem in playlistTrackItems)
                                                   AddTrackItemToPlaylist(trackItem, false, false);
                                       }
                                   });
@@ -123,14 +123,14 @@ namespace UltraSonic
             {
                 if (!string.IsNullOrWhiteSpace(_currentPlaybackList))
                 {
-                    ObservableCollection<TrackItem> playbackTrackItems;
+                    ObservableCollection<TrackModel> playbackTrackItems;
                     var xmlSerializer = new XmlSerializer(_playbackTrackItems.GetType());
 
                     using (TextReader reader = new StringReader(_currentPlaybackList))
-                        playbackTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackItem>;
+                        playbackTrackItems = xmlSerializer.Deserialize(reader) as ObservableCollection<TrackModel>;
 
                     if (playbackTrackItems != null)
-                        foreach (TrackItem trackItem in playbackTrackItems)
+                        foreach (TrackModel trackItem in playbackTrackItems)
                             AddTrackItemToPlaylist(trackItem, true, false);
                 }
             });

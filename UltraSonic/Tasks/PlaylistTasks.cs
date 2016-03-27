@@ -1,5 +1,4 @@
-﻿using Subsonic.Client;
-using Subsonic.Client.Items;
+﻿using Subsonic.Client.Models;
 using Subsonic.Common.Classes;
 using Subsonic.Common.Enums;
 using System;
@@ -34,7 +33,7 @@ namespace UltraSonic
                             _playbackTrackItems.Clear();
                         }
 
-                        foreach (TrackItem trackItem in GetTrackItemCollection(task.Result))
+                        foreach (TrackModel trackItem in GetTrackItemCollection(task.Result))
                             AddTrackItemToPlaylist(trackItem, playback, false);
 
                         if (!play) return;
@@ -62,7 +61,7 @@ namespace UltraSonic
                                                   column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                               }
 
-                                              foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Entries))
+                                              foreach (TrackModel trackItem in GetTrackItemCollection(task.Result.Entries))
                                                   AddTrackItemToPlaylist(trackItem);
                                           });
                     break;
@@ -84,7 +83,7 @@ namespace UltraSonic
                                                   column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                                               }
 
-                                              foreach (TrackItem trackItem in GetTrackItemCollection(task.Result.Songs))
+                                              foreach (TrackModel trackItem in GetTrackItemCollection(task.Result.Songs))
                                                   AddTrackItemToPlaylist(trackItem);
                                           });
                     break;
@@ -109,7 +108,7 @@ namespace UltraSonic
 
                         var tracks = task.Result.Albums.Where(a => !a.IsDir).ToList();
 
-                        foreach (TrackItem trackItem in GetTrackItemCollection(tracks))
+                        foreach (TrackModel trackItem in GetTrackItemCollection(tracks))
                             AddTrackItemToPlaylist(trackItem);
                     });
                     break;
@@ -150,7 +149,7 @@ namespace UltraSonic
                                               Starred starred = task.Result;
                                               int starDuration = starred.Songs.Sum(child => child.Duration);
 
-                                              PlaylistItem newStarredPlaylist = new PlaylistItem
+                                              PlaylistModel newStarredPlaylist = new PlaylistModel
                                                                              {
                                                                                  Duration = TimeSpan.FromSeconds(starDuration),
                                                                                  Name = "Starred",
@@ -158,7 +157,7 @@ namespace UltraSonic
                                                                                  Playlist = null
                                                                              };
 
-                                              PlaylistItem currentStarredPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null && p.Name == "Starred");
+                                              PlaylistModel currentStarredPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null && p.Name == "Starred");
 
                                               if (currentStarredPlaylist == null)
                                                   _playlistItems.Add(newStarredPlaylist);
@@ -183,7 +182,7 @@ namespace UltraSonic
                         var tracks = albumList.Albums.Where(a => !a.IsDir).ToList();
                         int duration = tracks.Sum(child => child.Duration);
 
-                        PlaylistItem newHighestRatedPlaylist = new PlaylistItem
+                        PlaylistModel newHighestRatedPlaylist = new PlaylistModel
                         {
                             Duration = TimeSpan.FromSeconds(duration),
                             Name = "Highest Rated",
@@ -191,7 +190,7 @@ namespace UltraSonic
                             Playlist = null
                         };
 
-                        PlaylistItem currentHighestRatedPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null && p.Name == "Highest Rated");
+                        PlaylistModel currentHighestRatedPlaylist = _playlistItems.FirstOrDefault(p => p.Playlist == null && p.Name == "Highest Rated");
 
                         if (currentHighestRatedPlaylist == null)
                             _playlistItems.Add(newHighestRatedPlaylist);

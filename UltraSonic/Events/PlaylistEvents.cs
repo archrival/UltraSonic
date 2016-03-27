@@ -1,5 +1,4 @@
-﻿using Subsonic.Client;
-using Subsonic.Client.Items;
+﻿using Subsonic.Client.Models;
 using Subsonic.Common.Enums;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +10,7 @@ namespace UltraSonic
     {
         private void PlaybackTrackGridAddClick(object sender, RoutedEventArgs e)
         {
-            foreach (TrackItem item in PlaybackTrackGrid.SelectedItems)
+            foreach (TrackModel item in PlaybackTrackGrid.SelectedItems)
                 AddTrackItemToPlaylist(item);
         }
 
@@ -37,7 +36,7 @@ namespace UltraSonic
 
             for (int i = dataGrid.SelectedIndex; i < dataGrid.Items.Count; i++)
             {
-                TrackItem playlistEntryItem = dataGrid.Items[i] as TrackItem;
+                TrackModel playlistEntryItem = dataGrid.Items[i] as TrackModel;
 
                 if (playlistEntryItem != null)
                     _playbackTrackItems.Add(playlistEntryItem);
@@ -58,7 +57,7 @@ namespace UltraSonic
             if (dataGrid == null) return;
 
             // Take first selected item and play it
-            TrackItem playlistEntryItem = dataGrid.SelectedItems[0] as TrackItem;
+            TrackModel playlistEntryItem = dataGrid.SelectedItems[0] as TrackModel;
 
             StopMusic();
 
@@ -76,7 +75,7 @@ namespace UltraSonic
             if (_working) return;
             _working = true;
 
-            PlaylistItem playlistItem = PlaylistsDataGrid.SelectedItem as PlaylistItem;
+            PlaylistModel playlistItem = PlaylistsDataGrid.SelectedItem as PlaylistModel;
 
             if (playlistItem != null)
             {
@@ -117,7 +116,7 @@ namespace UltraSonic
 
         private void PlaylistsDataGridDeletePlaylistClick(object sender, RoutedEventArgs e)
         {
-            foreach (PlaylistItem playlistItem in PlaylistsDataGrid.SelectedItems)
+            foreach (PlaylistModel playlistItem in PlaylistsDataGrid.SelectedItems)
             {
                 if (playlistItem.Playlist == null && playlistItem.Name == "Starred")
                 {

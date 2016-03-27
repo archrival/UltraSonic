@@ -6,14 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using UltraSonic.Items;
+using UltraSonic.Models;
 using UltraSonic.Static;
 
 namespace UltraSonic
 {
     public partial class MainWindow
     {
-        private void UpdateNowPlayingAlbumImageArt(Task<IImageFormat<Image>> task, UltraSonicNowPlayingItem nowPlayingItem)
+        private void UpdateNowPlayingAlbumImageArt(Task<IImageFormat<Image>> task, NowPlayingModel nowPlayingItem)
         {
             switch (task.Status)
             {
@@ -48,7 +48,7 @@ namespace UltraSonic
                         {
                             string fileName = GetMusicFilename(entry);
 
-                            UltraSonicNowPlayingItem nowPlayingItem = new UltraSonicNowPlayingItem
+                            NowPlayingModel nowPlayingItem = new NowPlayingModel
                             {
                                 BitRate = entry.BitRate,
                                 DiscNumber = entry.DiscNumber,

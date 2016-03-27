@@ -1,9 +1,8 @@
-﻿using Subsonic.Client;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -12,7 +11,7 @@ namespace UltraSonic
     {
         private void TrackDataGridAddClick(object sender, RoutedEventArgs e)
         {
-            foreach (TrackItem item in TrackDataGrid.SelectedItems)
+            foreach (TrackModel item in TrackDataGrid.SelectedItems)
                 AddTrackItemToPlaylist(item);
         }
 
@@ -29,8 +28,8 @@ namespace UltraSonic
 
             _working = true;
 
-            TrackItem selectedTrack = source.CurrentItem as TrackItem;
-            TrackItem playlistTrackItem = null;
+            TrackModel selectedTrack = source.CurrentItem as TrackModel;
+            TrackModel playlistTrackItem = null;
             
             if (selectedTrack != null)
                 playlistTrackItem = AddTrackItemToPlaylist(selectedTrack, _doubleClickBehavior == DoubleClickBehavior.Play);
@@ -50,16 +49,16 @@ namespace UltraSonic
         private void PlayTrackImageMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DataGridRow test = UiHelpers.GetVisualParent<DataGridRow>(sender);
-            TrackItem trackItem = test.Item as TrackItem;
+            TrackModel trackItem = test.Item as TrackModel;
 
             if (trackItem == null) return;
 
             Dispatcher.Invoke(() => AddTrackToPlaylistAndPlay(trackItem));
         }
 
-        private void AddTrackToPlaylistAndPlay(TrackItem trackItem)
+        private void AddTrackToPlaylistAndPlay(TrackModel trackItem)
         {
-            TrackItem playlistTrackItem = AddTrackItemToPlaylist(trackItem, true);
+            TrackModel playlistTrackItem = AddTrackItemToPlaylist(trackItem, true);
             PlaylistTrackGrid.SelectedItem = playlistTrackItem;
             StopMusic();
             PlayButtonClick(null, null);

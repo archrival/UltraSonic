@@ -1,6 +1,5 @@
 ﻿using System.Windows.Controls;
-using Subsonic.Client;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -16,7 +15,7 @@ namespace UltraSonic
             if (dataGrid == null) return;
 
             // Take first selected item in parent DataGrid, if any
-            ChildItem childItem = dataGrid.SelectedItem as ChildItem;
+            ChildModel childItem = dataGrid.SelectedItem as ChildModel;
             if (childItem == null) return;
 
             SubsonicClient.SetRatingAsync(childItem.Child.Id, ratingControl.RatingValue).ConfigureAwait(false);

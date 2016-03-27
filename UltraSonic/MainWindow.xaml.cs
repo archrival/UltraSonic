@@ -2,7 +2,7 @@
 using Subsonic.Client;
 using Subsonic.Client.Enums;
 using Subsonic.Client.Handlers;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 using Subsonic.Client.Monitors;
 using Subsonic.Client.Windows;
 using Subsonic.Common;
@@ -23,7 +23,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Subsonic.Common.Interfaces;
-using UltraSonic.Items;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 using Directory = System.IO.Directory;
@@ -47,18 +46,18 @@ namespace UltraSonic
         private readonly DispatcherTimer _nowPlayingTimer = new DispatcherTimer();
         private readonly DispatcherTimer _chatMessagesTimer = new DispatcherTimer();
         private readonly SemaphoreSlim _cachingThrottle = new SemaphoreSlim(1);
-        private readonly ObservableCollection<UltraSonicNowPlayingItem> _nowPlayingItems = new ObservableCollection<UltraSonicNowPlayingItem>();
-        private readonly ObservableCollection<UltraSonicAlbumItem> _albumItems = new ObservableCollection<UltraSonicAlbumItem>();
-        private readonly ObservableCollection<ArtistItem> _artistItems = new ObservableCollection<ArtistItem>();
-        private readonly ObservableCollection<ChatItem> _chatMessages = new ObservableCollection<ChatItem>();
-        private readonly ObservableCollection<TrackItem> _playlistTrackItems = new ObservableCollection<TrackItem>();
-        private readonly ObservableCollection<TrackItem> _playbackTrackItems = new ObservableCollection<TrackItem>();
-        private readonly ObservableCollection<PlaylistItem> _playlistItems = new ObservableCollection<PlaylistItem>();
-        private readonly ObservableCollection<TrackItem> _trackItems = new ObservableCollection<TrackItem>();
+        private readonly ObservableCollection<Models.NowPlayingModel> _nowPlayingItems = new ObservableCollection<Models.NowPlayingModel>();
+        private readonly ObservableCollection<Models.AlbumModel> _albumItems = new ObservableCollection<Models.AlbumModel>();
+        private readonly ObservableCollection<ArtistModel> _artistItems = new ObservableCollection<ArtistModel>();
+        private readonly ObservableCollection<ChatModel> _chatMessages = new ObservableCollection<ChatModel>();
+        private readonly ObservableCollection<TrackModel> _playlistTrackItems = new ObservableCollection<TrackModel>();
+        private readonly ObservableCollection<TrackModel> _playbackTrackItems = new ObservableCollection<TrackModel>();
+        private readonly ObservableCollection<PlaylistModel> _playlistItems = new ObservableCollection<PlaylistModel>();
+        private readonly ObservableCollection<TrackModel> _trackItems = new ObservableCollection<TrackModel>();
         public AlbumArt AlbumArtWindow;
         private string _cacheDirectory;
         private string _artistFilter = string.Empty;
-        private TrackItem _nowPlayingTrack;
+        private TrackModel _nowPlayingTrack;
         private Image _currentAlbumArt;
         private TimeSpan _position;
         private int _maxSearchResults = 25;
@@ -75,7 +74,7 @@ namespace UltraSonic
         private AlbumPlayButtonBehavior _albumPlayButtonBehavior = AlbumPlayButtonBehavior.Ask;
 
         //private double _chatMessageSince;
-        private AlbumListItem _albumListItem;
+        private AlbumListModel _albumListItem;
         private string _currentPlaylist = string.Empty;
         private string _currentPlaybackList = string.Empty;
 
@@ -91,7 +90,7 @@ namespace UltraSonic
         private bool _movingSlider;
         private bool _working;
 
-        private ObservableCollection<ArtistItem> _filteredArtistItems = new ObservableCollection<ArtistItem>();
+        private ObservableCollection<ArtistModel> _filteredArtistItems = new ObservableCollection<ArtistModel>();
 
         private Playlist CurrentPlaylist { get; set; }
         private User CurrentUser { get; set; }
@@ -113,23 +112,23 @@ namespace UltraSonic
         public static RoutedCommand PreviousCommand = new RoutedCommand();
         public static RoutedCommand PlayPauseCommand = new RoutedCommand();
 
-        private ObservableCollection<ArtistItem> ArtistItems
+        private ObservableCollection<ArtistModel> ArtistItems
         {
             get
             {
                 if (!string.IsNullOrEmpty(_artistFilter))
                 {
-                    _filteredArtistItems = new ObservableCollection<ArtistItem>();
+                    _filteredArtistItems = new ObservableCollection<ArtistModel>();
 
-                    foreach (ArtistItem artistItem in _artistItems)
+                    foreach (ArtistModel artistItem in _artistItems)
                     {
-                        IEnumerable<ArtistItem> filteredArtistItems = artistItem.Children.Where(c => c.Name.Contains(_artistFilter, StringComparison.OrdinalIgnoreCase));
-                        List<ArtistItem> artistItems = filteredArtistItems as List<ArtistItem> ?? filteredArtistItems.ToList();
+                        IEnumerable<ArtistModel> filteredArtistItems = artistItem.Children.Where(c => c.Name.Contains(_artistFilter, StringComparison.OrdinalIgnoreCase));
+                        List<ArtistModel> artistItems = filteredArtistItems as List<ArtistModel> ?? filteredArtistItems.ToList();
 
                         if (!artistItems.Any()) continue;
 
-                        var newArtistItem = new ArtistItem();
-                        var children = new ObservableCollection<ArtistItem>(artistItems);
+                        var newArtistItem = new ArtistModel();
+                        var children = new ObservableCollection<ArtistModel>(artistItems);
                         artistItem.CopyTo(newArtistItem);
                         newArtistItem.Children = children;
                         _filteredArtistItems.Add(newArtistItem);
@@ -329,7 +328,7 @@ namespace UltraSonic
 
             FileLogger.Log($"Subsonic Server API Version: {SubsonicServer.ApiVersion}", LoggingLevel.Information);
 
-            if (SubsonicServer.ApiVersion < SubsonicApiVersions.Version1_8_0)
+            if (SubsonicServer.ApiVersion < SubsonicApiVersion.Version1_8_0)
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -340,7 +339,7 @@ namespace UltraSonic
                     UserShareLabel2.Visibility = Visibility.Hidden;
                 });
             }
-            else if (SubsonicServer.ApiVersion < SubsonicApiVersions.Version1_4_0)
+            else if (SubsonicServer.ApiVersion < SubsonicApiVersion.Version1_4_0)
             {
                 FileLogger.Log($"{AppName} requires a Subsonic server with a REST API version of at least 1.4.0", LoggingLevel.Error);
                 MessageBox.Show($"{AppName} requires a Subsonic server with a REST API version of at least 1.4.0", AppName, MessageBoxButton.OK, MessageBoxImage.Error);
@@ -514,7 +513,7 @@ namespace UltraSonic
             return fileName;
         }
 
-        private void DownloadCoverArt(UltraSonicAlbumItem albumItem)
+        private void DownloadCoverArt(Models.AlbumModel albumItem)
         {
             SubsonicClient.GetCoverArtAsync(albumItem.Child.CoverArt).ContinueWith(t => UpdateAlbumImageArt(t, albumItem));
         }

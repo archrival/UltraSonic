@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Subsonic.Client;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -18,7 +17,7 @@ namespace UltraSonic
             if (dataGrid == null) return;
 
             // Take first selected item in parent DataGrid, if any
-            ChildItem childItem = dataGrid.SelectedItem as ChildItem;
+            ChildModel childItem = dataGrid.SelectedItem as ChildModel;
             if (childItem == null) return;
 
             if (toggleButton.IsChecked.HasValue && toggleButton.IsChecked.Value)

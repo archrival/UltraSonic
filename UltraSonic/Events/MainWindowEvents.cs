@@ -12,11 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
-using Subsonic.Client;
 using Subsonic.Client.Activities;
-using Subsonic.Client.Items;
-using Subsonic.Common.Classes;
-using Subsonic.Common.Interfaces;
+using Subsonic.Client.Models;
 using UltraSonic.Properties;
 using UltraSonic.Static;
 
@@ -51,7 +48,7 @@ namespace UltraSonic
                                       {
                                           if (PlaybackTrackGrid.Items.Count > 0)
                                           {
-                                              foreach (TrackItem trackItem in PlaybackTrackGrid.Items.Cast<TrackItem>().Where(trackItem => !trackItem.Cached))
+                                              foreach (TrackModel trackItem in PlaybackTrackGrid.Items.Cast<TrackModel>().Where(trackItem => !trackItem.Cached))
                                               {
                                                   _shouldCachePlaylist = true;
                                                   break;
@@ -60,7 +57,7 @@ namespace UltraSonic
                                               if (PlaybackTrackGrid.SelectedIndex == -1)
                                                   PlaybackTrackGrid.SelectedIndex = 0;
 
-                                              var playlistEntryItem = PlaybackTrackGrid.SelectedItem as TrackItem;
+                                              var playlistEntryItem = PlaybackTrackGrid.SelectedItem as TrackModel;
 
                                               if (playlistEntryItem != null)
                                                   QueueTrack(playlistEntryItem);
@@ -73,9 +70,9 @@ namespace UltraSonic
         {
             if (_caching) return;
 
-            List<TrackItem> playlistTracks = CollectionViewSource.GetDefaultView(_playbackTrackItems).Cast<TrackItem>().ToList();
+            List<TrackModel> playlistTracks = CollectionViewSource.GetDefaultView(_playbackTrackItems).Cast<TrackModel>().ToList();
 
-            foreach (TrackItem trackItem in playlistTracks)
+            foreach (TrackModel trackItem in playlistTracks)
             {
                 if (IsTrackCached(trackItem.FileName, trackItem.Child)) continue;
                 if (_playbackTrackItems.All(t => t != trackItem)) continue;
@@ -93,8 +90,8 @@ namespace UltraSonic
                     _caching = true;
 
                     DownloadStatusLabel.Content = $"Caching: {trackItem.Child.Title}";
-                    TrackItem item = trackItem;
-                    await SubsonicClient.StreamAsync(trackItem.Child.Id, trackItem.FileName, _streamParameters, null, null, null, token).ContinueWith(t => FinalizeCache(t, item), token);
+                    TrackModel item = trackItem;
+                    await SubsonicClient.StreamAsync(trackItem.Child.Id, trackItem.FileName, _streamParameters, null, null, null, null, token).ContinueWith(t => FinalizeCache(t, item), token);
                 }
                 finally
                 {
@@ -103,7 +100,7 @@ namespace UltraSonic
             }
         }
 
-        private void FinalizeCache(Task<long> task, TrackItem trackItem)
+        private void FinalizeCache(Task<long> task, TrackModel trackItem)
         {
            Dispatcher.Invoke(() => DownloadStatusLabel.Content = string.Empty);
 

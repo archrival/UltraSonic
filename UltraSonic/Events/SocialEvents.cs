@@ -1,8 +1,7 @@
-﻿using Subsonic.Client;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 
 namespace UltraSonic
 {
@@ -45,7 +44,7 @@ namespace UltraSonic
 
             if (source == null) return;
 
-            NowPlayingItem selectedTrack = source.CurrentItem as NowPlayingItem;
+            NowPlayingModel selectedTrack = source.CurrentItem as NowPlayingModel;
 
             if (selectedTrack != null)
                 AddTrackItemToPlaylist(selectedTrack, _doubleClickBehavior == DoubleClickBehavior.Play);

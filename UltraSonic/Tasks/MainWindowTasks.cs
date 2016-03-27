@@ -1,5 +1,6 @@
 ﻿using Subsonic.Common.Classes;
 using Subsonic.Common.Interfaces;
+using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
@@ -45,9 +46,16 @@ namespace UltraSonic
                         if (_currentAlbumArt != null)
                         {
                             string localFileName = GetCoverArtFilename(child);
-                            _currentAlbumArt.Save(localFileName);
 
-                            Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int) (MusicCoverArt.Width*ScalingFactor), (int) (MusicCoverArt.Height*ScalingFactor)));
+                            try
+                            {
+                                _currentAlbumArt.Save(localFileName);
+
+                                Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(MusicCoverArt.Width * ScalingFactor), (int)(MusicCoverArt.Height * ScalingFactor)));
+                            }
+                            catch(Exception ex)
+                            {
+                            }
                         }
                     }
 

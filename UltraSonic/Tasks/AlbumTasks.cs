@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using UltraSonic.Items;
+using UltraSonic.Models;
 using UltraSonic.Static;
 using Directory = Subsonic.Common.Classes.Directory;
 
@@ -50,7 +50,7 @@ namespace UltraSonic
             }
         }
 
-        private void UpdateAlbumImageArt(Task<IImageFormat<Image>> task, UltraSonicAlbumItem albumItem)
+        private void UpdateAlbumImageArt(Task<IImageFormat<Image>> task, AlbumModel albumItem)
         {
             switch (task.Status)
             {
@@ -83,7 +83,7 @@ namespace UltraSonic
             }
         }
 
-        private void UpdateAlbumImageArt(Task<BitmapFrame> task, UltraSonicAlbumItem albumItem)
+        private void UpdateAlbumImageArt(Task<BitmapFrame> task, AlbumModel albumItem)
         {
             switch (task.Status)
             {

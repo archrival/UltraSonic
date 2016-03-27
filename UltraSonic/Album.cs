@@ -1,7 +1,6 @@
 ﻿using Subsonic.Common.Classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -9,8 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using UltraSonic.Items;
+using UltraSonic.Models;
 using UltraSonic.Static;
 using Image = System.Drawing.Image;
 
@@ -44,12 +42,12 @@ namespace UltraSonic
 
                                       _albumItems.Clear();
 
-                                      ICollectionView view = CollectionViewSource.GetDefaultView(AlbumDataGrid.ItemsSource);
+                                      var view = CollectionViewSource.GetDefaultView(AlbumDataGrid.ItemsSource);
                                       
                                       if (view != null && view.SortDescriptions.Count > 0)
                                           view.SortDescriptions.Clear();
 
-                                      foreach (DataGridColumn column in AlbumDataGrid.Columns)
+                                      foreach (var column in AlbumDataGrid.Columns)
                                       {
                                           column.SortDirection = null;
                                           column.Width = column.MinWidth;
@@ -64,10 +62,10 @@ namespace UltraSonic
                                           throttler = new SemaphoreSlim(enumerable.Count < _throttle ? enumerable.Count : _throttle);
 
                                       foreach (
-                                          UltraSonicAlbumItem albumItem in
+                                          var albumItem in
                                               enumerable.Select(
                                                   child =>
-                                                  new UltraSonicAlbumItem
+                                                  new AlbumModel
                                                       {
                                                           AlbumArtSize = _albumArtSize,
                                                           Artist = child.Artist,
@@ -90,19 +88,19 @@ namespace UltraSonic
                                               continue;
                                           }
 
-                                          if (throttler != null) throttler.WaitAsync();
+                                          throttler?.WaitAsync();
 
                                           try
                                           {
-                                              UltraSonicAlbumItem item = albumItem;
+                                              AlbumModel item = albumItem;
 
                                               Task.Run(async () =>
                                                                  {
                                                                      try
                                                                      {
                                                                          await Task.Delay(1);
-                                                                         Image image = Image.FromFile(GetCoverArtFilename(item.Child)); 
-                                                                         BitmapFrame bitmapFrame = image.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
+                                                                         var image = Image.FromFile(GetCoverArtFilename(item.Child)); 
+                                                                         var bitmapFrame = image.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(_albumArtSize * ScalingFactor), (int)(_albumArtSize * ScalingFactor));
                                                                          image.Dispose();
                                                                          bitmapFrame.Freeze();
                                                                          GC.Collect();
@@ -110,7 +108,7 @@ namespace UltraSonic
                                                                      }
                                                                      finally
                                                                      {
-                                                                         if (throttler != null) throttler.Release();
+                                                                         throttler?.Release();
                                                                      }
                                                                  }).ContinueWith(t => UpdateAlbumImageArt(t, item));
                                           }

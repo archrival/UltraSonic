@@ -7,8 +7,8 @@ namespace UltraSonic
         private CancellationToken GetCancellationToken(string tokenType)
         {
             CancelTasks(tokenType);
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
+            var tokenSource = new CancellationTokenSource();
+            var token = tokenSource.Token;
             QueueTask(tokenType, tokenSource);
             return token;
         }

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics;
-using Subsonic.Client;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 
 namespace UltraSonic
 {
@@ -11,7 +10,7 @@ namespace UltraSonic
         {
             if (SubsonicClient == null) return;
 
-            foreach (TrackItem item in selectedItems)
+            foreach (TrackModel item in selectedItems)
                 Process.Start(SubsonicClient.BuildDownloadUrl(item.Child.Id).ToString()); // Launch default URL handler for each download
         }
     }

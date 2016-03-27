@@ -1,7 +1,6 @@
 ﻿using System.Windows;
-using Subsonic.Client;
 using Subsonic.Client.Activities;
-using Subsonic.Client.Items;
+using Subsonic.Client.Models;
 using UltraSonic.Static;
 
 namespace UltraSonic
@@ -31,7 +30,7 @@ namespace UltraSonic
         {
             if (SubsonicClient == null) return;
 
-            ArtistItem artistItem = e.NewValue as ArtistItem;
+            ArtistModel artistItem = e.NewValue as ArtistModel;
             _albumListItem = null;
             AlbumDataGridNext.Visibility = Visibility.Collapsed;
 
