@@ -53,7 +53,7 @@ namespace UltraSonic
 
                                 Dispatcher.Invoke(() => MusicCoverArt.Source = _currentAlbumArt.ToBitmapSource().Resize(BitmapScalingMode.HighQuality, true, (int)(MusicCoverArt.Width * ScalingFactor), (int)(MusicCoverArt.Height * ScalingFactor)));
                             }
-                            catch(Exception ex)
+                            catch(Exception)
                             {
                             }
                         }
