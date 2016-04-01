@@ -11901,11 +11901,10 @@
   "libraries": {
     "Microsoft.ApplicationInsights/2.0.1": {
       "sha512": "iZjOx8ysupwITjhCl6suEOBQ+yTUBlJhQ2lfXBJkpS66gjB5TDJxIPrqKJ17/v4QqiFw//eHTGtMUCtoMN6WDQ==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "Microsoft.ApplicationInsights.2.0.1.nupkg.sha512",
         "Microsoft.ApplicationInsights.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
         "lib/dotnet5.4/Microsoft.ApplicationInsights.XML",
         "lib/dotnet5.4/Microsoft.ApplicationInsights.dll",
         "lib/net40/Microsoft.ApplicationInsights.XML",
@@ -11916,8 +11915,7 @@
         "lib/net46/Microsoft.ApplicationInsights.dll",
         "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll",
         "lib/uap10.0/Microsoft.ApplicationInsights.dll",
-        "lib/wp8/Microsoft.ApplicationInsights.dll",
-        "package/services/metadata/core-properties/312640b031884ea79d940dd9faa4155a.psmdcp"
+        "lib/wp8/Microsoft.ApplicationInsights.dll"
       ]
     },
     "Microsoft.ApplicationInsights.PersistenceChannel/1.2.3": {
@@ -12111,12 +12109,10 @@
     },
     "Microsoft.NETCore.Runtime.CoreCLR-arm/1.0.0": {
       "sha512": "hoJfIl981eXwn9Tz8onO/J1xaYApIfp/YrhjSh9rRhml1U5Wj80LBgyp/6n+KI3VlvcAraThhnHnCTp+M3Uh+w==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "Microsoft.NETCore.Runtime.CoreCLR-arm.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Runtime.CoreCLR-arm.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/c1cbeaed81514106b6b7971ac193f132.psmdcp",
         "ref/dotnet/_._",
         "runtimes/win8-arm/lib/dotnet/mscorlib.ni.dll",
         "runtimes/win8-arm/native/clretwrc.dll",
@@ -12130,12 +12126,10 @@
     },
     "Microsoft.NETCore.Runtime.CoreCLR-x64/1.0.0": {
       "sha512": "DaY5Z13xCZpnVIGluC5sCo4/0wy1rl6mptBH7v3RYi3guAmG88aSeFoQzyZepo0H0jEixUxNFM0+MB6Jc+j0bw==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "Microsoft.NETCore.Runtime.CoreCLR-x64.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Runtime.CoreCLR-x64.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/bd7bd26b6b8242179b5b8ca3d9ffeb95.psmdcp",
         "ref/dotnet/_._",
         "runtimes/win7-x64/lib/dotnet/mscorlib.ni.dll",
         "runtimes/win7-x64/native/clretwrc.dll",
@@ -12149,12 +12143,10 @@
     },
     "Microsoft.NETCore.Runtime.CoreCLR-x86/1.0.0": {
       "sha512": "2LDffu5Is/X01GVPVuye4Wmz9/SyGDNq1Opgl5bXG3206cwNiCwsQgILOtfSWVp5mn4w401+8cjhBy3THW8HQQ==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "Microsoft.NETCore.Runtime.CoreCLR-x86.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Runtime.CoreCLR-x86.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/dd7e29450ade4bdaab9794850cd11d7a.psmdcp",
         "ref/dotnet/_._",
         "runtimes/win7-x86/lib/dotnet/mscorlib.ni.dll",
         "runtimes/win7-x86/native/clretwrc.dll",
@@ -12168,13 +12160,11 @@
     },
     "Microsoft.NETCore.Runtime.Native/1.0.0": {
       "sha512": "tMsWWrH1AJCguiM22zK/vr6COxqz62Q1F02B07IXAUN405R3HGk5SkD/DL0Hte+OTjNtW9LkKXpOggGBRwYFNg==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "Microsoft.NETCore.Runtime.Native.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Runtime.Native.nuspec",
-        "[Content_Types].xml",
-        "_._",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/a985563978b547f984c16150ef73e353.psmdcp"
+        "_._"
       ]
     },
     "Microsoft.NETCore.Targets/1.0.0": {
@@ -12212,12 +12202,10 @@
     },
     "Microsoft.NETCore.Windows.ApiSets-x64/1.0.0": {
       "sha512": "NC+dpFMdhujz2sWAdJ8EmBk07p1zOlNi0FCCnZEbzftABpw9xZ99EMP/bUJrPTgCxHfzJAiuLPOtAauzVINk0w==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "Microsoft.NETCore.Windows.ApiSets-x64.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Windows.ApiSets-x64.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/b25894a2a9234c329a98dc84006b2292.psmdcp",
         "runtimes/win10-x64/native/_._",
         "runtimes/win7-x64/native/API-MS-Win-Base-Util-L1-1-0.dll",
         "runtimes/win7-x64/native/API-MS-Win-Core-Kernel32-Private-L1-1-0.dll",
@@ -12379,12 +12367,10 @@
     },
     "Microsoft.NETCore.Windows.ApiSets-x86/1.0.0": {
       "sha512": "/HDRdhz5bZyhHwQ/uk/IbnDIX5VDTsHntEZYkTYo57dM+U3Ttel9/OJv0mjL64wTO/QKUJJNKp9XO+m7nSVjJQ==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "Microsoft.NETCore.Windows.ApiSets-x86.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Windows.ApiSets-x86.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/b773d829b3664669b45b4b4e97bdb635.psmdcp",
         "runtimes/win10-x86/native/_._",
         "runtimes/win7-x86/native/API-MS-Win-Base-Util-L1-1-0.dll",
         "runtimes/win7-x86/native/API-MS-Win-Core-Kernel32-Private-L1-1-0.dll",
@@ -13294,36 +13280,30 @@
     },
     "System.IO.Compression.clrcompression-arm/4.0.0": {
       "sha512": "Kk21GecAbI+H6tMP6/lMssGObbhoHwLiREiB5UkNMCypdxACuF+6gmrdDTousCUcbH28CJeo7tArrnUc+bchuw==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "System.IO.Compression.clrcompression-arm.4.0.0.nupkg.sha512",
         "System.IO.Compression.clrcompression-arm.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/e09228dcfd7b47adb2ddcf73e2eb6ddf.psmdcp",
         "runtimes/win10-arm/native/ClrCompression.dll",
         "runtimes/win7-arm/native/clrcompression.dll"
       ]
     },
     "System.IO.Compression.clrcompression-x64/4.0.0": {
       "sha512": "Lqr+URMwKzf+8HJF6YrqEqzKzDzFJTE4OekaxqdIns71r8Ufbd8SbZa0LKl9q+7nu6Em4SkIEXVMB7plSXekOw==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "System.IO.Compression.clrcompression-x64.4.0.0.nupkg.sha512",
         "System.IO.Compression.clrcompression-x64.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/416c3fd9fab749d484e0fed458de199f.psmdcp",
         "runtimes/win10-x64/native/ClrCompression.dll",
         "runtimes/win7-x64/native/clrcompression.dll"
       ]
     },
     "System.IO.Compression.clrcompression-x86/4.0.0": {
       "sha512": "GmevpuaMRzYDXHu+xuV10fxTO8DsP7OKweWxYtkaxwVnDSj9X6RBupSiXdiveq9yj/xjZ1NbG+oRRRb99kj+VQ==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "System.IO.Compression.clrcompression-x86.4.0.0.nupkg.sha512",
         "System.IO.Compression.clrcompression-x86.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
-        "package/services/metadata/core-properties/cd12f86c8cc2449589dfbe349763f7b3.psmdcp",
         "runtimes/win10-x86/native/ClrCompression.dll",
         "runtimes/win7-x86/native/clrcompression.dll"
       ]
@@ -14067,17 +14047,15 @@
     },
     "System.Reflection.Emit/4.0.0": {
       "sha512": "CqnQz5LbNbiSxN10cv3Ehnw3j1UZOBCxnE0OO0q/keGQ5ENjyFM6rIG4gm/i0dX6EjdpYkAgKcI/mhZZCaBq4A==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "System.Reflection.Emit.4.0.0.nupkg.sha512",
         "System.Reflection.Emit.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
         "lib/DNXCore50/System.Reflection.Emit.dll",
         "lib/MonoAndroid10/_._",
         "lib/net45/_._",
         "lib/netcore50/System.Reflection.Emit.dll",
         "lib/xamarinmac20/_._",
-        "package/services/metadata/core-properties/f6dc998f8a6b43d7b08f33375407a384.psmdcp",
         "ref/MonoAndroid10/_._",
         "ref/dotnet/System.Reflection.Emit.dll",
         "ref/dotnet/System.Reflection.Emit.xml",
@@ -14096,16 +14074,14 @@
     },
     "System.Reflection.Emit.ILGeneration/4.0.0": {
       "sha512": "02okuusJ0GZiHZSD2IOLIN41GIn6qOr7i5+86C98BPuhlwWqVABwebiGNvhDiXP1f9a6CxEigC7foQD42klcDg==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "System.Reflection.Emit.ILGeneration.4.0.0.nupkg.sha512",
         "System.Reflection.Emit.ILGeneration.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
         "lib/DNXCore50/System.Reflection.Emit.ILGeneration.dll",
         "lib/net45/_._",
         "lib/netcore50/System.Reflection.Emit.ILGeneration.dll",
         "lib/wp80/_._",
-        "package/services/metadata/core-properties/d044dd882ed2456486ddb05f1dd0420f.psmdcp",
         "ref/dotnet/System.Reflection.Emit.ILGeneration.dll",
         "ref/dotnet/System.Reflection.Emit.ILGeneration.xml",
         "ref/dotnet/de/System.Reflection.Emit.ILGeneration.xml",
@@ -14123,16 +14099,14 @@
     },
     "System.Reflection.Emit.Lightweight/4.0.0": {
       "sha512": "DJZhHiOdkN08xJgsJfDjkuOreLLmMcU8qkEEqEHqyhkPUZMMQs0lE8R+6+68BAFWgcdzxtNu0YmIOtEug8j00w==",
-      "type": "Package",
+      "type": "package",
       "files": [
+        "System.Reflection.Emit.Lightweight.4.0.0.nupkg.sha512",
         "System.Reflection.Emit.Lightweight.nuspec",
-        "[Content_Types].xml",
-        "_rels/.rels",
         "lib/DNXCore50/System.Reflection.Emit.Lightweight.dll",
         "lib/net45/_._",
         "lib/netcore50/System.Reflection.Emit.Lightweight.dll",
         "lib/wp80/_._",
-        "package/services/metadata/core-properties/52abced289cd46eebf8599b9b4c1c67b.psmdcp",
         "ref/dotnet/System.Reflection.Emit.Lightweight.dll",
         "ref/dotnet/System.Reflection.Emit.Lightweight.xml",
         "ref/dotnet/de/System.Reflection.Emit.Lightweight.xml",

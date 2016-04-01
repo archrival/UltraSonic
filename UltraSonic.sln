@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraSonic", "UltraSonic\UltraSonic.csproj", "{367828C2-6E33-4F95-96AC-9E1E9740B185}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsonic.Client.UniversalWindows", "SubsonicSharp\Subsonic.Client.UniversalWindows\Subsonic.Client.UniversalWindows.csproj", "{D6205D55-8D7F-486A-8AC0-DCF36B36B3E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitViewMenu", "SplitViewMenu\SplitViewMenu.csproj", "{2D22C1A0-98B1-4E23-980F-E49EE27EC735}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsonic.Client.Android", "SubsonicSharp\Subsonic.Client.Android\Subsonic.Client.Android.csproj", "{62125682-B913-4281-87FE-BB3E5DF75248}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -163,6 +165,22 @@ Global
 		{2D22C1A0-98B1-4E23-980F-E49EE27EC735}.Release|x64.Build.0 = Release|x64
 		{2D22C1A0-98B1-4E23-980F-E49EE27EC735}.Release|x86.ActiveCfg = Release|x86
 		{2D22C1A0-98B1-4E23-980F-E49EE27EC735}.Release|x86.Build.0 = Release|x86
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|ARM.Build.0 = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|x64.Build.0 = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Debug|x86.Build.0 = Debug|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|ARM.ActiveCfg = Release|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|ARM.Build.0 = Release|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|x64.ActiveCfg = Release|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|x64.Build.0 = Release|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|x86.ActiveCfg = Release|Any CPU
+		{62125682-B913-4281-87FE-BB3E5DF75248}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
