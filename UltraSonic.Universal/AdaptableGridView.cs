@@ -7,7 +7,7 @@ namespace UltraSonic
     public class AdaptableGridView : GridView
     {
         // default itemWidth
-        private const double itemWidth = 100.00;
+        private const double itemWidth = 300.00;
 
         public double ItemWidth
         {
@@ -17,6 +17,7 @@ namespace UltraSonic
 
         public static readonly DependencyProperty ItemWidthProperty =
             DependencyProperty.Register("ItemWidth", typeof(double), typeof(AdaptableGridView), new PropertyMetadata(itemWidth));
+
         // default max number of rows or columns
         private const int maxRowsOrColumns = 3;
 
@@ -27,7 +28,7 @@ namespace UltraSonic
         }
 
         public static readonly DependencyProperty MaxRowColProperty = DependencyProperty.Register("MaxRowsOrColumns", typeof(int), typeof(AdaptableGridView), new PropertyMetadata(maxRowsOrColumns));
-        
+
         public AdaptableGridView()
         {
             SizeChanged += MyGridViewSizeChanged;
@@ -35,7 +36,7 @@ namespace UltraSonic
 
         private void MyGridViewSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Calculate the proper max rows or columns based on new size 
+            // Calculate the proper max rows or columns based on new size
             MaxRowsOrColumns = ItemWidth > 0 ? Convert.ToInt32(Math.Floor(e.NewSize.Width / ItemWidth)) : maxRowsOrColumns;
         }
     }

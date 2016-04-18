@@ -2,11 +2,11 @@
 
 namespace UltraSonic.Extensions
 {
-    public static class IPropertySetExtensions
+    public static class PropertySetExtensions
     {
         public static T TryGetProperty<T>(this IPropertySet propertySet, string propertyName, T defaultValue)
         {
-            object result = null;
+            object result;
 
             if (!propertySet.TryGetValue(propertyName, out result))
             {

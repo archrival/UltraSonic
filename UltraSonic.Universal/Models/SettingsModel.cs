@@ -21,11 +21,11 @@ namespace UltraSonic.Models
             get { return _username; }
             set
             {
-                if (value != _username)
-                {
-                    _username = value;
-                    OnPropertyChanged();
-                }
+                if (value == _username)
+                    return;
+
+                _username = value;
+                OnPropertyChanged();
             }
         }
 
@@ -34,11 +34,11 @@ namespace UltraSonic.Models
             get { return _password; }
             set
             {
-                if (value != _password)
-                {
-                    _password = value;
-                    OnPropertyChanged();
-                }
+                if (value == _password)
+                    return;
+
+                _password = value;
+                OnPropertyChanged();
             }
         }
 
@@ -47,11 +47,11 @@ namespace UltraSonic.Models
             get { return _serverUrl; }
             set
             {
-                if (value != _serverUrl)
-                {
-                    _serverUrl = value;
-                    OnPropertyChanged();
-                }
+                if (value == _serverUrl)
+                    return;
+
+                _serverUrl = value;
+                OnPropertyChanged();
             }
         }
         
@@ -60,11 +60,11 @@ namespace UltraSonic.Models
             get { return _useProxy; }
             set
             {
-                if (value != _useProxy)
-                {
-                    _useProxy = value;
-                    OnPropertyChanged();
-                }
+                if (value == _useProxy)
+                    return;
+
+                _useProxy = value;
+                OnPropertyChanged();
             }
         }
 
@@ -73,11 +73,11 @@ namespace UltraSonic.Models
             get { return _proxyServer; }
             set
             {
-                if (value != _proxyServer)
-                {
-                    _proxyServer = value;
-                    OnPropertyChanged();
-                }
+                if (value == _proxyServer)
+                    return;
+
+                _proxyServer = value;
+                OnPropertyChanged();
             }
         }
 
@@ -86,11 +86,11 @@ namespace UltraSonic.Models
             get { return _proxyUsername; }
             set
             {
-                if (value != _proxyUsername)
-                {
-                    _proxyUsername = value;
-                    OnPropertyChanged();
-                }
+                if (value == _proxyUsername)
+                    return;
+
+                _proxyUsername = value;
+                OnPropertyChanged();
             }
         }
 
@@ -99,11 +99,11 @@ namespace UltraSonic.Models
             get { return _proxyPassword; }
             set
             {
-                if (value != _proxyPassword)
-                {
-                    _proxyPassword = value;
-                    OnPropertyChanged();
-                }
+                if (value == _proxyPassword)
+                    return;
+
+                _proxyPassword = value;
+                OnPropertyChanged();
             }
         }
 
@@ -112,11 +112,11 @@ namespace UltraSonic.Models
             get { return _proxyPort; }
             set
             {
-                if (value != _proxyPort)
-                {
-                    _proxyPort = value;
-                    OnPropertyChanged();
-                }
+                if (value == _proxyPort)
+                    return;
+
+                _proxyPort = value;
+                OnPropertyChanged();
             }
         }
 
@@ -125,11 +125,11 @@ namespace UltraSonic.Models
             get { return _maxBitrate; }
             set
             {
-                if (value != _maxBitrate)
-                {
-                    _maxBitrate = value;
-                    OnPropertyChanged();
-                }
+                if (value == _maxBitrate)
+                    return;
+
+                _maxBitrate = value;
+                OnPropertyChanged();
             }
         }
 
@@ -138,11 +138,11 @@ namespace UltraSonic.Models
             get { return _maxAlbumResults; }
             set
             {
-                if (value != _maxAlbumResults)
-                {
-                    _maxAlbumResults = value;
-                    OnPropertyChanged();
-                }
+                if (value == _maxAlbumResults)
+                    return;
+
+                _maxAlbumResults = value;
+                OnPropertyChanged();
             }
         }
         public int MaxSongResults
@@ -150,11 +150,11 @@ namespace UltraSonic.Models
             get { return _maxSongResults; }
             set
             {
-                if (value != _maxSongResults)
-                {
-                    _maxSongResults = value;
-                    OnPropertyChanged();
-                }
+                if (value == _maxSongResults)
+                    return;
+
+                _maxSongResults = value;
+                OnPropertyChanged();
             }
         }
     }

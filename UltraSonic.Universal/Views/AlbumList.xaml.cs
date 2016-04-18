@@ -45,18 +45,20 @@ namespace UltraSonic.Views
 
             foreach (var album in albumList.Albums)
             {
-                var albumModel = new Models.AlbumModel();
-                albumModel.Artist = album.Artist;
-                albumModel.Child = album;
-                albumModel.CoverArt = album.CoverArt;
-                albumModel.Genre = album.Genre;
-                albumModel.Id = album.Id;
-                albumModel.Name = album.Title;
-                albumModel.Parent = album.Parent;
-                albumModel.Rating = album.UserRating;
-                albumModel.Starred = album.Starred != default(DateTime);
-                albumModel.Year = album.Year;
-                albumModel.Image = await GetCoverArt(album.CoverArt ?? album.Id, 200);
+                var albumModel = new Models.AlbumModel
+                {
+                    Artist = album.Artist,
+                    Child = album,
+                    CoverArt = album.CoverArt,
+                    Genre = album.Genre,
+                    Id = album.Id,
+                    Name = album.Title,
+                    Parent = album.Parent,
+                    Rating = album.UserRating,
+                    Starred = album.Starred != default(DateTime),
+                    Year = album.Year,
+                    Image = await GetCoverArt(album.CoverArt ?? album.Id, 200)
+                };
 
                 albumModels.Add(albumModel);
             }

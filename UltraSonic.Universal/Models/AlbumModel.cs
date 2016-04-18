@@ -12,11 +12,11 @@ namespace UltraSonic.Models
             get { return _image; }
             set
             {
-                if (value != _image)
-                {
-                    _image = value;
-                    OnPropertyChanged();
-                }
+                if (value == _image)
+                    return;
+
+                _image = value;
+                OnPropertyChanged();
             }
         }
     }

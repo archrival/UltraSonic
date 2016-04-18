@@ -3,6 +3,7 @@ using Subsonic.Client.Interfaces;
 using Subsonic.Client.UniversalWindows;
 using Subsonic.Common.Interfaces;
 using System;
+using Windows.Storage;
 using UltraSonic.Extensions;
 using UltraSonic.Models;
 using UltraSonic.ViewModels;
@@ -14,28 +15,28 @@ namespace UltraSonic
     {
         private static SettingsModel _settingsModel;
 
-        private static ISubsonicServer SubsonicServer;
-        private static IImageFormatFactory<SoftwareBitmapSource> ImageFormatFactory;
-        private static ISubsonicClient<SoftwareBitmapSource> SubsonicClient;
+        private static ISubsonicServer _subsonicServer;
+        private static IImageFormatFactory<SoftwareBitmapSource> _imageFormatFactory;
+        private static ISubsonicClient<SoftwareBitmapSource> _subsonicClient;
 
-        private const int defaultMaxAlbumResults = 25;
-        private const int defaultMaxBitrate = 0;
-        private const int defaultMaxSongResults = 100;
+        private const int DefaultMaxAlbumResults = 25;
+        private const int DefaultMaxBitrate = 0;
+        private const int DefaultMaxSongResults = 100;
 
-        private const string serverSettingsKey = "serverSettings";
-        private const string proxySettingsKey = "proxySettings";
-        private const string searchSettingsKey = "searchSettings";
-        private const string serverUrlKey = "serverUrl";
-        private const string usernameKey = "username";
-        private const string passwordKey = "password";
-        private const string useProxyKey = "useProxy";
-        private const string proxyServerKey = "proxyServer";
-        private const string proxyPortKey = "proxyPort";
-        private const string proxyUsernameKey = "proxyUsername";
-        private const string proxyPasswordKey = "proxyPassword";
-        private const string maxBitrateKey = "maxBitrate";
-        private const string maxAlbumResultsKey = "maxAlbumResults";
-        private const string maxSongResultsKey = "maxSongResults";
+        private const string ServerSettingsKey = "serverSettings";
+        private const string ProxySettingsKey = "proxySettings";
+        private const string SearchSettingsKey = "searchSettings";
+        private const string ServerUrlKey = "serverUrl";
+        private const string UsernameKey = "username";
+        private const string PasswordKey = "password";
+        private const string UseProxyKey = "useProxy";
+        private const string ProxyServerKey = "proxyServer";
+        private const string ProxyPortKey = "proxyPort";
+        private const string ProxyUsernameKey = "proxyUsername";
+        private const string ProxyPasswordKey = "proxyPassword";
+        private const string MaxBitrateKey = "maxBitrate";
+        private const string MaxAlbumResultsKey = "maxAlbumResults";
+        private const string MaxSongResultsKey = "maxSongResults";
 
         public static ISubsonicClient<SoftwareBitmapSource> GetSubsonicClient()
         {
@@ -45,67 +46,39 @@ namespace UltraSonic
             if (string.IsNullOrWhiteSpace(GetServerUrl()))
                 return null;
 
-            if (SubsonicClient == null)
-            {
-                SubsonicServer = new SubsonicServer(new Uri(GetServerUrl()), GetUsername(), GetPassword(), "UltraSonic.Universal");
-                ImageFormatFactory = new ImageFormatFactory();
-                SubsonicClient = new SubsonicClient(SubsonicServer, ImageFormatFactory);
-            }
+            if (_subsonicClient != null)
+                return _subsonicClient;
 
-            return SubsonicClient;
+            _subsonicServer = new SubsonicServer(new Uri(GetServerUrl()), GetUsername(), GetPassword(), "UltraSonic.Universal");
+            _imageFormatFactory = new ImageFormatFactory();
+            _subsonicClient = new SubsonicClient(_subsonicServer, _imageFormatFactory);
+
+            return _subsonicClient;
         }
         
         public static SettingsModel GetSettings()
         {
             _settingsModel = new SettingsModel();
 
-            Windows.Storage.ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
 
-            Windows.Storage.ApplicationDataContainer serverSettingsContainer = null;
-            Windows.Storage.ApplicationDataContainer proxySettingsContainer = null;
-            Windows.Storage.ApplicationDataContainer searchSettingsContainer = null;
+            var serverSettingsContainer = roamingSettings.Containers.ContainsKey(ServerSettingsKey) ? roamingSettings.Containers[ServerSettingsKey] : roamingSettings.CreateContainer(ServerSettingsKey, ApplicationDataCreateDisposition.Always);
+            var proxySettingsContainer = roamingSettings.Containers.ContainsKey(ProxySettingsKey) ? roamingSettings.Containers[ProxySettingsKey] : roamingSettings.CreateContainer(ProxySettingsKey, ApplicationDataCreateDisposition.Always);
+            var searchSettingsContainer = roamingSettings.Containers.ContainsKey(SearchSettingsKey) ? roamingSettings.Containers[SearchSettingsKey] : roamingSettings.CreateContainer(SearchSettingsKey, ApplicationDataCreateDisposition.Always);
 
-            if (roamingSettings.Containers.ContainsKey(serverSettingsKey))
-            {
-                serverSettingsContainer = roamingSettings.Containers[serverSettingsKey];
-            }
-            else
-            {
-                serverSettingsContainer = roamingSettings.CreateContainer(serverSettingsKey, Windows.Storage.ApplicationDataCreateDisposition.Always);
+            _settingsModel.ServerUrl = serverSettingsContainer.Values.TryGetProperty(ServerUrlKey, string.Empty);
+            _settingsModel.Username = serverSettingsContainer.Values.TryGetProperty(UsernameKey, string.Empty);
+            _settingsModel.Password = serverSettingsContainer.Values.TryGetProperty(PasswordKey, string.Empty);
 
-            }
+            _settingsModel.UseProxy =  proxySettingsContainer.Values.TryGetProperty(UseProxyKey, false);
+            _settingsModel.ProxyServer = proxySettingsContainer.Values.TryGetProperty(ProxyServerKey, string.Empty);
+            _settingsModel.ProxyPort = proxySettingsContainer.Values.TryGetProperty(ProxyPortKey, 0);
+            _settingsModel.ProxyUsername = proxySettingsContainer.Values.TryGetProperty(ProxyUsernameKey, string.Empty);
+            _settingsModel.ProxyPassword = proxySettingsContainer.Values.TryGetProperty(ProxyPasswordKey, string.Empty);
 
-            if (roamingSettings.Containers.ContainsKey(proxySettingsKey))
-            {
-                proxySettingsContainer = roamingSettings.Containers[proxySettingsKey];
-            }
-            else
-            {
-                proxySettingsContainer = roamingSettings.CreateContainer(proxySettingsKey, Windows.Storage.ApplicationDataCreateDisposition.Always);
-            }
-
-            if (roamingSettings.Containers.ContainsKey(searchSettingsKey))
-            {
-                searchSettingsContainer = roamingSettings.Containers[searchSettingsKey];
-            }
-            else
-            {
-                searchSettingsContainer = roamingSettings.CreateContainer(searchSettingsKey, Windows.Storage.ApplicationDataCreateDisposition.Always);
-            }
-
-            _settingsModel.ServerUrl = serverSettingsContainer.Values.TryGetProperty(serverUrlKey, string.Empty);
-            _settingsModel.Username = serverSettingsContainer.Values.TryGetProperty(usernameKey, string.Empty);
-            _settingsModel.Password = serverSettingsContainer.Values.TryGetProperty(passwordKey, string.Empty);
-
-            _settingsModel.UseProxy =  proxySettingsContainer.Values.TryGetProperty(useProxyKey, false);
-            _settingsModel.ProxyServer = proxySettingsContainer.Values.TryGetProperty(proxyServerKey, string.Empty);
-            _settingsModel.ProxyPort = proxySettingsContainer.Values.TryGetProperty(proxyPortKey, 0);
-            _settingsModel.ProxyUsername = proxySettingsContainer.Values.TryGetProperty(proxyUsernameKey, string.Empty);
-            _settingsModel.ProxyPassword = proxySettingsContainer.Values.TryGetProperty(proxyPasswordKey, string.Empty);
-
-            _settingsModel.MaxAlbumResults = searchSettingsContainer.Values.TryGetProperty(maxAlbumResultsKey, defaultMaxAlbumResults);
-            _settingsModel.MaxBitrate = searchSettingsContainer.Values.TryGetProperty(maxBitrateKey, defaultMaxBitrate);
-            _settingsModel.MaxSongResults = searchSettingsContainer.Values.TryGetProperty(maxSongResultsKey, defaultMaxSongResults);
+            _settingsModel.MaxAlbumResults = searchSettingsContainer.Values.TryGetProperty(MaxAlbumResultsKey, DefaultMaxAlbumResults);
+            _settingsModel.MaxBitrate = searchSettingsContainer.Values.TryGetProperty(MaxBitrateKey, DefaultMaxBitrate);
+            _settingsModel.MaxSongResults = searchSettingsContainer.Values.TryGetProperty(MaxSongResultsKey, DefaultMaxSongResults);
 
             GetSubsonicClient();
                                    
@@ -117,7 +90,7 @@ namespace UltraSonic
             if (_settingsModel == null)
                 GetSettings();
 
-            return _settingsModel.Username;
+            return _settingsModel?.Username;
         }
 
         public static string GetPassword()
@@ -125,7 +98,7 @@ namespace UltraSonic
             if (_settingsModel == null)
                 GetSettings();
 
-            return _settingsModel.Password;
+            return _settingsModel?.Password;
         }
 
         public static string GetServerUrl()
@@ -133,7 +106,7 @@ namespace UltraSonic
             if (_settingsModel == null)
                 GetSettings();
 
-            return _settingsModel.ServerUrl;
+            return _settingsModel?.ServerUrl;
         }
 
         public static int GetMaxAlbumResults()
@@ -146,52 +119,25 @@ namespace UltraSonic
 
         public static void SaveSettings(SettingsViewModel settingsViewModel)
         {
-            Windows.Storage.ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
 
-            Windows.Storage.ApplicationDataContainer serverSettingsContainer = null;
-            Windows.Storage.ApplicationDataContainer proxySettingsContainer = null;
-            Windows.Storage.ApplicationDataContainer searchSettingsContainer = null;
+            var serverSettingsContainer = !roamingSettings.Containers.ContainsKey(ServerSettingsKey) ? roamingSettings.CreateContainer(ServerSettingsKey, ApplicationDataCreateDisposition.Always) : roamingSettings.Containers[ServerSettingsKey];
+            var proxySettingsContainer = !roamingSettings.Containers.ContainsKey(ProxySettingsKey) ? roamingSettings.CreateContainer(ProxySettingsKey, ApplicationDataCreateDisposition.Always) : roamingSettings.Containers[ProxySettingsKey];
+            var searchSettingsContainer = !roamingSettings.Containers.ContainsKey(SearchSettingsKey) ? roamingSettings.CreateContainer(SearchSettingsKey, ApplicationDataCreateDisposition.Always) : roamingSettings.Containers[SearchSettingsKey];
 
-            if (!roamingSettings.Containers.ContainsKey(serverSettingsKey))
-            {
-                serverSettingsContainer = roamingSettings.CreateContainer(serverSettingsKey, Windows.Storage.ApplicationDataCreateDisposition.Always);
-            }
-            else
-            {
-                serverSettingsContainer = roamingSettings.Containers[serverSettingsKey];
-            }
+            serverSettingsContainer.Values[ServerUrlKey] = settingsViewModel.Settings.ServerUrl;
+            serverSettingsContainer.Values[UsernameKey] = settingsViewModel.Settings.Username;
+            serverSettingsContainer.Values[PasswordKey] = settingsViewModel.Settings.Password;
 
-            if (!roamingSettings.Containers.ContainsKey(proxySettingsKey))
-            {
-                proxySettingsContainer = roamingSettings.CreateContainer(proxySettingsKey, Windows.Storage.ApplicationDataCreateDisposition.Always);
-            }
-            else
-            {
-                proxySettingsContainer = roamingSettings.Containers[proxySettingsKey];
-            }
+            proxySettingsContainer.Values[UseProxyKey] = settingsViewModel.Settings.UseProxy;
+            proxySettingsContainer.Values[ProxyServerKey] = settingsViewModel.Settings.ProxyServer;
+            proxySettingsContainer.Values[ProxyPortKey] = settingsViewModel.Settings.ProxyPort;
+            proxySettingsContainer.Values[ProxyUsernameKey] = settingsViewModel.Settings.ProxyUsername;
+            proxySettingsContainer.Values[ProxyPasswordKey] = settingsViewModel.Settings.ProxyPassword;
 
-            if (!roamingSettings.Containers.ContainsKey(searchSettingsKey))
-            {
-                searchSettingsContainer = roamingSettings.CreateContainer(searchSettingsKey, Windows.Storage.ApplicationDataCreateDisposition.Always);
-            }
-            else
-            {
-                searchSettingsContainer = roamingSettings.Containers[searchSettingsKey];
-            }
-
-            serverSettingsContainer.Values[serverUrlKey] = settingsViewModel.Settings.ServerUrl;
-            serverSettingsContainer.Values[usernameKey] = settingsViewModel.Settings.Username;
-            serverSettingsContainer.Values[passwordKey] = settingsViewModel.Settings.Password;
-
-            proxySettingsContainer.Values[useProxyKey] = settingsViewModel.Settings.UseProxy;
-            proxySettingsContainer.Values[proxyServerKey] = settingsViewModel.Settings.ProxyServer;
-            proxySettingsContainer.Values[proxyPortKey] = settingsViewModel.Settings.ProxyPort;
-            proxySettingsContainer.Values[proxyUsernameKey] = settingsViewModel.Settings.ProxyUsername;
-            proxySettingsContainer.Values[proxyPasswordKey] = settingsViewModel.Settings.ProxyPassword;
-
-            searchSettingsContainer.Values[maxBitrateKey] = settingsViewModel.Settings.MaxBitrate;
-            searchSettingsContainer.Values[maxAlbumResultsKey] = settingsViewModel.Settings.MaxAlbumResults;
-            searchSettingsContainer.Values[maxSongResultsKey] = settingsViewModel.Settings.MaxSongResults;
+            searchSettingsContainer.Values[MaxBitrateKey] = settingsViewModel.Settings.MaxBitrate;
+            searchSettingsContainer.Values[MaxAlbumResultsKey] = settingsViewModel.Settings.MaxAlbumResults;
+            searchSettingsContainer.Values[MaxSongResultsKey] = settingsViewModel.Settings.MaxSongResults;
 
             GetSubsonicClient();
         }

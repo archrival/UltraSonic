@@ -24,7 +24,7 @@
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="m:AlbumModel">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                        <Image Width="200" Source="{x:Bind Image.Image}" HorizontalAlignment="Center"/>
+                        <Image Source="{x:Bind Image.Image}" HorizontalAlignment="Center"/>
                         <StackPanel>
                             <TextBlock FontSize="14" Text="{x:Bind Name}" HorizontalAlignment="Right"/>
                             <TextBlock FontSize="10" Text="{x:Bind Artist}" HorizontalAlignment="Right"/>

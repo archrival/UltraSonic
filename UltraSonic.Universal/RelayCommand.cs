@@ -36,7 +36,7 @@ namespace UltraSonic
         public RelayCommand(Action<object> execute, Predicate<object> canExecute)
         {
             if (execute == null)
-                throw new ArgumentNullException("execute");
+                throw new ArgumentNullException(nameof(execute));
 
             _execute = execute;
             _canExecute = canExecute;
@@ -49,7 +49,7 @@ namespace UltraSonic
         [DebuggerStepThrough]
         public bool CanExecute(object parameters)
         {
-            return _canExecute == null ? true : _canExecute(parameters);
+            return _canExecute == null || _canExecute(parameters);
         }
 
         public event EventHandler CanExecuteChanged;
@@ -58,8 +58,7 @@ namespace UltraSonic
         {
             var handler = CanExecuteChanged;
 
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         public void Execute(object parameters)

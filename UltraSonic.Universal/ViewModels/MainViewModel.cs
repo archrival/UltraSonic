@@ -1,10 +1,10 @@
-﻿using SplitViewMenu;
-using Subsonic.Client.Tasks;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
+using SplitViewMenu;
+using Subsonic.Client.Tasks;
 using UltraSonic.Views;
 
-namespace UltraSonic
+namespace UltraSonic.ViewModels
 {
     public class MainViewModel : ObservableObject
     {

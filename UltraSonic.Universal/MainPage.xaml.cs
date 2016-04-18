@@ -1,5 +1,6 @@
 ﻿using Windows.UI.Xaml.Controls;
 using SplitViewMenu;
+using UltraSonic.ViewModels;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
