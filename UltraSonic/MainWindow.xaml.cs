@@ -75,6 +75,7 @@ namespace UltraSonic
 
         //private double _chatMessageSince;
         private AlbumListModel _albumListItem;
+
         private string _currentPlaylist = string.Empty;
         private string _currentPlaybackList = string.Empty;
 
@@ -82,8 +83,10 @@ namespace UltraSonic
         private bool _saveWorkingPlaylist;
         private bool _savePlaybackList;
         private bool _showAlbumArt;
+
         //private bool _newChatNotify;
         private bool _playbackFollowsCursor;
+
         private bool _shouldCachePlaylist;
         private bool _caching;
         private bool _cachePlaylistTracks = true;
@@ -107,7 +110,7 @@ namespace UltraSonic
         private StreamProxy StreamProxy { get; set; }
         private FileLogger FileLogger { get; }
         private ChatMonitor<Image> ChatMonitor { get; set; }
-        
+
         public static RoutedCommand NextCommand = new RoutedCommand();
         public static RoutedCommand PreviousCommand = new RoutedCommand();
         public static RoutedCommand PlayPauseCommand = new RoutedCommand();
@@ -153,15 +156,15 @@ namespace UltraSonic
             {
                 String appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppName);
                 var appDir = new DirectoryInfo(appData);
-                
+
                 if (!appDir.Exists)
                     Directory.CreateDirectory(appData);
-                
+
                 String logFile = Path.Combine(appData, "ultrasonic.log");
 
                 FileLogger = new FileLogger(logFile, LoggingLevel.Verbose);
                 FileLogger.Log("UltraSonic Started", LoggingLevel.Basic);
-                
+
                 WindowStartupLocation = WindowStartupLocation.Manual;
 
                 FileLogger.Log($"WindowLeft: {Settings.Default.WindowLeft}", LoggingLevel.Verbose);
@@ -169,7 +172,7 @@ namespace UltraSonic
 
                 FileLogger.Log($"WindowTop: {Settings.Default.WindowTop}", LoggingLevel.Verbose);
                 Top = Settings.Default.WindowTop;
-                
+
                 FileLogger.Log($"WindowHeight: {Settings.Default.WindowHeight}", LoggingLevel.Verbose);
                 Height = Settings.Default.WindowHeight;
 
@@ -177,7 +180,7 @@ namespace UltraSonic
                 Width = Settings.Default.WindowWidth;
 
                 FileLogger.Log($"WindowMaximized: {Settings.Default.WindowMaximized}", LoggingLevel.Verbose);
-                
+
                 if (Settings.Default.WindowMaximized)
                     WindowState = WindowState.Maximized;
 
@@ -231,7 +234,7 @@ namespace UltraSonic
                 MediaPlayer.MediaEnded += (o, args) => PlayNextTrack();
                 MediaPlayer.Volume = Settings.Default.Volume;
                 MediaPlayer.IsMuted = Settings.Default.VolumeMuted;
-                VolumeSlider.Value = MediaPlayer.Volume*10;
+                VolumeSlider.Value = MediaPlayer.Volume * 10;
 
                 AlbumDataGrid.ItemsSource = _albumItems;
                 NowPlayingDataGrid.ItemsSource = _nowPlayingItems;
@@ -270,7 +273,7 @@ namespace UltraSonic
                 ChatMonitor.Subscribe(new ChatHandler<Image>
                 {
                     Client = SubsonicClient,
-                    Interval = _chatMessagesInterval*1000,
+                    Interval = _chatMessagesInterval * 1000,
                     CancellationToken = GetCancellationToken("ConfigureChat")
                 });
 
@@ -292,7 +295,7 @@ namespace UltraSonic
             }
             else
             {
-                ChatMonitor.ChatHandler.Interval = _chatMessagesInterval*1000;
+                ChatMonitor.ChatHandler.Interval = _chatMessagesInterval * 1000;
             }
         }
 
@@ -300,7 +303,7 @@ namespace UltraSonic
         {
             Uri serverUri = new Uri(ServerUrl);
             string proxyUri = string.IsNullOrWhiteSpace(ProxyServer) ? null : ProxyServer;
-            
+
             if (!ValidateCertificate(serverUri))
             {
                 FileLogger.Log("Unable to validate server certificate, this issue must be corrected before continuing.", LoggingLevel.Error);
@@ -409,7 +412,6 @@ namespace UltraSonic
             }
             catch
             {
-                
             }
             finally
             {
@@ -423,9 +425,9 @@ namespace UltraSonic
         {
             Dispatcher.Invoke(() =>
             {
-                LicenseDateLabel.Text = license.Date != new DateTime() ? license.Date.ToString(CultureInfo.InvariantCulture) : string.Empty;
+                LicenseDateLabel.Text = license.LicenseExpires != new DateTime() ? license.LicenseExpires.ToString(CultureInfo.InvariantCulture) : string.Empty;
                 LicenseEmailLabel.Text = license.Email;
-                LicenseKeyLabel.Text = license.Key;
+                LicenseKeyLabel.Text = null;
                 LicenseValidLabel.Text = license.Valid.ToString();
             });
         }
@@ -445,7 +447,7 @@ namespace UltraSonic
 
             if (!_movingSlider)
                 ProgressSlider.Value = MediaPlayer.Position.TotalMilliseconds;
-        
+
             MusicTimeRemainingLabel.Content = $"{TimeSpan.FromMilliseconds(MediaPlayer.Position.TotalMilliseconds):mm\\:ss} / {TimeSpan.FromMilliseconds(_position.TotalMilliseconds):mm\\:ss}";
             UpdateTitle();
 
@@ -479,10 +481,10 @@ namespace UltraSonic
 
         protected override void OnClosed(EventArgs e)
         {
- 	        base.OnClosed(e);
+            base.OnClosed(e);
             Dispose();
         }
-        
+
         public void Dispose()
         {
             Dispose(true);
