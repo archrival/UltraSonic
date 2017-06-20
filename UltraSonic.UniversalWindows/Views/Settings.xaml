@@ -2,7 +2,6 @@
     x:Class="UltraSonic.Views.Settings"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:UltraSonic.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:UltraSonic.ViewModels"
@@ -13,20 +12,20 @@
             <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Server URL" Margin="5" Width="90"/>
-                        <TextBox Text="{x:Bind Settings.ServerUrl, Mode=TwoWay, FallbackValue=''}" Width="300"/>
+                        <TextBlock Text="Server URL" Margin="5" Width="90" />
+                        <TextBox Text="{x:Bind Settings.ServerUrl, Mode=TwoWay, FallbackValue=''}" Width="300" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Username"  Margin="5" Width="90"/>
-                        <TextBox Text="{x:Bind Settings.Username, Mode=TwoWay, FallbackValue=''}" Width="300"/>
+                        <TextBlock Text="Username"  Margin="5" Width="90" />
+                        <TextBox Text="{x:Bind Settings.Username, Mode=TwoWay, FallbackValue=''}" Width="300" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Password" Margin="5" Width="90"/>
-                        <PasswordBox Password="{x:Bind Settings.Password, Mode=TwoWay, FallbackValue=''}" Width="300"/>
+                        <TextBlock Text="Password" Margin="5" Width="90" />
+                        <PasswordBox Password="{x:Bind Settings.Password, Mode=TwoWay, FallbackValue=''}" Width="300" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Max Album Results"  Margin="5" Width="90"/>
-                        <TextBox Text="{x:Bind Settings.MaxAlbumResults, Mode=TwoWay, FallbackValue=''}" Width="300"/>
+                        <TextBlock Text="Max Album Results"  Margin="5" Width="90" />
+                        <TextBox Text="{x:Bind Settings.MaxAlbumResults, Mode=TwoWay, FallbackValue=''}" Width="300" />
                     </StackPanel>
                     <Button Content="Save" Margin="5" Command="{Binding SaveSettingsCommand}" />
                 </StackPanel>

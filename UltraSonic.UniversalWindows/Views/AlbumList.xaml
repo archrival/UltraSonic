@@ -5,29 +5,28 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:u="using:UltraSonic"
     xmlns:m="using:UltraSonic.Models"
-    xmlns:vm="using:UltraSonic.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="100" />
         </Grid.RowDefinitions>
 
-        <u:AdaptableGridView IsItemClickEnabled="True" ItemsSource="{Binding AlbumList.Result}" x:Name="tumbview" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,0,0" >
+        <u:AdaptableGridView IsItemClickEnabled="True" ItemsSource="{Binding AlbumList.Result}" x:Name="tumbview" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,0,0">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VariableSizedWrapGrid  Orientation="Horizontal" ItemWidth="{Binding ElementName=tumbview, Path=ItemWidth}" MaximumRowsOrColumns="{Binding ElementName=tumbview, Path=MaxRowsOrColumns}"/>
+                    <VariableSizedWrapGrid  Orientation="Horizontal" ItemWidth="{Binding ElementName=tumbview, Path=ItemWidth}" MaximumRowsOrColumns="{Binding ElementName=tumbview, Path=MaxRowsOrColumns}" />
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="m:AlbumModel">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                        <Image Source="{x:Bind Image.Image}" HorizontalAlignment="Center"/>
+                        <Image Source="{x:Bind Image.Image}" HorizontalAlignment="Center" />
                         <StackPanel>
-                            <TextBlock FontSize="14" Text="{x:Bind Name}" HorizontalAlignment="Right"/>
-                            <TextBlock FontSize="10" Text="{x:Bind Artist}" HorizontalAlignment="Right"/>
+                            <TextBlock FontSize="14" Text="{x:Bind Name}" HorizontalAlignment="Right" />
+                            <TextBlock FontSize="10" Text="{x:Bind Artist}" HorizontalAlignment="Right" />
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>

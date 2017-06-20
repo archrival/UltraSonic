@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="4d57c780-a048-4ec6-8db7-0bbfcb948167"
+    Name="4f202cb2-ddd5-422f-84b5-6f9754eadf54"
     Publisher="CN=Josh"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="4d57c780-a048-4ec6-8db7-0bbfcb948167" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="4f202cb2-ddd5-422f-84b5-6f9754eadf54" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>UltraSonic.Universal</DisplayName>
+    <DisplayName>UltraSonic.UniversalWindows</DisplayName>
     <PublisherDisplayName>Josh</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="UltraSonic.Universal.App">
+      EntryPoint="UltraSonic.UniversalWindows.App">
       <uap:VisualElements
-        DisplayName="UltraSonic.Universal"
+        DisplayName="UltraSonic.UniversalWindows"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="UltraSonic.Universal"
+        Description="UltraSonic.UniversalWindows"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
