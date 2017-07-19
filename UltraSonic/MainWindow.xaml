@@ -1566,6 +1566,9 @@
                             </Style>
                         </DockPanel.Resources>
                         <Button Width="75"
+                                Click="StartScanClicked"
+                                Content="Scan" />                        
+                        <Button Width="75"
                                 Click="SettingsSaveButtonClick"
                                 Content="Save" />
                         <Button Width="75"

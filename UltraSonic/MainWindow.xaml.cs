@@ -537,5 +537,10 @@ namespace UltraSonic
                 ProgressIndicator.Visibility = Visibility.Hidden;
             });
         }
+
+        private void StartScanClicked(object sender, RoutedEventArgs e)
+        {
+            SubsonicClient.StartScanAsync(GetCancellationToken("StartScan"));
+        }
     }
 }
